@@ -364,6 +364,30 @@ Status: Gaps identified for Phase 2-3 development
 
 ---
 
+## TIER 1 BANKING ENRICHMENT (BOFA STANDARDS)
+
+### 11. Dynamic Customer Segmentation
+**Problem:** One-size-fits-all thresholds (e.g., $10k) create noise for institutional clients and miss risks for retail students.
+**Enrichment:** Implement multi-tier thresholds that adjust based on `customer_segment` (Retail, HNW, SMB, Institutional).
+**Priority:** HIGH (Strategic RBA)
+
+### 12. Data Quality & "Completeness" Scoring
+**Problem:** Missing fields (Purpose of Wire, UBO) are treated as data gaps rather than risk indicators.
+**Enrichment:** Add a "Data Integrity Penalty" module—missing mandatory fields automatically increase the composite risk score.
+**Priority:** MEDIUM (Regulatory Preference)
+
+### 13. Investigator "Narrative Builder"
+**Problem:** Analysts spend time manually summarizing why a score is high.
+**Enrichment:** Enhance the Dashboard Detail View to auto-generate a plain-English "Risk Narrative" (e.g., "Flagged due to High-Risk Geo (Nigeria) combined with PEP status and 20% amount spike").
+**Priority:** HIGH (Operational Efficiency)
+
+### 14. Model Governance & Critical Critique
+**Problem:** Models are often implemented without a formal "challenge" or limitation analysis.
+**Enrichment:** Add a formal Model Validation Report (MVR) following SR 11-7 standards to identify and document "Blind Spots" in the logic.
+**Priority:** CRITICAL (Defensibility)
+
+---
+
 ## SUCCESS METRICS
 
 After implementation, we will measure:
