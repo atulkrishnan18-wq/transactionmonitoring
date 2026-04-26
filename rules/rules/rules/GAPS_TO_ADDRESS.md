@@ -364,26 +364,26 @@ Status: Gaps identified for Phase 2-3 development
 
 ---
 
-## TIER 1 BANKING ENRICHMENT (BOFA STANDARDS)
+## TIER 1 INSTITUTIONAL CALIBRATION (G-SIB STANDARDS)
 
 ### 11. Dynamic Customer Segmentation
 **Problem:** One-size-fits-all thresholds (e.g., $10k) create noise for institutional clients and miss risks for retail students.
-**Enrichment:** Implement multi-tier thresholds that adjust based on `customer_segment` (Retail, HNW, SMB, Institutional).
+**Enrichment:** Implement multi-tier thresholds that adjust based on `customer_segment` (Retail, HNW, SMB, Institutional) consistent with G-SIB risk appetite frameworks.
 **Priority:** HIGH (Strategic RBA)
 
-### 12. Data Quality & "Completeness" Scoring
-**Problem:** Missing fields (Purpose of Wire, UBO) are treated as data gaps rather than risk indicators.
-**Enrichment:** Add a "Data Integrity Penalty" module—missing mandatory fields automatically increase the composite risk score.
-**Priority:** MEDIUM (Regulatory Preference)
+### 12. Data Quality & "Materiality" Scoring
+**Problem:** Treating all missing data as equal leads to operational friction.
+**Enrichment:** Implement a Jurisdictional Calibration layer—DIP penalties are only applied to fields that are **legally mandatory** in the specific jurisdiction of the transaction.
+**Priority:** MEDIUM (Operational Efficiency)
 
 ### 13. Investigator "Narrative Builder"
 **Problem:** Analysts spend time manually summarizing why a score is high.
-**Enrichment:** Enhance the Dashboard Detail View to auto-generate a plain-English "Risk Narrative" (e.g., "Flagged due to High-Risk Geo (Nigeria) combined with PEP status and 20% amount spike").
+**Enrichment:** Enhance the Dashboard Detail View to auto-generate a plain-English "Risk Narrative" (e.g., "Flagged due to High-Risk Geo combined with PEP status and 20% amount spike") to optimize investigator throughput.
 **Priority:** HIGH (Operational Efficiency)
 
-### 14. Model Governance & Critical Critique
+### 14. Model Governance & Critical Challenge
 **Problem:** Models are often implemented without a formal "challenge" or limitation analysis.
-**Enrichment:** Add a formal Model Validation Report (MVR) following SR 11-7 standards to identify and document "Blind Spots" in the logic.
+**Enrichment:** Add a formal Model Validation Report (MVR) following SR 11-7 standards to identify and document "Blind Spots" in the logic, providing a transparent audit trail for regulators.
 **Priority:** CRITICAL (Defensibility)
 
 ---

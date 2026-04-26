@@ -40,7 +40,7 @@ This document defines the customer risk categorization rules for ScoreSentinel. 
 
 ## 2. Customer Type Classification
 
-Customer types are classified based on four real-world risk triggers observed in financial crime typologies and validated against FATF guidance, FinCEN advisories, and BofA HRDT operational experience:
+Customer types are classified based on four real-world risk triggers observed in financial crime typologies and validated against FATF guidance, FinCEN advisories, and G-SIB operational experience:
 
 1. **Shell company / opaque ownership structure** — beneficial ownership concealment
 2. **Cash-intensive business** — elevated placement-stage ML risk
@@ -125,7 +125,7 @@ Maximum Possible CCRS = 200
 
 ### 3.7 Dimension 6 — Data Integrity Penalty (0–25)
 
-Reflecting Tier 1 standards (BofA), missing mandatory data is treated as a risk indicator (concealment) rather than just a data gap.
+Reflecting G-SIB standards, missing mandatory data is treated as a risk indicator (concealment) rather than just a data gap.
 
 | Missing Data Field | Penalty Score | Rationale |
 |---|---|---|

@@ -51,7 +51,7 @@ This document defines transaction type risk scoring rules for ScoreSentinel. Dif
 
 ### 2.6 Data Integrity Penalty (Transaction Level)
 
-Tier 1 standards (BofA) require that missing or invalid transaction metadata be scored as an "Operational Risk Penalty."
+Tier 1 standards (G-SIB) require that missing or invalid transaction metadata be scored as an "Operational Risk Penalty."
 
 | Missing Metadata Field | Penalty Score | Rationale |
 |---|---|---|

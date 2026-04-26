@@ -603,7 +603,7 @@ Logic: Structuring flag + near-CTR threshold + cash type score
 
 ### Day 41 — User Acceptance Testing
 **Deliverable:** UAT report — system tested as if you were a compliance analyst
-**Your Task:** Spend 30 minutes using the system as you would in your BofA role
+**Your Task:** Spend 30 minutes using the system as you would in a Tier 1 Analyst role
 
 ---
 

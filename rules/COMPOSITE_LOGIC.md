@@ -71,7 +71,22 @@ Rationale: Sanctions and PEP Tier 1 exposure carry strict liability under OFAC r
 - Who the customer IS is the strongest single predictor of ML risk
 - A shell company with unknown beneficial ownership in an offshore jurisdiction represents the highest-conviction ML signal regardless of transaction amount or type
 - PEP exposure, tax haven association, and newly onboarded status are all customer-level attributes that dominate risk in real-world EDD reviews
-- Consistent with BofA HRDT operational experience — customer profile drives the majority of high-risk escalations
+- Consistent with G-SIB operational experience — customer profile drives the majority of high-risk escalations
+
+---
+
+## 10. Jurisdictional & Materiality Calibration
+
+To ensure the model is "Business-Friendly" and operationally efficient, the following calibration layers are applied:
+
+### 10.1 Jurisdictional Legal Supremacy
+The Data Integrity Penalty (DIP) is dynamically adjusted based on the legal requirements of the transaction jurisdiction. If a specific data field is not legally mandated in a jurisdiction, the penalty for that field is suppressed (Penalty = 0). This prevents unnecessary friction in jurisdictions with lighter documentation requirements.
+
+### 10.2 Materiality Filter
+DIP is only applied to "Hard-Stop" fields (e.g., UBO, Source of Wealth) that carry direct regulatory liability. Missing secondary fields (e.g., phone numbers, middle names) are treated as operational gaps rather than risk indicators and do not trigger scoring penalties.
+
+### 10.3 Segmented Risk Tolerance
+Tolerance for data gaps is higher for **Institutional** segments where "Know Your Business" (KYB) has already been performed by a regulated partner institution. Retail segments carry a higher DIP to reflect the institution's direct regulatory obligation.
 - FATF Recommendation 10 places CDD at the centre of AML programs — reflecting customer risk as the primary variable
 
 ### 4.2 Why Structuring = 25%
