@@ -7,11 +7,11 @@
 
 ## Overview
 
-| | Your Role | My Role (Days 21–60) |
+| | Lead AML Architect | Gemini CLI (Technical Implementation) |
 |---|---|---|
-| **Focus** | Design AML logic, define thresholds, validate rules | Build Python engine, Flask API, React dashboard |
-| **Result** | Live AML system YOU designed | You understand every component |
-| **By Day 60** | Portfolio-ready project | Interview-confident explanation |
+| **Focus** | Architectural design, risk threshold specification, and rule validation | Full-stack development: Python engine, Flask API, and React dashboard |
+| **Result** | Proprietary AML risk scoring framework and functional prototype | Comprehensive technical transparency and component mastery |
+| **By Day 60** | Production-ready project repository | Strategic project defense and technical fluency |
 
 ---
 
@@ -881,7 +881,7 @@ Logic: Structuring flag + near-CTR threshold + cash type score
 ---
 
 ### Day 60 — LAUNCH DAY 🚀
-**Objective:** Go live and celebrate
+**Objective:** Production cutover, system health verification, and v2.0 roadmap formalization
 **Time:** 60 minutes
 
 **Tasks:**
