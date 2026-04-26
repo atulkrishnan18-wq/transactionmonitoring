@@ -49,6 +49,19 @@ This document defines transaction type risk scoring rules for ScoreSentinel. Dif
 
 ---
 
+### 2.6 Data Integrity Penalty (Transaction Level)
+
+Tier 1 standards (BofA) require that missing or invalid transaction metadata be scored as an "Operational Risk Penalty."
+
+| Missing Metadata Field | Penalty Score | Rationale |
+|---|---|---|
+| Missing "Ultimate Beneficiary" name | +25 | Critical sanctions/evasion risk |
+| Missing "Purpose of Wire" (Int'l) | +20 | High-risk corridor concealment |
+| Invalid/Generic Goods Description (Trade) | +20 | TBML indicator (phantom goods) |
+| Missing Remitter Phone/Address | +10 | Travel Rule non-compliance |
+
+---
+
 ### 2.2 High-Risk Transaction Types 🔴
 
 #### 1. Cryptocurrency Transaction
@@ -361,9 +374,20 @@ Velocity rules detect risk in **patterns over time** — not just individual tra
 | VEL-004 | Rapid round-trip | Funds in and out within 24 hours > $10,000 | High risk alert |
 | VEL-005 | Dormant account spike | Account inactive 90+ days then sudden activity > $5,000 | Flag for review |
 
+### 3.2 Segmented Velocity Thresholds (Tier 1 RBA)
+
+In a Tier 1 institution, "high volume" is relative to the segment. ScoreSentinel dynamically adjusts thresholds based on the `Customer Segment`.
+
+| Segment | Rule | Adjusted Threshold |
+|---|---|---|
+| **Institutional** | VEL-001 (Daily Count) | > 500 transactions |
+| **Retail** | VEL-001 (Daily Count) | > 5 transactions |
+| **SMB** | VEL-002 (Daily Value) | > $250,000 |
+| **HNW** | VEL-002 (Daily Value) | > $100,000 |
+
 ---
 
-### 3.2 Transaction-Type Specific Velocity Rules
+### 3.3 Transaction-Type Specific Velocity Rules
 
 | Rule ID | Transaction Type | Velocity Trigger | Threshold | Action |
 |---|---|---|---|---|

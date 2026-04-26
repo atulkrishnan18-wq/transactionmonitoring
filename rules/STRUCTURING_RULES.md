@@ -86,6 +86,32 @@ Account A: $9,500 + Account B: $9,500 same day = FLAG
 
 ---
 
+---
+
+## Segmented Structuring Thresholds (Tier 1 RBA)
+
+Structuring detection is more effective when thresholds are calibrated by `Customer Segment`.
+
+| Segment | Rule 1 (Smurfing) Threshold | Rule 4 (Micro) Threshold | Rationale |
+|---|---|---|---|
+| **Institutional** | $50,000+ | $500,000+ aggregate | High volume is normal |
+| **Retail** | $8,000+ | $10,000+ aggregate | Individual limit focus |
+| **SMB** | $25,000+ | $100,000+ aggregate | Cash intensity context |
+
+---
+
+## Data Integrity Penalty (Structuring Context)
+
+Missing metadata during a structuring pattern is a high-conviction indicator of intent to evade.
+
+| Missing Metadata | Penalty Score |
+|---|---|
+| Missing "Source of Funds" on $8k+ cash | +20 |
+| Missing "Relationship to Counterparty" | +15 |
+| Generic "Business Payment" description | +10 |
+
+---
+
 ## Composite Structuring Score
 
 | Rule Triggered        | Score |

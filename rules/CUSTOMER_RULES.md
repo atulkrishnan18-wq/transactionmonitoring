@@ -90,11 +90,24 @@ These four triggers form the backbone of ScoreSentinel's customer risk classific
 
 ---
 
+### 2.4 Customer Segmentation (Tier 1 RBA)
+
+In a Tier 1 Risk-Based Approach (RBA), thresholds and monitoring intensity are calibrated by customer segment to minimize noise and maximize signal.
+
+| Segment | Definition | Monitoring Intensity | Risk Tolerance |
+|---|---|---|---|
+| **Retail** | Individual consumer accounts | Standard | Moderate |
+| **HNW** | High Net Worth Individuals (> $5M AUM) | High | Low |
+| **SMB** | Small/Medium Business (< $50M Rev) | Standard | Moderate |
+| **Institutional** | Large Corps, Govt Entities, Banks | Tailored | Low |
+
+---
+
 ## 3. Customer Risk Scoring Logic
 
-### 3.1 Scoring Architecture
+### 3.1 Scoring Architecture (Enriched)
 
-Customer risk in ScoreSentinel is assessed across **five independent risk dimensions**. Each dimension is scored separately and combined into a **Composite Customer Risk Score (CCRS).**
+Customer risk in ScoreSentinel is assessed across **six independent risk dimensions**. Each dimension is scored separately and combined into a **Composite Customer Risk Score (CCRS).**
 
 ```
 COMPOSITE CUSTOMER RISK SCORE (CCRS) =
@@ -103,14 +116,28 @@ COMPOSITE CUSTOMER RISK SCORE (CCRS) =
 + Geographic Risk Score        (0–25) ← integrates with GEO_RULES.md
 + Account Behaviour Score      (0–25)
 + PEP / Sanctions Score        (0–50) ← auto-alert trigger
++ Data Integrity Penalty       (0–25) ← Tier 1 Enrichment
 ─────────────────────────────────────
-Maximum Possible CCRS = 175
-Alert Threshold = CCRS ≥ 60
+Maximum Possible CCRS = 200
 ```
 
 ---
 
-### 3.2 Dimension 1 — Customer Type Score (0–50)
+### 3.7 Dimension 6 — Data Integrity Penalty (0–25)
+
+Reflecting Tier 1 standards (BofA), missing mandatory data is treated as a risk indicator (concealment) rather than just a data gap.
+
+| Missing Data Field | Penalty Score | Rationale |
+|---|---|---|
+| Missing Ultimate Beneficial Owner (UBO) | 25 | Critical concealment risk |
+| Missing Source of Wealth (SOW) | 20 | FATF/EDD violation |
+| Missing Nature of Business Purpose | 15 | Inability to baseline behavior |
+| Missing Phone/Email Verification | 5 | Identity uncertainty |
+| Complete Data Set | 0 | Transparent customer profile |
+
+---
+
+## 4. PEP & Sanctions Matching Process
 
 Derived directly from Section 2 classification. Assign the highest applicable score if a customer falls into multiple categories.
 
@@ -268,6 +295,7 @@ CCRS = Customer Type Score
      + Geographic Risk Score
      + Account Behaviour Score
      + PEP / Sanctions Score
+     + Data Integrity Penalty
 ```
 
 ### 5.2 Risk Band Assignment

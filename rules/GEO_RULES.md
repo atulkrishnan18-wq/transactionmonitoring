@@ -160,9 +160,29 @@ Geographic risk is assessed on **BOTH the sender country and the receiver countr
 
 > **Scoring Rule:** Both sides are additive. If sender = Tier 2B (+15) and receiver = Tier 1C (+25), total geo contribution = **+40**. If either side is Tier 1A or 1B → **Auto-Alert regardless of total score.**
 
+### 3.2 Segmented Thresholds (Tier 1 RBA)
+
+Thresholds for geographic risk are adjusted based on the `Customer Segment` to ensure that standard institutional payments between major hubs are not flagged unnecessarily, while high-risk individual flows are prioritized.
+
+| Segment | Geo Risk Alert Threshold | Rationale |
+|---|---|---|
+| Institutional | 85+ | High-volume cross-border flows are standard |
+| HNW | 70+ | Complex international structures |
+| Retail | 60+ | Low-volume, domestic-centric profile |
+
+### 3.3 Data Integrity Penalty (Geo-Context)
+
+Missing data in cross-border flows is a primary layering indicator.
+
+| Missing Field (Geo) | Penalty Score |
+|---|---|
+| Missing SWIFT/BIC code | +15 |
+| Missing Receiver Bank Address | +10 |
+| Missing "Purpose of Payment" on Tier 1C flow | +20 |
+
 ---
 
-### 3.2 Score Integration with Existing ScoreSentinel Modules
+### 3.4 Score Integration with Existing ScoreSentinel Modules
 
 Geography scores are **additive** to existing transaction scores.
 
