@@ -1,251 +1,80 @@
-# AML SCORING RULES - TRANSACTION MONITORING
+# AML_RULES.md — Master Detection Framework (ScoreSentinel)
 
-Based on Risk Matrix dated 03/03/2026
-
-## RISK FACTOR 1: TRANSACTION AMOUNT
-Criteria: Transaction amount threshold
-Individual Score: 5 (High)
-Weight: 3 (High)
-Weighted Score: 15
-
-Thresholds:
-- ≤ $10,000: Score 1
-- $10,001 - $25,000: Score 2
-- $25,001 - $50,000: Score 3
-- $50,001 - $100,000: Score 4
-- > $100,000: Score 5
-
-Governance Notes: Threshold reviewed quarterly; escalation required if threshold changes
-Last Updated: 22/02/2026
-Reviewed By: Atul Krishnan
+**ScoreSentinel AML Transaction Risk Scoring Engine**
+**Version:** 1.0 | **Status:** Master Ruleset | **Author:** Atul Krishnan, CAMS
+**Last Updated:** 26 April 2026
 
 ---
 
-## RISK FACTOR 2: TRANSACTION FREQUENCY
-Criteria: Number of transactions per day
-Individual Score: 4 (Medium-High)
-Weight: 2 (Medium)
-Weighted Score: 8
+## 1. Executive Summary
 
-Thresholds:
-- 1-3 transactions/week: Score 1
-- 4-10 transactions/week: Score 2
-- 11-20 transactions/week: Score 3
-- 21-50 transactions/day: Score 4 (Flag for review)
-- > 50 transactions/day: Score 5 (Critical)
+ScoreSentinel is a G-SIB grade, rules-based transaction monitoring engine designed for full regulatory defensibility under **SR 11-7** standards. It moves beyond binary detection by employing a **Weighted Risk Matrix** that evaluates transactions across five independent risk dimensions.
 
-Governance Notes: Reviewed annually; internal monitoring rules
-Last Updated: 23/02/2026
-Reviewed By: Atul Krishnan
+### 1.1 The Five-Module Architecture
+
+| Module | Core Logic | Weight | Baseline Document |
+|---|---|---|---|
+| **Customer Risk** | Entity type, ownership, and PEP status | 30% | `CUSTOMER_RULES.md` |
+| **Structuring** | Smurfing and velocity patterns | 25% | `STRUCTURING_RULES.md` |
+| **Geography** | Jurisdictional risk (Sender/Receiver) | 25% | `GEO_RULES.md` |
+| **Transaction Type** | Mechanism-inherent risk (e.g., Crypto, Cash) | 20% | `TRANSACTION_RULES.md` |
+| **Data Integrity** | Penalty for missing mandatory fields | (Additive) | `COMPOSITE_LOGIC.md` |
 
 ---
 
-## RISK FACTOR 3: GEOGRAPHY
-Criteria: High-risk country per FATF list
-Individual Score: 6 (Critical)
-Weight: 3 (High)
-Weighted Score: 18
+## 2. Core Detection Logic
 
-High-Risk Countries (Score 6):
-- Yemen
-- Syria
-- North Korea
-- Iran
+### 2.1 The Composite Risk Score (CRS)
+All transactions are scored on a normalized scale of **0–100**. 
+- **Alert Threshold:** 60+ (triggers analyst review)
+- **High Risk:** 80+ (triggers senior management escalation)
 
-Medium-Risk Countries (Score 3):
-- Kenya
-- Mexico
-- Pakistan
-- Egypt
+### 2.2 Dynamic Customer Segmentation (Tier 1 RBA)
+To ensure business friendliness and operational efficiency, alert thresholds are dynamically calibrated by customer segment:
+- **Institutional:** 75+ (High tolerance for volume)
+- **Small Business:** 65+ (Moderate tolerance)
+- **Retail / HNW:** 60+ (Standard sensitivity)
 
-Low-Risk Countries (Score 1):
-- United States
-- United Kingdom
-- Australia
-- Canada
-- Singapore
-
-Governance Notes: Reviewed quarterly against FATF high-risk country list
-Last Updated: 24/02/2026
-Reviewed By: Atul Krishnan
+### 2.3 Jurisdictional Calibration
+ScoreSentinel respects **Local Law Supremacy**. Data Integrity Penalties (DIP) are only applied to fields legally mandated in the transaction's specific jurisdiction, ensuring the model remains efficient across global borders.
 
 ---
 
-## RISK FACTOR 4: CUSTOMER RISK RATING
-Criteria: PEP or Politically Exposed Person
-Individual Score: 7 (Critical)
-Weight: 3 (High)
-Weighted Score: 21
+## 3. High-Risk Triggers & Auto-Alerts
 
-Customer Categories:
-- PEP (Politically Exposed Person): Score 7
-- Family member of PEP: Score 6
-- Close associate of PEP: Score 5
-- High-risk business (shell company): Score 5
-- New customer (< 30 days): Score 4
-- Verified individual (> 2 years): Score 1
-
-Governance Notes: Reviewed semi-annually; senior compliance sign-off required
-Last Updated: 25/02/2026
-Reviewed By: Atul Krishnan
+The following triggers bypass the scoring logic and generate **Immediate Sanctions/Compliance Alerts**:
+1. **Tier 1A/1B Geo Involvement:** Any flow involving OFAC-sanctioned jurisdictions (e.g., Iran, North Korea, Russia).
+2. **PEP Tier 1 Matching:** Onboarding or transaction involving Heads of State or Cabinet-level officials.
+3. **85% Fuzzy Match:** Direct matches against consolidated sanctions lists.
+4. **OFAC 50% Rule:** Entities owned 50% or more by sanctioned parties.
 
 ---
 
-## RISK FACTOR 5: PRODUCT/SERVICE TYPE
-Criteria: High-risk products (e.g., correspondent banking)
-Individual Score: 5 (High)
-Weight: 2 (Medium)
-Weighted Score: 10
+## 4. Governance & Auditability
 
-Transaction Type Scoring:
-- Correspondent Banking: Score 5
-- Wire Transfer (International): Score 4
-- Trade Finance: Score 3
-- Wire Transfer (Domestic): Score 2
-- Deposit/Withdrawal: Score 1
-- Loan Repayment: Score 1
+### 4.1 SR 11-7 Compliance
+- **No Black-Box ML:** Every score is explainable in plain English.
+- **Traceability:** Every alert includes a full breakdown of the rules fired and their individual score contributions.
+- **Calibration:** Rules are reviewed semi-annually against actual SAR conversion rates.
 
-Governance Notes: Reviewed semi-annually; compliance validates product mapping
-Last Updated: 26/02/2026
-Reviewed By: Atul Krishnan
+### 4.2 Audit Trail
+Every scoring decision is logged with:
+- Timestamp & User ID
+- Pre-scored metadata
+- Individual module scores
+- Final disposition (Review/Escalate/Clear)
 
 ---
 
-## RISK FACTOR 6: SANCTIONS EXPOSURE
-Criteria: Match with sanctions list (OFAC, UN, etc.)
-Individual Score: 10 (CRITICAL)
-Weight: 4 (Critical)
-Weighted Score: 40
+## 5. Master Index of Rulesets
 
-Action:
-- ANY match with OFAC list: IMMEDIATE ESCALATION
-- Score: 10 (Do Not Proceed)
-- Action: Block transaction + Report to management
-- Escalation: Daily
-
-Governance Notes: If composite score = Critical, immediate escalation required
-Last Updated: 27/02/2026
-Reviewed By: Atul Krishnan
+| Document | Purpose |
+|---|---|
+| `STRUCTURING_RULES.md` | Patterns for avoiding reporting thresholds |
+| `GEO_RULES.md` | Jurisdictional risk and sanctions logic |
+| `CUSTOMER_RULES.md` | Risk profiling of individuals and entities |
+| `TRANSACTION_RULES.md` | Risk by transaction mechanism and velocity |
+| `COMPOSITE_LOGIC.md` | Normalization, weighting, and calibration logic |
 
 ---
-
-## RISK FACTOR 7: WATCHLIST EXPOSURE
-Criteria: Match with iOCAL watchlists
-Individual Score: 7 (High)
-Weight: 3 (High)
-Weighted Score: 21
-
-Action:
-- Match with iOCAL: Score 7
-- Action: Manual review + escalation
-- Escalation: Within 24 hours
-
-Governance Notes: Reviewed upon each watchlist update; compliance validates mapping
-Last Updated: 28/02/2026
-Reviewed By: Atul Krishnan
-
----
-
-## RISK FACTOR 8: CORRUPTION PERCEPTION INDEX (High Corruption)
-Criteria: Country ranked outside top 50 (higher corruption)
-Individual Score: 6 (High)
-Weight: 2 (Medium)
-Weighted Score: 12
-
-CPI Scoring:
-- Ranked outside top 50 (higher corruption): Score 6
-- Ranked within top 50 (lower corruption): Score 2
-
-Governance Notes: Updated annually using Transparency International CPI
-Last Updated: 01/03/2026
-Reviewed By: Atul Krishnan
-
----
-
-## RISK FACTOR 9: CORRUPTION PERCEPTION INDEX (Low Corruption)
-Criteria: Country ranked within top 50 (lower corruption)
-Individual Score: 2 (Low)
-Weight: 1 (Low)
-Weighted Score: 2
-
-CPI Scoring:
-- Ranked within top 50: Score 2
-- Additional safeguard: Lower risk weight applied
-
-Governance Notes: Reviewed annually
-Last Updated: 02/03/2026
-Reviewed By: Atul Krishnan
-
----
-
-## COMPOSITE SCORE CALCULATION
-
-Formula:
-Composite Score = Sum of all (Individual Score × Weight)
-
-Example Transaction (from your matrix):
-- Amount ($10k+): 5 × 3 = 15
-- Frequency (>10/day): 4 × 2 = 8
-- Geography (High-risk): 6 × 3 = 18
-- Customer (PEP): 7 × 3 = 21
-- Product (Correspondent): 5 × 2 = 10
-- Sanctions (Match): 10 × 4 = 40
-- Watchlist (Match): 7 × 3 = 21
-- CPI High: 6 × 2 = 12
-- CPI Low: 2 × 1 = 2
-
-TOTAL COMPOSITE SCORE: 147
-
-## FINAL RISK CATEGORIES
-
-Based on Composite Score:
-
-LOW RISK: Composite Score < 30
-- Action: Monitor routine
-- Review: Quarterly
-
-MEDIUM RISK: Composite Score 30-80
-- Action: Enhanced due diligence
-- Review: Monthly
-
-HIGH RISK: Composite Score 80-147+
-- Action: Immediate escalation + investigation
-- Review: Daily + Management approval required
-
-CRITICAL (Sanctions Match): Automatic escalation
-- Action: Block transaction immediately
-- Review: Report to compliance + OFAC
-
----
-
-## SPECIAL RULES & EXCEPTIONS
-
-### Structuring Detection:
-Rule: If 5+ transactions same customer in 24-hour period
-- Additional Score Multiplier: 2x
-- Action: Flag for structuring investigation
-
-### PEP + High-Risk Geography + Large Amount:
-Combination triggers highest alert
-- Automatic escalation required
-- Manual review mandatory
-
-### Velocity Anomaly:
-If transaction velocity increases 10x normal
-- Flag as suspicious
-- Add +5 points to composite score
-
----
-
-## AUDIT & GOVERNANCE
-
-Last Reviewed: 03/03/2026
-Reviewed By: Atul Krishnan
-Next Review Due: 03/04/2026 (Quarterly)
-Approval Authority: Compliance Manager
-
-Threshold Changes Require:
-- Documented business rationale
-- Compliance approval
-- Management sign-off
-- Quarterly review cycle
+*ScoreSentinel | Master Framework | Authored by Atul Krishnan, CAMS | Version 1.0*

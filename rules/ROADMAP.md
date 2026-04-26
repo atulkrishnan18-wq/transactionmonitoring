@@ -35,7 +35,7 @@
 | 4 | CUSTOMER_RULES.md | ✅ Done |
 | 5 | TRANSACTION_RULES.md | ✅ Done |
 | 6 | COMPOSITE_LOGIC.md | 🔄 Pending |
-| 7 | AML_RULES_FINAL.md | 🔄 Pending |
+| 7 | AML_RULES_FINAL.md (Consolidated into AML_RULES.md) | ✅ Done |
 | 8–60 | See full plan below | 🔄 Pending |
 
 ---
