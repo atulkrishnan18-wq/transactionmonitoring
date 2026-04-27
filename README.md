@@ -56,7 +56,7 @@ ScoreSentinel fixes that.
 ---
 
 ## Status
-🚧 Active development — Day 6 of 60
+🚧 Active development — Day 8 of 60
 
 ---
 

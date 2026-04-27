@@ -23,17 +23,19 @@ SR 11-7 Compliance Statement: ScoreSentinel uses a weighted percentage model. Ev
 
 ### 2.1 Four Risk Modules
 
-| Module | Document | Raw Score Range | Weight |
+| Module | Document | Max Raw Score | Weight |
 |---|---|---|---|
-| Customer Risk | CUSTOMER_RULES.md | 0–175 | 30% |
-| Structuring | STRUCTURING_RULES.md | 0–70 | 25% |
-| Geography | GEO_RULES.md | 0–100 | 25% |
-| Transaction Type | TRANSACTION_RULES.md | 0–55 | 20% |
+| Customer Risk | CUSTOMER_RULES.md | 175 | 30% |
+| Structuring | STRUCTURING_RULES.md | 115 | 25% |
+| Geography | GEO_RULES.md | 100 | 25% |
+| Transaction Type | TRANSACTION_RULES.md | 100 | 20% |
+
+*Note: Transaction Type max (100) includes Base Score (55) + Data Integrity Penalties (45).*
 
 ### 2.2 Two-Step Calculation
 
 Step 1 — Normalise each module score to 0–100:
-  Normalised Score = (Raw Score / Maximum Possible) × 100
+  Normalised Score = (Raw Score / Max Raw Score) × 100
 
 Step 2 — Apply weights and sum:
   CRS = (Customer × 30%) + (Structuring × 25%) + (Geography × 25%) + (Transaction Type × 20%)
@@ -116,9 +118,9 @@ Tolerance for data gaps is higher for **Institutional** segments where "Know You
 
 Raw module scores have different maximum values:
 - Customer Risk maximum = 175
-- Structuring maximum = 70
+- Structuring maximum = 115
 - Geography maximum = 100
-- Transaction Type maximum = 55
+- Transaction Type maximum = 100 (including DIP)
 
 Without normalisation, customer risk would dominate the composite regardless of weights — a customer score of 175 would always overwhelm a transaction type score of 55. Normalising each module to 0–100 before weighting ensures each module contributes proportionally according to its assigned weight.
 
@@ -134,20 +136,20 @@ Raw scores:
 - Customer Risk: 105 (shell company + unknown BO + offshore)
 - Structuring: 55 (near-CTR threshold pattern)
 - Geography: 40 (Nigeria sender + Cayman receiver)
-- Transaction Type: 45 (international wire)
+- Transaction Type: 70 (international wire + missing UBO penalty)
 
 Normalised:
 - Customer: 105/175 × 100 = 60.0
-- Structuring: 55/70 × 100 = 78.6
+- Structuring: 55/115 × 100 = 47.8
 - Geography: 40/100 × 100 = 40.0
-- Transaction Type: 45/55 × 100 = 81.8
+- Transaction Type: 70/100 × 100 = 70.0
 
 Weighted CRS:
 - 60.0 × 30% = 18.00
-- 78.6 × 25% = 19.65
+- 47.8 × 25% = 11.95
 - 40.0 × 25% = 10.00
-- 81.8 × 20% = 16.36
-- CRS = 64.01 — HIGH RISK — Alert Generated
+- 70.0 × 20% = 14.00
+- CRS = 53.95 — MEDIUM-HIGH — Enhanced Monitoring (Borderline Alert)
 
 ### Example 2 — Verified Individual Domestic Wire
 
