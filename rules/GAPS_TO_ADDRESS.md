@@ -388,6 +388,17 @@ Status: Gaps identified for Phase 2-3 development
 
 ---
 
+## GAPS IDENTIFIED DURING SCENARIO VALIDATION (V1.1)
+
+| Gap | Scenario | Action |
+|---|---|---|
+| Switzerland not in GEO_RULES.md Tier 3 | Scenario 6 | Add Switzerland to Tier 3 or document exclusion |
+| Domestic Salary Credit not in TRANSACTION_RULES.md | Scenario 1 | Add as sub-type of Domestic Wire |
+| Scenario 9 borderline — consider threshold sensitivity test | Scenario 9 | Back-test with historical data on Day 30 |
+| Structuring independent alert threshold (75%) needs adding to COMPOSITE_LOGIC.md | Scenarios 3, 8 | Update COMPOSITE_LOGIC.md Section 3 |
+
+---
+
 ## SUCCESS METRICS
 
 After implementation, we will measure:
