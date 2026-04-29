@@ -1,8 +1,8 @@
 # TEST_SCENARIOS.md — Validation Scenarios
 
 **ScoreSentinel AML Transaction Risk Scoring Engine**
-**Version:** 1.1 | **Day:** 8 of 60 | **Author:** Atul Krishnan, CAMS
-**Last Updated:** 25 April 2026
+**Version:** 1.2 | **Day:** 8 of 60 | **Author:** Atul Krishnan, CAMS
+**Last Updated:** 29 April 2026
 
 ---
 
@@ -89,7 +89,7 @@ The following conditions trigger an immediate alert regardless of CRS:
 |---|---|---|---|---|
 | Customer Risk | 90 | Shell company (50) + Unknown BO (25) + Offshore incorporation (15) | 175 | 51.4% |
 | Structuring | 0 | Single transaction | 70 | 0% |
-| Geography | 55 | Domestic sender (0) + Cayman receiver Tier 3 (15) + CPI adjustment (40) | 100 | 55% |
+| Geography | 55 | Domestic sender (0) + Cayman receiver Tier 3 offshore (15) + Cayman CPI-based risk adjustment (40) — see GEO_RULES.md Tier 2A/2B combined | 100 | 55% |
 | Transaction Type | 45 | International Wire | 55 | 81.8% |
 
 **CRS Calculation:**
@@ -258,7 +258,7 @@ The following conditions trigger an immediate alert regardless of CRS:
 | Module | Raw Score | Derivation | Maximum | Normalised |
 |---|---|---|---|---|
 | Customer Risk | 45 | Cash-intensive business (restaurant) | 175 | 25.7% |
-| Structuring | 70 | 15 cash deposits $2,000 in 30 days — Rule STR-004 micro-structuring | 70 | 100% |
+| Structuring | 70 | 15 cash deposits $2,000 in 30 days — Rule STR-004 micro-structuring. Score escalates to maximum (70) because 15 transactions represents the most severe micro-structuring pattern — see STRUCTURING_RULES.md escalation logic. Base STR-004 score is 40 for a single incident; repeated pattern across 30 days escalates to 70 | 70 | 100% |
 | Geography | 0 | Domestic | 100 | 0% |
 | Transaction Type | 35 | Cash Deposit | 55 | 63.6% |
 
@@ -290,7 +290,7 @@ The following conditions trigger an immediate alert regardless of CRS:
 |---|---|---|---|---|
 | Customer Risk | 50 | Shell company | 175 | 28.6% |
 | Structuring | 50 | Smurfing pattern detected — Rule STR-001 | 70 | 71.4% |
-| Geography | 65 | Nigeria sender Tier 1C (25) + BVI receiver Tier 3 (15) + CPI scores (25) | 100 | 65% |
+| Geography | 65 | Nigeria sender Tier 1C (25) + BVI receiver Tier 3 offshore (15) + Nigeria CPI Tier 2B adjustment (15) + BVI secrecy premium (10) = 65 | 100 | 65% |
 | Transaction Type | 45 | International Wire | 55 | 81.8% |
 
 **CRS Calculation:**
@@ -355,7 +355,7 @@ The following conditions trigger an immediate alert regardless of CRS:
 | 6 | PEP Tier 2 Wire | 31.24 | 🟡 Medium-Low + EDD | None — EDD by PEP rule |
 | 7 | FATF Corridor | 32.39 | 🟡 Medium-Low | None |
 | 8 | Cash SMB Micro-Structuring | 45.43 | 🚨 Alert | ✅ Structuring = 100% |
-| 9 | SAR Generator | 59.04 | 🟠 Medium-High | None — 0.96 below threshold |
+| 9 | SAR Generator | 59.04 | 🟠 MEDIUM-HIGH | None — 0.96 below threshold |
 | 10 | Missing UBO Data | 24.94 | 🟡 Medium-Low + Data Flag | None — KYC flag only |
 
 ---
@@ -369,7 +369,7 @@ The following gaps were identified during scenario validation and must be added 
 | Switzerland not in GEO_RULES.md Tier 3 | Scenario 6 | Add Switzerland to Tier 3 or document exclusion |
 | Domestic Salary Credit not in TRANSACTION_RULES.md | Scenario 1 | Add as sub-type of Domestic Wire |
 | Scenario 9 borderline — consider threshold sensitivity test | Scenario 9 | Back-test with historical data on Day 30 |
-| Structuring independent alert threshold (75%) needs adding to COMPOSITE_LOGIC.md | Scenarios 3, 8 | Update COMPOSITE_LOGIC.md Section 3 |
+| Structuring independent alert threshold (75%) needs adding to COMPOSITE_LOGIC.md | Scenarios 3, 8 | ✅ Fixed in COMPOSITE_LOGIC.md v1.2 |
 
 ---
 
@@ -379,7 +379,8 @@ The following gaps were identified during scenario validation and must be added 
 |---|---|---|---|
 | 1.0 | Initial release by Gemini — 10 scenarios drafted | 27 April 2026 | ScoreSentinel Build |
 | 1.1 | Corrected Scenarios 2, 3, 6, 9, 10 — fixed scores, labels, and penalty logic. Added gaps section. Added structuring independent trigger rationale. | 25 April 2026 | Atul Krishnan, CAMS |
+| 1.2 | Fixed Scenario 2 and 9 geography derivation labels — clarified CPI adjustment sources. Added Scenario 8 structuring escalation note explaining 40→70 score increase. Marked COMPOSITE_LOGIC gap as resolved. | 29 April 2026 | Atul Krishnan, CAMS |
 
 ---
 
-*ScoreSentinel | TEST_SCENARIOS.md | Version 1.1 | Authored by Atul Krishnan, CAMS | Day 8 of 60*
+*ScoreSentinel | TEST_SCENARIOS.md | Version 1.2 | Authored by Atul Krishnan, CAMS | Day 8 of 60*
