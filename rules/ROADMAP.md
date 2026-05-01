@@ -231,7 +231,7 @@ Logic: Structuring flag + near-CTR threshold + cash type score
 
 ---
 
-### Day 10 — Velocity & Pattern Rules
+### Day 10 — Velocity & Pattern Rules ✅
 **Objective:** Define transaction velocity and behavioural patterns
 **Time:** 60 minutes
 
