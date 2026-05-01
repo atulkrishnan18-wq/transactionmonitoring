@@ -17,7 +17,7 @@ Velocity rules are designed to detect risk not in a single transaction, but in t
 
 ---
 
-## 2. Velocity Patterns & Thresholds (Veteran Standards)
+## 2. Velocity Patterns & Thresholds
 
 ScoreSentinel categorizes transaction velocity into three distinct tiers based on frequency and time windows, with additional "Burst" detection for high-signal events.
 
@@ -32,7 +32,7 @@ ScoreSentinel categorizes transaction velocity into three distinct tiers based o
 
 ---
 
-## 3. High-Signal "Veteran" Patterns
+## 3. High-Signal Patterns
 
 Beyond simple counts, these structural patterns identify sophisticated laundering schemes.
 
