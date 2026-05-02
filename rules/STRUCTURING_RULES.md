@@ -1,6 +1,8 @@
-# STRUCTURING_RULES.md
-# ScoreSentinel — Structuring Detection Rules
-# Author: Atul Krishnan | Day 2
+# STRUCTURING_RULES.md — Structuring Detection Rules
+
+**ScoreSentinel AML Transaction Risk Scoring Engine**
+**Version:** 1.1 | **Day:** 2 of 60 | **Author:** Atul Krishnan, CAMS
+**Last Updated:** 30 April 2026
 
 ---
 
@@ -141,3 +143,41 @@ regardless of composite score.
 - Thresholds adjustable without code changes
 - All flags require human review before SAR filing
 - False positive rate target: < 15%
+
+---
+
+## Model Governance & Version Control
+
+### SR 11-7 Compliance Checklist
+
+| Requirement | Status | Location |
+|---|---|---|
+| Model purpose documented | ✅ Complete | Section 1 |
+| Structuring definitions documented | ✅ Complete | Section 2 |
+| Threshold justification provided | ✅ Complete | Per rule |
+| Velocity rules defined | ✅ Complete | Section 3 |
+| False positive targets defined | ✅ Complete | Section 4 |
+| Independent trigger threshold documented | ✅ Complete | Feeds COMPOSITE_LOGIC.md Section 3 |
+| Recalibration schedule defined | ✅ Complete | Section below |
+| Independent validation | 🔄 Pending | Planned Day 45 |
+| Back-testing | 🔄 Pending | Planned Day 30 |
+
+### Recalibration Schedule
+
+| Trigger | Frequency | Action |
+|---|---|---|
+| Scheduled review | Every 6 months | Validate structuring thresholds against actual SAR conversion rates |
+| CTR threshold change | If BSA threshold changes | Update all near-threshold rules immediately |
+| FATF typology update | As published | Review structuring patterns against new guidance |
+| False positive rate breach | If FP > 20% for 2 months | Review thresholds — consider upward adjustment |
+
+### Version History
+
+| Version | Change | Date | Author |
+|---|---|---|---|
+| 1.0 | Initial release — structuring detection rules, velocity rules, near-threshold patterns | Day 2 — 2025 | Atul Krishnan, CAMS |
+| 1.1 | Added model governance section, SR 11-7 checklist, recalibration schedule, and version history — identified as missing during Day 9 model validation review | 30 April 2026 | Atul Krishnan, CAMS |
+
+---
+
+*ScoreSentinel | STRUCTURING_RULES.md | Structuring Detection Rules | Authored by Atul Krishnan, CAMS | Version 1.1 | 30 April 2026*

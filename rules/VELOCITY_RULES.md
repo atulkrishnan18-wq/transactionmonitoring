@@ -373,8 +373,8 @@ Dormancy threshold = 90 days with zero transactions
 
 | Version | Change | Date | Author |
 |---|---|---|---|
-| 1.0 | Initial draft — velocity tiers, Fan-In/Fan-Out, BEH indicators. Incorrect integration: velocity scores added directly to CRS. Rule IDs VEL-STR-001 to 004 conflicted with existing VEL sequence | 30 April 2026 | AK, CAMS |
-| 1.1 | Corrected integration architecture — all velocity scores feed into Structuring module (0–70), not directly to CRS. Added cap rule at 70. Renamed VEL-STR rules to VEL-028 to VEL-031 to continue existing sequence. Added explicit module home for all BEH scores. Added SR 11-7 threshold justifications. Added false positive scenario. Added independent trigger section | 02 May 2026 | AK, CAMS |
+| 1.0 | Initial draft — velocity tiers, Fan-In/Fan-Out, BEH indicators. Incorrect integration: velocity scores added directly to CRS. Rule IDs VEL-STR-001 to 004 conflicted with existing VEL sequence | 30 April 2026 | ScoreSentinel Build (Gemini) |
+| 1.1 | Corrected integration architecture — all velocity scores feed into Structuring module (0–70), not directly to CRS. Added cap rule at 70. Renamed VEL-STR rules to VEL-028 to VEL-031 to continue existing sequence. Added explicit module home for all BEH scores. Added SR 11-7 threshold justifications. Added false positive scenario. Added independent trigger section | 30 April 2026 | Atul Krishnan, CAMS |
 
 ---
 
