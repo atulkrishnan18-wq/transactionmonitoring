@@ -176,8 +176,8 @@ regardless of composite score.
 | Version | Change | Date | Author |
 |---|---|---|---|
 | 1.0 | Initial release — structuring detection rules, velocity rules, near-threshold patterns | Day 2 — 2025 | Atul Krishnan, CAMS |
-| 1.1 | Added model governance section, SR 11-7 checklist, recalibration schedule, and version history — identified as missing during Day 9 model validation review | 30 April 2026 | Atul Krishnan, CAMS |
+| 1.1 | Added model governance section, SR 11-7 checklist, recalibration schedule, and version history — identified as missing during Day 9 model validation review | 01 May 2026 | Atul Krishnan, CAMS |
 
 ---
 
-*ScoreSentinel | STRUCTURING_RULES.md | Structuring Detection Rules | Authored by Atul Krishnan, CAMS | Version 1.1 | 30 April 2026*
+*ScoreSentinel | STRUCTURING_RULES.md | Structuring Detection Rules | Authored by Atul Krishnan, CAMS | Version 1.1 | 01 May 2026*
