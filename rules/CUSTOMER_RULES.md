@@ -1,8 +1,8 @@
 # CUSTOMER_RULES.md — Customer Risk Categorization Rules
 
 **ScoreSentinel AML Transaction Risk Scoring Engine**
-**Version:** 1.0 | **Day:** 4 of 60 | **Author:** Atul Krishnan, CAMS
-**Last Updated:** 2025
+**Version:** 1.1 | **Day:** 4 of 60 | **Author:** Atul Krishnan, CAMS
+**Last Updated:** 30 April 2026
 
 ---
 
@@ -31,6 +31,7 @@ This document defines the customer risk categorization rules for ScoreSentinel. 
 - **FATF Recommendation 12** — Politically Exposed Persons: enhanced measures required for PEPs
 - **FATF Recommendation 1** — Risk-Based Approach: customer risk must be documented, justified, and proportionate
 - **FinCEN CDD Rule (31 CFR 1010.230)** — Requires identification of beneficial owners and risk categorization of legal entity customers
+- **OFAC 50% Ownership Rule** — Any entity owned 50% or more by a sanctioned individual or entity is itself treated as sanctioned, regardless of whether it appears on the SDN list. Beneficial ownership data collected under this module is the primary input for OFAC 50% rule screening — see `GEO_RULES.md` Section 5.4 for full implementation details
 - **BSA/AML Examination Manual** — Customer Risk Rating methodology must be documented and defensible
 - **SR 11-7** — Model risk management: scoring logic must be explainable, validated, and governed
 
@@ -40,7 +41,7 @@ This document defines the customer risk categorization rules for ScoreSentinel. 
 
 ## 2. Customer Type Classification
 
-Customer types are classified based on four real-world risk triggers observed in financial crime typologies and validated against FATF guidance, FinCEN advisories, and G-SIB operational experience:
+Customer types are classified based on four real-world risk triggers observed in financial crime typologies and validated against FATF guidance, FinCEN advisories, and BofA HRDT operational experience:
 
 1. **Shell company / opaque ownership structure** — beneficial ownership concealment
 2. **Cash-intensive business** — elevated placement-stage ML risk
@@ -90,24 +91,11 @@ These four triggers form the backbone of ScoreSentinel's customer risk classific
 
 ---
 
-### 2.4 Customer Segmentation (Tier 1 RBA)
-
-In a Tier 1 Risk-Based Approach (RBA), thresholds and monitoring intensity are calibrated by customer segment to minimize noise and maximize signal.
-
-| Segment | Definition | Monitoring Intensity | Risk Tolerance |
-|---|---|---|---|
-| **Retail** | Individual consumer accounts | Standard | Moderate |
-| **HNW** | High Net Worth Individuals (> $5M AUM) | High | Low |
-| **SMB** | Small/Medium Business (< $50M Rev) | Standard | Moderate |
-| **Institutional** | Large Corps, Govt Entities, Banks | Tailored | Low |
-
----
-
 ## 3. Customer Risk Scoring Logic
 
-### 3.1 Scoring Architecture (Enriched)
+### 3.1 Scoring Architecture
 
-Customer risk in ScoreSentinel is assessed across **six independent risk dimensions**. Each dimension is scored separately and combined into a **Composite Customer Risk Score (CCRS).**
+Customer risk in ScoreSentinel is assessed across **five independent risk dimensions**. Each dimension is scored separately and combined into a **Composite Customer Risk Score (CCRS).**
 
 ```
 COMPOSITE CUSTOMER RISK SCORE (CCRS) =
@@ -116,28 +104,14 @@ COMPOSITE CUSTOMER RISK SCORE (CCRS) =
 + Geographic Risk Score        (0–25) ← integrates with GEO_RULES.md
 + Account Behaviour Score      (0–25)
 + PEP / Sanctions Score        (0–50) ← auto-alert trigger
-+ Data Integrity Penalty       (0–25) ← Tier 1 Enrichment
 ─────────────────────────────────────
-Maximum Possible CCRS = 200
+Maximum Possible CCRS = 175
+Alert Threshold = CCRS ≥ 60
 ```
 
 ---
 
-### 3.7 Dimension 6 — Data Integrity Penalty (0–25)
-
-Reflecting G-SIB standards, missing mandatory data is treated as a risk indicator (concealment) rather than just a data gap.
-
-| Missing Data Field | Penalty Score | Rationale |
-|---|---|---|
-| Missing Ultimate Beneficial Owner (UBO) | 25 | Critical concealment risk |
-| Missing Source of Wealth (SOW) | 20 | FATF/EDD violation |
-| Missing Nature of Business Purpose | 15 | Inability to baseline behavior |
-| Missing Phone/Email Verification | 5 | Identity uncertainty |
-| Complete Data Set | 0 | Transparent customer profile |
-
----
-
-## 4. PEP & Sanctions Matching Process
+### 3.2 Dimension 1 — Customer Type Score (0–50)
 
 Derived directly from Section 2 classification. Assign the highest applicable score if a customer falls into multiple categories.
 
@@ -160,6 +134,7 @@ Assesses the clarity and verifiability of beneficial ownership — a direct resp
 | Ownership Structure | Score |
 |---|---|
 | Beneficial owner unidentified or unverifiable | 25 |
+> **OFAC 50% Rule Integration:** When beneficial ownership is identified, it must be screened against the OFAC SDN list to detect indirect sanctions exposure. If a beneficial owner holds ≥50% ownership and is a sanctioned entity, the customer entity is treated as sanctioned regardless of CRS — see `GEO_RULES.md` Section 5.4.
 | Layered ownership — 3+ levels, offshore intermediaries | 20 |
 | Nominee directors or bearer shares present | 20 |
 | Beneficial owner identified but not verified | 15 |
@@ -295,7 +270,6 @@ CCRS = Customer Type Score
      + Geographic Risk Score
      + Account Behaviour Score
      + PEP / Sanctions Score
-     + Data Integrity Penalty
 ```
 
 ### 5.2 Risk Band Assignment
@@ -601,3 +575,14 @@ AUDIT LOG ENTRY — MINIMUM REQUIRED FIELDS:
 | Integration with GEO_RULES.md is explicit and non-duplicative | ✅ |
 
 ---
+
+## 12. Version History
+
+| Version | Change | Date | Author |
+|---|---|---|---|
+| 1.0 | Initial release — customer type taxonomy, 5-dimension CCRS, PEP matching, SR 11-7 governance | Day 4 — 2025 | Atul Krishnan, CAMS |
+| 1.1 | Added OFAC 50% Ownership Rule cross-reference to regulatory basis and ownership transparency sections. Fixed Last Updated date. | 01 May 2026 | Atul Krishnan, CAMS |
+
+---
+
+*ScoreSentinel | CUSTOMER_RULES.md | Authored by Atul Krishnan, CAMS | Version 1.1 | 30 April 2026*
