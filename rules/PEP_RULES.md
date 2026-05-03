@@ -1,8 +1,8 @@
 # PEP_RULES.md — PEP Matching & Beneficial Owner Risk Logic
 
 **ScoreSentinel AML Transaction Risk Scoring Engine**
-**Version:** 1.0 | **Day:** 11 of 60 | **Author:** Atul Krishnan, CAMS
-**Last Updated:** 1 May 2026
+**Version:** 1.1 | **Day:** 11 of 60 | **Author:** Atul Krishnan, CAMS
+**Last Updated:** 3 May 2026
 
 ---
 
@@ -222,6 +222,37 @@ ScoreSentinel applies **two independent beneficial ownership thresholds** servin
 | **≥ 50% ownership by sanctioned entity** | OFAC 50% Rule | Entity treated as sanctioned | 🚨 AUTO-ALERT — sanctions screening — see `GEO_RULES.md` Section 5.4 |
 
 > **Key Distinction:** The 25% threshold triggers a **due diligence obligation** — collect and verify BO data. The 50% OFAC threshold triggers a **sanctions alert** — the entity is treated as if it appears on the SDN list regardless of its own name. Both thresholds must be checked independently for every legal entity customer.
+
+### 5.5 The 40–50% Enhanced Monitoring Zone
+
+> **The Sulzer Gap — Ownership Engineering Risk**
+> As demonstrated by the Sulzer AG / Vekselberg case (ScoreSentinel Validation Scenario 11), sophisticated actors deliberately engineer beneficial ownership below the 50% OFAC threshold to avoid sanctions designation. Renova Group held 48.8% of Sulzer — just below the cliff edge — and conducted an emergency share buyback to reduce the stake further when OFAC designated Vekselberg.
+
+ScoreSentinel applies an **enhanced monitoring zone** for any entity where a sanctioned individual or entity holds between 40% and 50% ownership:
+
+```
+ENHANCED MONITORING ZONE — 40% TO 50% OWNERSHIP:
+
+IF beneficial owner is a sanctioned entity AND
+ownership stake is between 40% and 50%:
+
+  → OFAC 50% rule does NOT trigger (below threshold)
+  → BUT: Enhanced monitoring zone applies
+  → Quarterly ownership verification required
+     (not just at onboarding)
+  → Any ownership increase toward 50% must be
+     flagged immediately for Compliance Officer review
+  → Customer risk score: add +25 (sanctions-adjacent)
+  → Document: "Sanctions-adjacent ownership — 
+     [X]% held by [sanctioned entity] — 
+     quarterly monitoring applied"
+
+RATIONALE:
+  The 0.1% difference between 49.9% and 50.0%
+  is the single most exploited gap in sanctions
+  compliance. Ongoing monitoring — not just
+  onboarding checks — is the only effective control.
+```
 
 ---
 
@@ -500,8 +531,9 @@ ScoreSentinel Version 1.0 implements UK MLR 2017 as the primary PEP and benefici
 
 | Version | Change | Date | Author |
 |---|---|---|---|
-| 1.0 | Initial release — UK MLR 2017 PEP tier taxonomy, dual BO threshold system, fuzzy match justification with OCC examiner defence, fallback BO rule, regional overlay roadmap for ScoreSentinel 2.0 | 3 May 2026 | Atul Krishnan, CAMS |
+| 1.0 | Initial release — UK MLR 2017 PEP tier taxonomy, dual BO threshold system, fuzzy match justification with OCC examiner defence, fallback BO rule, regional overlay roadmap for ScoreSentinel 2.0 | 1 May 2026 | Atul Krishnan, CAMS |
+| 1.1 | Added 40–50% enhanced monitoring zone (Sulzer Gap) — identified during Day 12 Scenario 11 validation | 3 May 2026 | Atul Krishnan, CAMS |
 
 ---
 
-*ScoreSentinel | PEP_RULES.md | PEP Matching & Beneficial Owner Risk Logic | Authored by Atul Krishnan, CAMS | Version 1.0 | 1 May 2026*
+*ScoreSentinel | PEP_RULES.md | PEP Matching & Beneficial Owner Risk Logic | Authored by Atul Krishnan, CAMS | Version 1.0 | 3 May 2026*
