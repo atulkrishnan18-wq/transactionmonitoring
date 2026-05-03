@@ -1,8 +1,8 @@
 # AML_RULES.md — Master Detection Framework
 
 **ScoreSentinel AML Transaction Risk Scoring Engine**
-**Version:** 1.1 | **Status:** Master Ruleset | **Author:** Atul Krishnan, CAMS
-**Last Updated:** 25 April 2026
+**Version:** 1.2 | **Status:** Master Ruleset | **Author:** Atul Krishnan, CAMS
+**Last Updated:** 3 May 2026
 
 ---
 
@@ -171,6 +171,9 @@ AUDIT LOG — MANDATORY FIELDS PER TRANSACTION:
 | `VELOCITY_RULES.md` | `rules/` | Standalone velocity and behavioural pattern rules | Day 10 |
 | `PEP_RULES.md` | `rules/` | PEP tier definitions, matching logic, beneficial owner | Day 11 |
 | `AUDIT_REQUIREMENTS.md` | `governance/` | Compliance audit trail requirements | Day 13 |
+| `VELOCITY_RULES.md` | `rules/` | Transaction velocity, Fan-In/Fan-Out, behavioural change indicators | Day 10 |
+| `PEP_RULES.md` | `rules/` | UK MLR 2017 PEP tiers, beneficial owner dual threshold, fuzzy match | Day 11 |
+| `VALIDATION_SCENARIOS.md` | `scenarios/` | Extended 10-scenario set — Vekselberg, Wirecard, TBML, Insurance ML | Day 12 |
 | `MODEL_GOVERNANCE.md` | `governance/` | SR 11-7 full compliance documentation | Day 43 |
 | `BACKTESTING.md` | `governance/` | Back-testing methodology and results | Day 44 |
 
@@ -181,8 +184,9 @@ AUDIT LOG — MANDATORY FIELDS PER TRANSACTION:
 | Version | Change | Date | Author |
 |---|---|---|---|
 | 1.0 | Initial draft — five-module architecture, dynamic segmentation | 26 April 2026 | ScoreSentinel Build (Gemini) |
-| 1.1 | Corrected to four-module architecture. Removed unvalidated dynamic threshold segmentation — replaced with universal threshold of 60 with SR 11-7 justification. Clarified data integrity as customer module dimension, not standalone module. Added master index with day references. Added version history. | 25 April 2026 | Atul Krishnan, CAMS |
+| 1.2 | Updated master index — added VELOCITY_RULES.md, PEP_RULES.md, VALIDATION_SCENARIOS.md. Updated date. | 1 May 2026 | Atul Krishnan, CAMS |
+| 1.1 | Corrected to four-module architecture. Removed unvalidated dynamic threshold segmentation — replaced with universal threshold of 60 with SR 11-7 justification. Clarified data integrity as customer module dimension, not standalone module. Added master index with day references. Added version history. | 03 May 2026 | Atul Krishnan, CAMS |
 
 ---
 
-*ScoreSentinel | AML_RULES.md | Master Detection Framework | Authored by Atul Krishnan, CAMS | Version 1.1 | 25 April 2026*
+*ScoreSentinel | AML_RULES.md | Master Detection Framework | Authored by Atul Krishnan, CAMS | Version 1.1 | 03 May 2026*
