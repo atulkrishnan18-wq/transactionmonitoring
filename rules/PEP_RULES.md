@@ -500,7 +500,7 @@ ScoreSentinel Version 1.0 implements UK MLR 2017 as the primary PEP and benefici
 
 | Version | Change | Date | Author |
 |---|---|---|---|
-| 1.0 | Initial release — UK MLR 2017 PEP tier taxonomy, dual BO threshold system, fuzzy match justification with OCC examiner defence, fallback BO rule, regional overlay roadmap for ScoreSentinel 2.0 | 1 May 2026 | Atul Krishnan, CAMS |
+| 1.0 | Initial release — UK MLR 2017 PEP tier taxonomy, dual BO threshold system, fuzzy match justification with OCC examiner defence, fallback BO rule, regional overlay roadmap for ScoreSentinel 2.0 | 3 May 2026 | Atul Krishnan, CAMS |
 
 ---
 
