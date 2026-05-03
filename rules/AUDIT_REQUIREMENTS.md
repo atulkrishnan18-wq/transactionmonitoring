@@ -2,7 +2,7 @@
 
 **ScoreSentinel AML Transaction Risk Scoring Engine**
 **Version:** 1.0 | **Day:** 13 of 60 | **Author:** Atul Krishnan, CAMS
-**Last Updated:** 1 May 2026
+**Last Updated:** 3 May 2026
 
 ---
 
