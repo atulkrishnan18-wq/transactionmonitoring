@@ -1,8 +1,8 @@
 # TRANSACTION_RULES.md — Transaction Type Risk Scoring Rules
 
 **ScoreSentinel AML Transaction Risk Scoring Engine**
-**Version:** 1.0 | **Day:** 5 of 60 | **Author:** Atul Krishnan, CAMS
-**Last Updated:** 25 April 2026
+**Version:** 1.2 | **Day:** 5 of 60 | **Author:** Atul Krishnan, CAMS
+**Last Updated:** 3 May 2026
 
 ---
 
@@ -46,19 +46,6 @@ This document defines transaction type risk scoring rules for ScoreSentinel. Dif
 | 🟠 Medium-High Risk | 25–39 | Elevated risk requiring enhanced monitoring |
 | 🟡 Medium Risk | 15–24 | Moderate risk — monitor for patterns |
 | 🟢 Low Risk | 0–14 | Low inherent risk — standard monitoring |
-
----
-
-### 2.6 Data Integrity Penalty (Transaction Level)
-
-Tier 1 standards (G-SIB) require that missing or invalid transaction metadata be scored as an "Operational Risk Penalty."
-
-| Missing Metadata Field | Penalty Score | Rationale |
-|---|---|---|
-| Missing "Ultimate Beneficiary" name | +25 | Critical sanctions/evasion risk |
-| Missing "Purpose of Wire" (Int'l) | +20 | High-risk corridor concealment |
-| Invalid/Generic Goods Description (Trade) | +20 | TBML indicator (phantom goods) |
-| Missing Remitter Phone/Address | +10 | Travel Rule non-compliance |
 
 ---
 
@@ -136,6 +123,8 @@ Tier 1 standards (G-SIB) require that missing or invalid transaction metadata be
 | Auto-Escalate If | Counterparty is in Tier 1C or above per GEO_RULES.md, or goods description is vague |
 
 **Scoring Rationale:** TBML is the largest ML typology by volume globally. The complexity of trade documentation creates natural concealment opportunities. Over/under-invoicing and phantom shipments are extremely difficult to detect without transaction type-specific rules.
+
+> **TBML Over-Invoicing Indicator:** Where invoice value can be compared against publicly available commodity prices or industry benchmarks, a discrepancy of 20% or more above market price is a TBML red flag per FinCEN Advisory FIN-2010-A001. Vague goods descriptions (e.g. "general merchandise", "electronic components" without specification) combined with high invoice values require enhanced documentary scrutiny. Multiple LC amendments within a single trade cycle are an additional red flag — legitimate trade rarely requires more than one amendment.
 
 ---
 
@@ -306,9 +295,25 @@ Tier 1 standards (G-SIB) require that missing or invalid transaction metadata be
 
 **Scoring Rationale:** E-commerce transactions are high volume and generally low individual risk. Score of 15 reflects this — the risk is in anomalous patterns (excessive refunds, purchases from high-risk merchant categories) rather than the transaction type itself.
 
+> **Merchant ML Refund Rate Threshold:** Industry average refund rate for legitimate e-commerce merchants is below 2%. A refund rate exceeding 15% of transaction volume within any 30-day period is a Material Negative Indicator (MNI) requiring analyst review. A refund rate exceeding 40% is a high-conviction merchant ML indicator — escalate immediately. Refunds issued to accounts different from the original payment source are an additional red flag regardless of refund rate.
+
 ---
 
 ### 2.5 Low Risk Transaction Types 🟢
+
+#### 16b. Domestic Salary Credit
+**Base Score: 15**
+
+| Attribute | Detail |
+|---|---|
+| Primary Risk | Low — predictable, regular, employer-verified |
+| Classification | Treated as sub-type of Domestic Wire for scoring purposes |
+| Velocity Trigger | None — regular salary credits are expected pattern |
+| Auto-Escalate If | Salary amount changes by more than 50% unexpectedly, or employer changes to unverified entity |
+
+> **Note:** Domestic Salary Credit does not appear as a standalone transaction type in the ScoreSentinel transaction taxonomy but is scored as a Domestic Wire (15 points) when the transaction description or payment reference indicates salary/payroll origin. This classification was identified during TEST_SCENARIOS.md Scenario 1 validation.
+
+---
 
 #### 17. Wire Transfer (Domestic)
 **Base Score: 15**
@@ -358,6 +363,13 @@ Tier 1 standards (G-SIB) require that missing or invalid transaction metadata be
 
 **Scoring Rationale:** Insurance premium payments are generally low risk. The specific ML typology is early policy surrender — paying premiums with illicit funds then surrendering the policy for a clean refund cheque. Score of 10 with targeted escalation rules covers this.
 
+> **Three-Indicator Insurance ML Escalation Rule:** If any TWO of the following three indicators are present simultaneously, mandatory escalation applies regardless of CRS:
+> 1. Premium paid in cash or from high-risk jurisdiction account
+> 2. Policy surrendered within 12 months of inception (VEL-022)
+> 3. Surrender refund requested to a different account than the premium payment source
+>
+> All three indicators present = immediate escalation to Compliance Officer. This three-indicator rule is consistent with the ScoreSentinel three-point decision standard defined in AUDIT_REQUIREMENTS.md Section 3.
+
 ---
 
 ## 3. Velocity Rules
@@ -374,20 +386,9 @@ Velocity rules detect risk in **patterns over time** — not just individual tra
 | VEL-004 | Rapid round-trip | Funds in and out within 24 hours > $10,000 | High risk alert |
 | VEL-005 | Dormant account spike | Account inactive 90+ days then sudden activity > $5,000 | Flag for review |
 
-### 3.2 Segmented Velocity Thresholds (Tier 1 RBA)
-
-In a Tier 1 institution, "high volume" is relative to the segment. ScoreSentinel dynamically adjusts thresholds based on the `Customer Segment`.
-
-| Segment | Rule | Adjusted Threshold |
-|---|---|---|
-| **Institutional** | VEL-001 (Daily Count) | > 500 transactions |
-| **Retail** | VEL-001 (Daily Count) | > 5 transactions |
-| **SMB** | VEL-002 (Daily Value) | > $250,000 |
-| **HNW** | VEL-002 (Daily Value) | > $100,000 |
-
 ---
 
-### 3.3 Transaction-Type Specific Velocity Rules
+### 3.2 Transaction-Type Specific Velocity Rules
 
 | Rule ID | Transaction Type | Velocity Trigger | Threshold | Action |
 |---|---|---|---|---|
@@ -652,6 +653,8 @@ Rule Rationale          : Loan-back scheme indicator + FATF grey list domicile
 | Version | Change | Date | Author |
 |---|---|---|---|
 | 1.0 | Initial release — 19 transaction types, velocity rules, sequencing rules | Day 5 — 2025 | Atul Krishnan, CAMS |
+| 1.1 | Added third-party loan repayment rules VEL-025/026/027 | 25 April 2026 | Atul Krishnan, CAMS |
+| 1.2 | Added merchant ML refund rate threshold (Online Payment), TBML over-invoicing indicator (Trade Finance), three-indicator insurance ML escalation rule, domestic salary credit sub-type classification. All gaps identified during Day 12 scenario validation | 3 May 2026 | Atul Krishnan, CAMS |
 
 ### 9.3 SR 11-7 Checklist
 
