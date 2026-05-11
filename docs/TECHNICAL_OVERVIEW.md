@@ -2,7 +2,7 @@
 
 **ScoreSentinel AML Transaction Risk Scoring Engine**
 **Version:** 1.0 | **Day:** 20 of 60 | **Author:** Atul Krishnan, CAMS
-**Last Updated:** 8 May 2026
+**Last Updated:** 11 May 2026
 **Audience:** Non-technical readers — compliance officers, hiring managers, regulators
 
 ---
@@ -91,12 +91,12 @@ The system returns the composite score, the risk band, whether an alert was gene
 
 ## Real Example — Pakistani Trade Payment
 
-A Pakistani textile manufacturer sends $180,000 to a UK fabric supplier for a confirmed export order.
+A Nepali textile manufacturer sends $180,000 to a UK fabric supplier for a confirmed export order.
 
 ```
 Customer check:     Non-resident business — score 35/175 = 20%
 Structuring check:  Single consistent payment — score 0/70 = 0%
-Geography check:    Pakistan FATF grey list — score 45/100 = 45%
+Geography check:    Nepal FATF grey list — score 45/100 = 45%
 Transaction check:  International wire — score 45/55 = 82%
 
 Final score = (20×30%) + (0×25%) + (45×25%) + (82×20%)
@@ -104,9 +104,9 @@ Final score = (20×30%) + (0×25%) + (45×25%) + (82×20%)
             = 33.65 — MEDIUM-LOW
 ```
 
-Pakistan's FATF grey list status correctly adds risk weight. But the combination of an established business, a single transaction, and full trade documentation keeps the score below the alert threshold. The system flags it for enhanced monitoring — but does not block it or generate an analyst alert.
+Nepal's FATF grey list status correctly adds risk weight. But the combination of an established business, a single transaction, and full trade documentation keeps the score below the alert threshold. The system flags it for enhanced monitoring — but does not block it or generate an analyst alert.
 
-This is the correct outcome. A legitimate Pakistani trade payment should not be blocked — but it should be monitored more closely than a domestic UK transfer.
+This is the correct outcome. A legitimate Nepali trade payment should not be blocked — but it should be monitored more closely than a domestic UK transfer.
 
 ---
 
@@ -222,8 +222,8 @@ The system is accessible via public URLs — any hiring manager, regulator, or i
 
 | Version | Change | Date | Author |
 |---|---|---|---|
-| 1.0 | Initial release — Phase 1 complete. Plain English explanation of full system architecture, two worked examples, case management workflow, regulatory alignment table | 8 May 2026 | Atul Krishnan, CAMS |
+| 1.0 | Initial release — Phase 1 complete. Plain English explanation of full system architecture, two worked examples, case management workflow, regulatory alignment table | 11 May 2026 | Atul Krishnan, CAMS |
 
 ---
 
-*ScoreSentinel | TECHNICAL_OVERVIEW.md | System Explained for Non-Technical Readers | Authored by Atul Krishnan, CAMS | Version 1.0 | Day 20 of 60 | 8 May 2026*
+*ScoreSentinel | TECHNICAL_OVERVIEW.md | System Explained for Non-Technical Readers | Authored by Atul Krishnan, CAMS | Version 1.0 | Day 20 of 60 | 11 May 2026*
