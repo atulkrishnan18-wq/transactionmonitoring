@@ -49,7 +49,7 @@
 | 17 | API concepts — 3 endpoints, request-response | Learning | ✅ Done | — |
 | 18 | Dashboard specification — 4 screens, case workflow | Learning | ✅ Done | — |
 | 19 | Full tech stack overview | docs/ | ⬜ Next | — |
-| 20 | TECHNICAL_OVERVIEW.md + final Phase 1 commit | docs/ | ⬜ Pending | — |
+| 20 | TECHNICAL_OVERVIEW.md + final Phase 1 commit | docs/ | ✅ Done | — |
 
 ---
 
