@@ -636,6 +636,17 @@ Rule Rationale          : Loan-back scheme indicator + FATF grey list domicile
 
 ---
 
+---
+
+## Assumptions & Limitations
+
+- **Mechanism Over Amount:** Base scores reflect the inherent risk of the transaction *type*, not the dollar amount; small transactions of high-risk types (e.g., small crypto payments) will still score highly.
+- **Classification Accuracy:** Effective scoring depends on the correct mapping of payment codes (e.g., ISO 20022/SWIFT) to ScoreSentinel transaction types; misclassified data will result in incorrect risk weighting.
+- **Third-party Visibility:** Detection of third-party involvement (e.g., in loan repayments) assumes that originator/beneficiary fields are populated and unmasked.
+- **Velocity Windows:** Rolling windows (24h, 48h, 7d, 30d) are fixed; sophisticated launderers may deliberately space transactions just outside these windows to avoid velocity triggers.
+
+---
+
 ## 9. Governance & Version Control
 
 ### 9.1 Review Schedule

@@ -146,6 +146,15 @@ regardless of composite score.
 
 ---
 
+## Assumptions & Limitations
+
+- **Data Integrity:** Detection relies on accurate Customer IDs; if a customer uses multiple aliases or unlinked identities, cross-account detection (Rule 5) will be compromised.
+- **Intra-day Latency:** Real-time smurfing detection assumes minimal data latency; batch-processed data may delay alert generation by up to 24 hours.
+- **Reporting Thresholds:** Thresholds are optimized for the $10,000 USD CTR standard; transactions in other currencies must be converted at current rates for accurate assessment.
+- **Legitimate Cash Businesses:** High-frequency cash deposits from verified businesses (e.g., supermarkets) may trigger false positives without manual whitelisting.
+
+---
+
 ## Model Governance & Version Control
 
 ### SR 11-7 Compliance Checklist

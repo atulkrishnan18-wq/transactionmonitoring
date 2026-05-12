@@ -19,7 +19,7 @@
 
 | Phase | Days | Focus | Status |
 |---|---|---|---|
-| **Phase 1** | Days 1–20 | AML Logic Design — rules, thresholds, testing, tech literacy | 🔄 In Progress — Day 18 |
+| **Phase 1** | Days 1–20 | AML Logic Design — rules, thresholds, testing, tech literacy | ✅ Complete |
 | **Phase 2** | Days 21–45 | Build — Python engine, database, API, dashboard | 📋 Upcoming |
 | **Phase 3** | Days 46–60 | Own It — mastery, deployment, portfolio, launch | 📋 Planned |
 
@@ -32,7 +32,7 @@
 | 1 | AML_RULES.md | rules/ | ✅ Done | v1.2 |
 | 2 | STRUCTURING_RULES.md | rules/ | ✅ Done | v1.1 |
 | 2 | STRUCTURING_SCENARIOS.md | scenarios/ | ✅ Done | v1.0 |
-| 3 | GEO_RULES.md | rules/ | ✅ Done | v1.0 |
+| 3 | GEO_RULES.md | rules/ | ✅ Done | v1.1 |
 | 4 | CUSTOMER_RULES.md | rules/ | ✅ Done | v1.1 |
 | 5 | TRANSACTION_RULES.md | rules/ | ✅ Done | v1.2 |
 | 6 | COMPOSITE_LOGIC.md | scoring/ | ✅ Done | v1.2 |
@@ -48,7 +48,7 @@
 | 16 | Database concepts — 3 tables, SQL queries | Learning | ✅ Done | — |
 | 17 | API concepts — 3 endpoints, request-response | Learning | ✅ Done | — |
 | 18 | Dashboard specification — 4 screens, case workflow | Learning | ✅ Done | — |
-| 19 | Full tech stack overview | docs/ | ⬜ Next | — |
+| 19 | Full tech stack overview | docs/ | ✅ Done | — |
 | 20 | TECHNICAL_OVERVIEW.md + final Phase 1 commit | docs/ | ✅ Done | — |
 
 ---
@@ -219,7 +219,7 @@
 
 ---
 
-### Day 19 ⬜ — Full Tech Stack Overview
+### Day 19 ✅ — Full Tech Stack Overview
 **Objective:** Understand complete system architecture
 **Tasks:**
 1. Understand all four components together — Python, PostgreSQL, Flask, React
@@ -231,7 +231,7 @@
 
 ---
 
-### Day 20 ⬜ — Tech Review & Phase 1 Final Commit
+### Day 20 ✅ — Tech Review & Phase 1 Final Commit
 **Objective:** Consolidate all Phase 1 learning, prepare for Phase 2
 **Tasks:**
 1. Create TECHNICAL_OVERVIEW.md — plain English explanation of all components

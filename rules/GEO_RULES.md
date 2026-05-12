@@ -152,6 +152,7 @@ Countries with CPI 30–49 carry meaningful corruption risk.
 | Panama | Secrecy/Layering | +15 |
 | Seychelles | Beneficial ownership | +15 |
 | Cyprus | Russian exposure | +15 |
+| Switzerland | Secrecy / Private banking | +15 |
 | Malaysia | Borderline CPI / Secrecy | +15 |
 
 ---

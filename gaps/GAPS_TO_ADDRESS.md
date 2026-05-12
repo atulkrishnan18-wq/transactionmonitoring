@@ -45,6 +45,8 @@ This document tracks all identified gaps, limitations, and planned improvements 
 | 16 | Velocity scores added directly to CRS — architecture error | Gemini VELOCITY_RULES v1.0 | Corrected — all feed into Structuring module | Day 10 |
 | 17 | VEL-STR rule IDs conflicted with existing VEL sequence | Gemini VELOCITY_RULES v1.0 | Renamed to VEL-028 to VEL-031 | Day 10 |
 | 18 | AML_RULES.md master index missing new documents | Day 14 review | Updated to v1.2 with all new files | Day 14 |
+| 19 | Switzerland not in GEO_RULES.md | Day 20 | Added to Tier 3 (v1.1) | Day 20 |
+| 20 | Assumptions & limitations sections | Day 20 | Added to all mandatory modules | Day 20 |
 
 ---
 
@@ -52,8 +54,6 @@ This document tracks all identified gaps, limitations, and planned improvements 
 
 | # | Gap | Priority | Planned Resolution | Day |
 |---|---|---|---|---|
-| 19 | Switzerland not in GEO_RULES.md | 🟠 Medium | Add Switzerland to Tier 3 — secrecy jurisdiction, private banking exposure | Day 20 |
-| 20 | Assumptions & limitations section missing from STRUCTURING_RULES.md, TRANSACTION_RULES.md, COMPOSITE_LOGIC.md | 🟡 Low | Add to each document during final Phase 1 review | Day 20 |
 | 21 | Back-testing against historical transaction data not yet completed | 🔴 High | Planned Day 30 | Day 30 |
 | 22 | Independent model validation not yet completed | 🔴 High | Planned Day 45 | Day 45 |
 | 23 | Alert-to-SAR ratio not yet measured — no live data | 🟠 Medium | Measurable after Python engine live — Day 25+ | Day 35 |
