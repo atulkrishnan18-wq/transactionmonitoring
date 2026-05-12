@@ -259,7 +259,7 @@
 
 | Day | What Gets Built | Your Validation Task |
 |---|---|---|
-| 21 | Engine structure + customer module | Verify CCRS dimensions match CUSTOMER_RULES.md |
+| 21 | Engine structure + customer module | ✅ Done |
 | 22 | Structuring + geography modules | Run 5 structuring scenarios — confirm scores |
 | 23 | Transaction type + velocity modules | Validate all 19 transaction types + VEL rules |
 | 24 | Composite score + independent triggers | Confirm CRS formula matches COMPOSITE_LOGIC.md |
