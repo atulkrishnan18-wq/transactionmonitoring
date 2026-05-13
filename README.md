@@ -4,8 +4,8 @@
 
 **Author:** Atul Krishnan, CAMS
 **Build:** 60-Day Independent Project | 1 Hour Per Day
-**Status:** Phase 1 Complete — AML Logic Design (Days 1–14)
-**Last Updated:** 4 May 2026
+**Status:** Phase 2 In Progress — Python Scoring Engine Complete (Days 21–25)
+**Last Updated:** 13 May 2026
 
 ---
 
@@ -164,8 +164,8 @@ ScoreSentinel has been validated against **20 scenarios** covering the full risk
 
 | Phase | Days | Status |
 |---|---|---|
-| Phase 1 — AML Logic Design | Days 1–20 | ✅ Week 1 Complete / ✅ Week 2 Complete |
-| Phase 2 — Python Engine Build | Days 21–45 | 🔄 Upcoming |
+| Phase 1 — AML Logic Design | Days 1–20 | ✅ Complete |
+| Phase 2 — Python Engine Build | Days 21–45 | 🔄 In Progress — Engine Build Complete |
 | Phase 3 — Deploy & Portfolio | Days 46–60 | 📋 Planned |
 
 **Full 60-day roadmap:** See `ROADMAP.md`

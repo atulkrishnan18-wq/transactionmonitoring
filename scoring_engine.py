@@ -5,42 +5,102 @@ Authored by Atul Krishnan, CAMS | Day 21 of 60
 """
 
 from engine.customer_module import CustomerModule
+from engine.structuring_module import StructuringModule
+from engine.geo_module import GeoModule
+from engine.transaction_module import TransactionModule
 
 class ScoreSentinelEngine:
     def __init__(self):
         self.customer_module = CustomerModule()
-        # Other modules will be initialized here as they are built
-        # self.structuring_module = StructuringModule()
-        # self.geo_module = GeoModule()
-        # self.transaction_module = TransactionModule()
+        self.structuring_module = StructuringModule()
+        self.geo_module = GeoModule()
+        self.transaction_module = TransactionModule()
+
+        # Weights as defined in COMPOSITE_LOGIC.md
+        self.weights = {
+            "customer": 0.30,
+            "structuring": 0.25,
+            "geo": 0.25,
+            "transaction": 0.20
+        }
+        
+        self.alert_threshold = 60
 
     def score_transaction(self, transaction_data):
         """
         Coordinates the scoring across all modules and produces a 
         Composite Risk Score (CRS).
         """
-        # Step 1: Score Customer Risk
-        customer_result = self.customer_module.get_ccrs(transaction_data.get("customer", {}))
+        # Step 1: Score individual modules
         
-        # Step 2: Normalization (placeholder for now)
-        # STEP 1 — Normalise each module score to 0–100:
-        # Customer Normalised = (Customer Raw / 175) × 100
+        # Module 1: Customer Risk
+        customer_result = self.customer_module.get_ccrs(transaction_data.get("customer", {}))
         customer_normalised = (customer_result["ccrs"] / 175) * 100
 
-        # Placeholder for other modules
-        # structuring_normalised = 0
-        # geo_normalised = 0
-        # txtype_normalised = 0
+        # Module 2: Structuring
+        structuring_result = self.structuring_module.get_structuring_score(
+            transaction_data.get("transaction", {}), 
+            transaction_data.get("history", [])
+        )
+        structuring_normalised = structuring_result["normalised_score"] * 100
 
-        # Step 3: Weighted Sum (placeholder for now)
-        # CRS = (Customer Normalised × 0.30) + ...
-        # For Day 21, we just return the customer results for validation.
-        
+        # Module 3: Geography
+        geo_result = self.geo_module.get_geo_score(
+            transaction_data.get("transaction", {}).get("sender_country"),
+            transaction_data.get("transaction", {}).get("receiver_country")
+        )
+        geo_normalised = geo_result["normalised_score"] * 100
+
+        # Module 4: Transaction Type
+        txtype_result = self.transaction_module.get_module_result(transaction_data.get("transaction", {}))
+        txtype_normalised = txtype_result["normalised_score"] * 100
+
+        # Step 2: Calculate Composite Risk Score (CRS)
+        crs = (
+            (customer_normalised * self.weights["customer"]) +
+            (structuring_normalised * self.weights["structuring"]) +
+            (geo_normalised * self.weights["geo"]) +
+            (txtype_normalised * self.weights["transaction"])
+        )
+
+        # Step 3: Check for Auto-Alerts
+        is_auto_alert = (
+            customer_result["is_auto_alert"] or
+            geo_result["is_auto_alert"] or
+            structuring_result["is_independent_trigger"] or
+            txtype_result["is_auto_alert"]
+        )
+
+        # Step 4: Determine final alert status
+        is_alert = crs >= self.alert_threshold or is_auto_alert
+
         return {
-            "customer_risk": customer_result,
-            "customer_normalised": customer_normalised,
-            "overall_crs": customer_normalised * 0.30, # Temporary until other modules added
-            "is_auto_alert": customer_result["is_auto_alert"]
+            "overall_crs": round(crs, 2),
+            "is_alert": is_alert,
+            "is_auto_alert": is_auto_alert,
+            "alert_reason": txtype_result.get("alert_reason"),
+            "module_scores": {
+                "customer": {
+                    "raw": customer_result["ccrs"],
+                    "normalised": round(customer_normalised, 2)
+                },
+                "structuring": {
+                    "raw": structuring_result["raw_score"],
+                    "normalised": round(structuring_normalised, 2),
+                    "is_trigger": structuring_result["is_independent_trigger"],
+                    "triggered_rules": structuring_result["triggered_rules"]
+                },
+                "geo": {
+                    "raw": geo_result["raw_score"],
+                    "normalised": round(geo_normalised, 2),
+                    "is_auto_alert": geo_result["is_auto_alert"]
+                },
+                "transaction_type": {
+                    "raw": txtype_result["raw_score"],
+                    "normalised": round(txtype_normalised, 2),
+                    "is_auto_alert": txtype_result["is_auto_alert"]
+                }
+            }
         }
 
 if __name__ == "__main__":

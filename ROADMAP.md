@@ -257,13 +257,11 @@
 - Confirm CRS calculations are correct
 - No coding required — review and validate only
 
-| Day | What Gets Built | Your Validation Task |
-|---|---|---|
 | 21 | Engine structure + customer module | ✅ Done |
-| 22 | Structuring + geography modules | Run 5 structuring scenarios — confirm scores |
-| 23 | Transaction type + velocity modules | Validate all 19 transaction types + VEL rules |
-| 24 | Composite score + independent triggers | Confirm CRS formula matches COMPOSITE_LOGIC.md |
-| 25 | All 20 scenarios pass | Run every scenario — confirm output matches expected |
+| 22 | Structuring + geography modules | ✅ Done |
+| 23 | Transaction type + velocity modules | ✅ Done |
+| 24 | Composite score + independent triggers | ✅ Done |
+| 25 | All 20 scenarios pass | ✅ Done |
 
 **Deliverable:** Working Python scoring engine
 
