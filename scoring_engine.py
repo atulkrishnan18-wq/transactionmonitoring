@@ -31,10 +31,19 @@ class ScoreSentinelEngine:
         Coordinates the scoring across all modules and produces a 
         Composite Risk Score (CRS).
         """
-        # Step 1: Score individual modules
+        # Step 1: Score individual modules and check for Auto-Alerts
         
         # Module 1: Customer Risk
         customer_result = self.customer_module.get_ccrs(transaction_data.get("customer", {}))
+        if customer_result["is_auto_alert"]:
+            return {
+                "crs": None,
+                "overall_crs": None,
+                "alert": True,
+                "alert_type": "Customer Auto-Alert",
+                "trigger": "PEP/Sanctions or High-Risk Jurisdiction match",
+                "rules_fired": ["CUST-AUTO-001"]
+            }
         customer_normalised = (customer_result["ccrs"] / 175) * 100
 
         # Module 2: Structuring
@@ -42,6 +51,15 @@ class ScoreSentinelEngine:
             transaction_data.get("transaction", {}), 
             transaction_data.get("history", [])
         )
+        if structuring_result["is_independent_trigger"]:
+            return {
+                "crs": None,
+                "overall_crs": None,
+                "alert": True,
+                "alert_type": "Structuring Independent Trigger",
+                "trigger": "Velocity or Structuring threshold breached",
+                "rules_fired": structuring_result["triggered_rules"]
+            }
         structuring_normalised = structuring_result["normalised_score"] * 100
 
         # Module 3: Geography
@@ -49,10 +67,28 @@ class ScoreSentinelEngine:
             transaction_data.get("transaction", {}).get("sender_country"),
             transaction_data.get("transaction", {}).get("receiver_country")
         )
+        if geo_result["is_auto_alert"]:
+            return {
+                "crs": None,
+                "overall_crs": None,
+                "alert": True,
+                "alert_type": "Geography Auto-Alert",
+                "trigger": "Sanctioned or Prohibited Jurisdiction",
+                "rules_fired": ["GEO-AUTO-001"]
+            }
         geo_normalised = geo_result["normalised_score"] * 100
 
         # Module 4: Transaction Type
         txtype_result = self.transaction_module.get_module_result(transaction_data.get("transaction", {}))
+        if txtype_result["is_auto_alert"]:
+            return {
+                "crs": None,
+                "overall_crs": None,
+                "alert": True,
+                "alert_type": "Transaction Type Auto-Alert",
+                "trigger": txtype_result.get("alert_reason"),
+                "rules_fired": ["TX-AUTO-001"]
+            }
         txtype_normalised = txtype_result["normalised_score"] * 100
 
         # Step 2: Calculate Composite Risk Score (CRS)
@@ -63,22 +99,14 @@ class ScoreSentinelEngine:
             (txtype_normalised * self.weights["transaction"])
         )
 
-        # Step 3: Check for Auto-Alerts
-        is_auto_alert = (
-            customer_result["is_auto_alert"] or
-            geo_result["is_auto_alert"] or
-            structuring_result["is_independent_trigger"] or
-            txtype_result["is_auto_alert"]
-        )
-
-        # Step 4: Determine final alert status
-        is_alert = crs >= self.alert_threshold or is_auto_alert
+        # Step 3: Determine final alert status
+        is_alert = crs >= self.alert_threshold
 
         return {
+            "crs": round(crs, 2),
             "overall_crs": round(crs, 2),
             "is_alert": is_alert,
-            "is_auto_alert": is_auto_alert,
-            "alert_reason": txtype_result.get("alert_reason"),
+            "alert": is_alert,
             "module_scores": {
                 "customer": {
                     "raw": customer_result["ccrs"],

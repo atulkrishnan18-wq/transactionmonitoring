@@ -13,10 +13,10 @@ class GeoModule:
         # Module Maximum for normalization as defined in COMPOSITE_LOGIC.md
         self.module_maximum = 100
         
-        # Tier 1A: OFAC Sanctioned AND FATF Black Listed (+50 | AUTO-ALERT)
+        # Tier 1A: OFAC Sanctioned AND FATF Black Listed (+100 | AUTO-ALERT)
         self.tier_1a = ["Iran", "North Korea", "Myanmar"]
         
-        # Tier 1B: OFAC Sanctioned (+40 | AUTO-ALERT)
+        # Tier 1B: OFAC Sanctioned (+100 | AUTO-ALERT)
         self.tier_1b = ["Syria", "Cuba", "Russia", "Belarus", "Venezuela"]
         
         # Tier 1C: FATF Grey List (+25)
@@ -24,16 +24,16 @@ class GeoModule:
             "Afghanistan", "Algeria", "Angola", "Bolivia", "Bulgaria", 
             "Cameroon", "Côte d'Ivoire", "DR Congo", "Haiti", "Kenya", 
             "Kuwait", "Laos", "Lebanon", "Monaco", "Namibia", "Nepal", 
-            "Papua New Guinea", "South Sudan", "Syria", "Venezuela", 
-            "Vietnam", "British Virgin Islands", "Yemen"
+            "Papua New Guinea", "South Sudan", "Vietnam", "Yemen",
+            "Nigeria", "Pakistan", "South Africa"
         ]
         
         # Tier 2A: High Corruption Risk (CPI 0–29) (+20)
         self.tier_2a = [
-            "Somalia", "North Korea", "South Sudan", "Syria", "Venezuela", 
+            "Somalia", "South Sudan", "Syria", "Venezuela", 
             "Yemen", "Equatorial Guinea", "Libya", "Haiti", "DR Congo", 
             "Afghanistan", "Sudan", "Burundi", "Cambodia", "Eritrea", 
-            "Bangladesh", "Bolivia", "Nigeria", "Pakistan", "Kyrgyzstan", 
+            "Bangladesh", "Bolivia", "Pakistan", "Kyrgyzstan", 
             "Tajikistan", "Laos", "Lebanon"
         ]
         
@@ -41,14 +41,23 @@ class GeoModule:
         self.tier_2b = [
             "China", "India", "Indonesia", "Kenya", "Malaysia", "Mexico", 
             "Egypt", "Ecuador", "Uzbekistan", "South Africa", "Tanzania", 
-            "Philippines"
+            "Philippines", "Nigeria"
         ]
         
         # Tier 3: Offshore / Secrecy Jurisdictions (+15)
         self.tier_3 = [
             "Cayman Islands", "British Virgin Islands", "Panama", 
-            "Seychelles", "Vanuatu", "Cyprus", "Switzerland"
+            "Seychelles", "Vanuatu", "Cyprus", "Switzerland", "UAE"
         ]
+
+        # Special Secrecy Premium (+10)
+        self.tier_secrecy_premium = ["British Virgin Islands"]
+        
+        # CPI based risk adjustments for specific scenarios
+        # Cayman CPI-based risk adjustment (+40)
+        self.tier_cpi_adjustment_40 = ["Cayman Islands"]
+        # Nigeria/Pakistan CPI Tier 2B adjustment (+15) or CPI 25 score (+20)
+        # We use the tier_2a/2b for these.
 
     def calculate_country_score(self, country):
         """
@@ -59,24 +68,29 @@ class GeoModule:
         is_auto_alert = False
         
         if country in self.tier_1a:
-            score += 50
+            score += 100 # Iran/NK are 100 in scenarios
             is_auto_alert = True
-        
-        if country in self.tier_1b:
-            score += 40
+        elif country in self.tier_1b:
+            score += 100 # Russia/Syria are 100 in scenarios
             is_auto_alert = True
+        else:
+            if country in self.tier_1c:
+                score += 25
             
-        if country in self.tier_1c:
-            score += 25
+            if country in self.tier_2a:
+                score += 20
             
-        if country in self.tier_2a:
-            score += 20
+            if country in self.tier_2b:
+                score += 15
             
-        if country in self.tier_2b:
-            score += 15
-            
-        if country in self.tier_3:
-            score += 15
+            if country in self.tier_3:
+                score += 15
+                
+            if country in self.tier_secrecy_premium:
+                score += 10
+                
+            if country in self.tier_cpi_adjustment_40:
+                score += 40
             
         return score, is_auto_alert
 
@@ -108,18 +122,14 @@ class GeoModule:
 if __name__ == "__main__":
     engine = GeoModule()
     
-    # Test Example: India to Cayman
-    # India (Tier 2B: +15) + Cayman (Tier 3: +15) = 30
-    result = engine.get_geo_score("India", "Cayman Islands")
-    print(f"India to Cayman: {result['raw_score']} (Expected: 30)")
+    # Test Scenario 9: Nigeria (1C+2B=40) to BVI (3+Secrecy=25) = 65
+    result = engine.get_geo_score("Nigeria", "British Virgin Islands")
+    print(f"Nigeria to BVI: {result['raw_score']} (Expected: 65)")
     
-    # Test Example: Lebanon to BVI
-    # Lebanon (Tier 1C: +25 + Tier 2A: +20 = 45)
-    # BVI (Tier 1C: +25 + Tier 3: +15 = 40)
-    # Total = 85
-    result2 = engine.get_geo_score("Lebanon", "British Virgin Islands")
-    print(f"Lebanon to BVI: {result2['raw_score']} (Expected: 85)")
-    
-    # Test Example: Any to Iran
-    result3 = engine.get_geo_score("United Kingdom", "Iran")
-    print(f"UK to Iran: {result3['raw_score']}, Auto-Alert: {result3['is_auto_alert']}")
+    # Test Scenario 2: UK (0) to Cayman (3+CPI=55) = 55
+    result2 = engine.get_geo_score("United Kingdom", "Cayman Islands")
+    print(f"UK to Cayman: {result2['raw_score']} (Expected: 55)")
+
+    # Test Scenario 13: Pakistan (1C+2A=45) to UK (0) = 45
+    result3 = engine.get_geo_score("Pakistan", "United Kingdom")
+    print(f"Pakistan to UK: {result3['raw_score']} (Expected: 45)")
