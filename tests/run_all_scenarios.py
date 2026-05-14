@@ -1,11 +1,9 @@
+# Scenario 7 expected CRS updated from 32.39 to 39.90 to reflect GEO_RULES.md v1.1 recalibration — Nigeria and South Africa reclassified from Tier 1C to Tier 2A/2B after FATF October 2025 plenary removal.
+
 """
 ScoreSentinel Master Validation Runner (Scenarios 1-20)
 Part of the ScoreSentinel AML Transaction Risk Scoring Engine
 Authored by Atul Krishnan, CAMS | Day 25 of 60
-
-NOTE: Scenario 7 expected CRS updated from 32.39 to 39.90 to reflect 
-GEO_RULES.md v1.1 recalibration — Nigeria and South Africa reclassified 
-from Tier 1C to Tier 2A/2B after FATF October 2025 plenary removal.
 """
 
 from scoring_engine import ScoreSentinelEngine
