@@ -56,6 +56,7 @@ def score_transaction():
     
     # Extract data for engine
     customer_id = data.get("customer_id")
+    account_id = data.get("account_id", "DEFAULT_ACC") # Extract account_id
     tx_amount = data.get("transaction_amount")
     tx_currency = data.get("transaction_currency")
     tx_type = data.get("transaction_type")
@@ -69,7 +70,9 @@ def score_transaction():
             "transaction_type": tx_type,
             "amount": tx_amount,
             "sender_country": sender_country,
-            "receiver_country": receiver_country
+            "receiver_country": receiver_country,
+            "account_id": account_id, # Pass account_id
+            "date": datetime.datetime.now() # Add date for structuring module
         },
         "history": data.get("history", []) # Optional history for velocity rules
     }
