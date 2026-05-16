@@ -21,8 +21,8 @@ CREATE TABLE transactions (
     transaction_amount  DECIMAL(15,2) NOT NULL,
     transaction_currency VARCHAR(3) NOT NULL,
     transaction_type    VARCHAR(50) NOT NULL,
-    sender_country      VARCHAR(3) NOT NULL,
-    receiver_country    VARCHAR(3) NOT NULL,
+    sender_country      VARCHAR(100) NOT NULL,
+    receiver_country    VARCHAR(100) NOT NULL,
     customer_type       VARCHAR(50),
     
     -- Module raw scores
@@ -68,7 +68,7 @@ CREATE TABLE customers (
     pep_tier            VARCHAR(10),
     beneficial_owner    VARCHAR(200),
     bo_ownership_pct    DECIMAL(5,2),
-    country_of_domicile VARCHAR(3),
+    country_of_domicile VARCHAR(100),
     onboarding_date     DATE,
     last_reviewed       TIMESTAMP,
     next_review_date    DATE,

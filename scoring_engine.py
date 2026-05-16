@@ -102,11 +102,17 @@ class ScoreSentinelEngine:
         # Step 3: Determine final alert status
         is_alert = crs >= self.alert_threshold
 
+        # Aggregate rules fired for audit trail
+        all_rules = []
+        all_rules.extend(structuring_result.get("triggered_rules", []))
+        # Geo and Tx modules could be updated to return rules too, but for now we take structuring
+        
         return {
             "crs": round(crs, 2),
             "overall_crs": round(crs, 2),
             "is_alert": is_alert,
             "alert": is_alert,
+            "rules_fired": all_rules,
             "module_scores": {
                 "customer": {
                     "raw": customer_result["ccrs"],

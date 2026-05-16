@@ -11,6 +11,10 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 from flask import Flask, request, jsonify
 from scoring_engine import ScoreSentinelEngine
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 app = Flask(__name__)
 engine = ScoreSentinelEngine()
@@ -92,7 +96,27 @@ def score_transaction():
     cur = conn.cursor()
     
     try:
-        # Insert into transactions table
+        # Step 1: Upsert Customer Record
+        cur.execute("""
+            INSERT INTO customers (
+                customer_id, full_name, customer_type, ccrs, risk_band, country_of_domicile
+            ) VALUES (%s, %s, %s, %s, %s, %s)
+            ON CONFLICT (customer_id) DO UPDATE SET
+                customer_type = EXCLUDED.customer_type,
+                ccrs = EXCLUDED.ccrs,
+                risk_band = EXCLUDED.risk_band,
+                country_of_domicile = EXCLUDED.country_of_domicile,
+                last_reviewed = NOW()
+        """, (
+            customer_id, 
+            data.get("customer", {}).get("full_name", f"Customer {customer_id}"),
+            data.get("customer", {}).get("customer_type"),
+            result.get("module_scores", {}).get("customer", {}).get("raw", 0),
+            get_risk_band(result.get("module_scores", {}).get("customer", {}).get("raw", 0)),
+            sender_country
+        ))
+
+        # Step 2: Insert into transactions table
         cur.execute("""
             INSERT INTO transactions (
                 transaction_id, customer_id, timestamp_processed, 
@@ -136,6 +160,8 @@ def score_transaction():
             
         conn.commit()
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         conn.rollback()
         return jsonify({"error": "Database error", "message": str(e)}), 500
     finally:
@@ -268,6 +294,8 @@ def update_alert(alert_id):
         conn.commit()
         return jsonify({"status": "updated", "alert_id": alert_id})
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         conn.rollback()
         return jsonify({"error": "Database error", "message": str(e)}), 500
     finally:
