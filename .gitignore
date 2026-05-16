@@ -1,0 +1,25 @@
+# ScoreSentinel Git Ignore File
+
+# Environment variables (Secrets)
+.env
+
+# Python caching
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local database files (if any)
+*.db
+*.sqlite3
+
+# IDE / System
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
