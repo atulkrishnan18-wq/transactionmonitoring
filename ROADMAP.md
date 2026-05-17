@@ -276,7 +276,7 @@
 | 26 | Database schema — all tables including dashboard fields | Confirm all AUDIT_REQUIREMENTS.md fields are columns |
 | 27 | Flask API — POST /api/score endpoint | Test with 5 transactions — confirm scores returned |
 | 28 | GET /api/transactions + customer history | Test customer profile queries |
-| 29 | PUT /api/alerts — three-point enforcement | Confirm system rejects requests missing any of 3 points |
+| 29 | PUT /api/alerts — three-point enforcement | ✅ Done |
 | 30 | Full API test + back-testing methodology | Run all 20 scenarios via API — document results |
 
 **Deliverable:** Working API — can score transactions and manage alerts

@@ -467,6 +467,672 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "11. Score Wirecard Merchant ML",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Structuring Alert triggered (Fan-Out)\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.alert).to.be.true;",
+							"    pm.expect(jsonData.alert_type).to.eql(\"Structuring Alert\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"customer_id\": \"MERCH-WIRE-001\",\n  \"transaction_amount\": 45.00,\n  \"transaction_type\": \"Online Payment / E-commerce\",\n  \"sender_country\": \"United Kingdom\",\n  \"receiver_country\": \"United Kingdom\",\n  \"customer\": {\n    \"customer_type\": \"Small/Medium Business (SMB)\",\n    \"business_sector\": \"E-commerce Payment Processor\"\n  },\n  \"history\": [\n    {\"amount\": 45, \"date\": \"2026-05-17T09:00:00\", \"account_id\": \"ACC1\", \"receiver_id\": \"REC1\"},\n    {\"amount\": 45, \"date\": \"2026-05-17T09:01:00\", \"account_id\": \"ACC1\", \"receiver_id\": \"REC2\"},\n    {\"amount\": 45, \"date\": \"2026-05-17T09:02:00\", \"account_id\": \"ACC1\", \"receiver_id\": \"REC3\"}\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/score",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"score"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "12. Score UK Cabinet Minister",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"PEP Tier 1 Auto-alert\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.alert).to.be.true;",
+							"    pm.expect(jsonData.alert_type).to.eql(\"Customer Auto-Alert\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"customer_id\": \"PEP-UK-001\",\n  \"transaction_amount\": 12000.00,\n  \"transaction_type\": \"Wire Transfer (Domestic)\",\n  \"sender_country\": \"United Kingdom\",\n  \"receiver_country\": \"United Kingdom\",\n  \"customer\": {\n    \"customer_type\": \"Politically Exposed Person (PEP)\",\n    \"is_pep\": true,\n    \"pep_tier\": \"Tier 1\",\n    \"pep_jurisdiction\": \"Domestic UK\"\n  }\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/score",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"score"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "13. Score Fan-In Mule Network",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Structuring Alert (Fan-In)\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.alert).to.be.true;",
+							"    pm.expect(jsonData.alert_type).to.eql(\"Structuring Alert\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"customer_id\": \"STUDENT-MULE-001\",\n  \"transaction_amount\": 7800.00,\n  \"transaction_type\": \"Wire Transfer (International)\",\n  \"sender_country\": \"United Kingdom\",\n  \"receiver_country\": \"Poland\",\n  \"customer\": {\n    \"customer_type\": \"Individual Customer\",\n    \"occupation\": \"Student\"\n  },\n  \"history\": [\n    {\"amount\": 1000, \"date\": \"2026-05-17T08:00:00\", \"sender_id\": \"S1\"},\n    {\"amount\": 1000, \"date\": \"2026-05-17T08:05:00\", \"sender_id\": \"S2\"},\n    {\"amount\": 1000, \"date\": \"2026-05-17T08:10:00\", \"sender_id\": \"S3\"},\n    {\"amount\": 1000, \"date\": \"2026-05-17T08:15:00\", \"sender_id\": \"S4\"}\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/score",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"score"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "14. Score TBML Letter of Credit",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Medium-High Risk band\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.risk_band).to.eql(\"MEDIUM_HIGH\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"customer_id\": \"TRADE-CO-001\",\n  \"transaction_amount\": 320000.00,\n  \"transaction_type\": \"Trade Finance / Letter of Credit\",\n  \"sender_country\": \"Malaysia\",\n  \"receiver_country\": \"United Kingdom\",\n  \"customer\": {\n    \"customer_type\": \"Small/Medium Business (SMB)\",\n    \"business_sector\": \"Import/Export\"\n  }\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/score",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"score"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "15. Score Former PEP 18 Months",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Medium-Low Risk band\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.risk_band).to.eql(\"MEDIUM_LOW\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"customer_id\": \"FORMER-PEP-001\",\n  \"transaction_amount\": 75000.00,\n  \"transaction_type\": \"Wire Transfer (International)\",\n  \"sender_country\": \"United Kingdom\",\n  \"receiver_country\": \"United Arab Emirates\",\n  \"customer\": {\n    \"customer_type\": \"Individual Customer\",\n    \"is_pep\": true,\n    \"pep_tier\": \"Tier 2\",\n    \"pep_status\": \"Former PEP (18 months)\"\n  }\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/score",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"score"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "16. Score BVI Shell Unknown BO",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Medium-High Risk band\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.risk_band).to.eql(\"MEDIUM_HIGH\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"customer_id\": \"BVI-SHELL-001\",\n  \"transaction_amount\": 500000.00,\n  \"transaction_type\": \"Wire Transfer (International)\",\n  \"sender_country\": \"British Virgin Islands\",\n  \"receiver_country\": \"Cyprus\",\n  \"customer\": {\n    \"customer_type\": \"Shell Company\",\n    \"ownership_structure\": \"Unknown BO / Nominee Directors\"\n  }\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/score",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"score"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "17. Score Dormant Account Nigeria",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Structuring Alert (Dormant Activation)\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.alert).to.be.true;",
+							"    pm.expect(jsonData.alert_type).to.eql(\"Structuring Alert\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"customer_id\": \"DORMANT-USER-001\",\n  \"transaction_amount\": 5900.00,\n  \"transaction_type\": \"Wire Transfer (International)\",\n  \"sender_country\": \"United Kingdom\",\n  \"receiver_country\": \"Nigeria\",\n  \"customer\": {\n    \"customer_type\": \"Individual Customer\",\n    \"behaviour_indicator\": \"Dormant for 7 months\"\n  },\n  \"history\": [\n    {\"amount\": 800, \"date\": \"2026-05-17T10:00:00\", \"type\": \"CASH_DEPOSIT\"},\n    {\"amount\": 800, \"date\": \"2026-05-17T11:00:00\", \"type\": \"CASH_DEPOSIT\"}\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/score",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"score"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "18. Score Insurance Early Surrender",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Medium-Low Risk band\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.risk_band).to.eql(\"MEDIUM_LOW\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"customer_id\": \"INS-USER-001\",\n  \"transaction_amount\": 43200.00,\n  \"transaction_type\": \"Insurance Premium - early surrender\",\n  \"sender_country\": \"United Kingdom\",\n  \"receiver_country\": \"Nigeria\",\n  \"customer\": {\n    \"customer_type\": \"HNWI\",\n    \"nationality\": \"Nigerian\"\n  }\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/score",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"score"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "19. Scenario 2: Shell Company Cayman",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Medium-High Risk band\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.risk_band).to.eql(\"MEDIUM_HIGH\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"customer_id\": \"CUST-SHELL-001\",\n  \"transaction_amount\": 50000.00,\n  \"transaction_type\": \"Wire Transfer (International)\",\n  \"sender_country\": \"United Kingdom\",\n  \"receiver_country\": \"Cayman Islands\",\n  \"customer\": {\n    \"customer_type\": \"Shell Company\",\n    \"ownership_structure\": \"Unknown BO\"\n  }\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/score",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"score"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "20. Scenario 3: Classic Smurfing",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Structuring Alert triggered\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.alert).to.be.true;",
+							"    pm.expect(jsonData.alert_type).to.eql(\"Structuring Alert\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"customer_id\": \"CUST-SMURF-001\",\n  \"transaction_amount\": 9500.00,\n  \"transaction_type\": \"Cash Deposit\",\n  \"sender_country\": \"United Kingdom\",\n  \"receiver_country\": \"United Kingdom\",\n  \"customer\": {\n    \"customer_type\": \"Individual Customer\"\n  },\n  \"history\": [\n    {\"amount\": 9500, \"date\": \"2026-05-15T10:00:00\"},\n    {\"amount\": 9500, \"date\": \"2026-05-16T10:00:00\"},\n    {\"amount\": 9500, \"date\": \"2026-05-17T10:00:00\"}\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/score",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"score"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "21. Scenario 5: High-Frequency Crypto",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Medium-High Risk band\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.risk_band).to.eql(\"MEDIUM_HIGH\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"customer_id\": \"CUST-CRYPTO-001\",\n  \"transaction_amount\": 5000.00,\n  \"transaction_type\": \"Cryptocurrency\",\n  \"sender_country\": \"United Kingdom\",\n  \"receiver_country\": \"United Kingdom\",\n  \"customer\": {\n    \"customer_type\": \"Crypto-asset business\"\n  },\n  \"history\": [\n    {\"amount\": 5000, \"date\": \"2026-05-17T09:00:00\", \"type\": \"Cryptocurrency\"},\n    {\"amount\": 5000, \"date\": \"2026-05-17T09:10:00\", \"type\": \"Cryptocurrency\"}\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/score",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"score"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "22. Scenario 8: Cash SMB Structuring",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Structuring Alert triggered\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.alert).to.be.true;",
+							"    pm.expect(jsonData.alert_type).to.eql(\"Structuring Alert\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"customer_id\": \"RESTAURANT-001\",\n  \"transaction_amount\": 2000.00,\n  \"transaction_type\": \"Cash Deposit\",\n  \"sender_country\": \"United Kingdom\",\n  \"receiver_country\": \"United Kingdom\",\n  \"customer\": {\n    \"customer_type\": \"Small/Medium Business (SMB)\",\n    \"business_sector\": \"Restaurant\"\n  },\n  \"history\": [\n    {\"amount\": 2000, \"date\": \"2026-05-01T10:00:00\"},\n    {\"amount\": 2000, \"date\": \"2026-05-02T10:00:00\"},\n    {\"amount\": 2000, \"date\": \"2026-05-03T10:00:00\"}\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/score",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"score"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "23. Scenario 6: PEP Tier 2 Wire",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Medium-Low Risk band\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.risk_band).to.eql(\"MEDIUM_LOW\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"customer_id\": \"PEP-TIER-2-001\",\n  \"transaction_amount\": 15000.00,\n  \"transaction_type\": \"Wire Transfer (International)\",\n  \"sender_country\": \"United Kingdom\",\n  \"receiver_country\": \"Cyprus\",\n  \"customer\": {\n    \"customer_type\": \"Politically Exposed Person (PEP)\",\n    \"is_pep\": true,\n    \"pep_tier\": \"Tier 2\"\n  }\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/score",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"score"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "24. Scenario 7: FATF Corridor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Medium-Low Risk band\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.risk_band).to.eql(\"MEDIUM_LOW\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"customer_id\": \"CORR-BIZ-001\",\n  \"transaction_amount\": 50000.00,\n  \"transaction_type\": \"Correspondent Banking\",\n  \"sender_country\": \"Nigeria\",\n  \"receiver_country\": \"South Africa\",\n  \"customer\": {\n    \"customer_type\": \"Established Business (5+ years)\"\n  }\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/score",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"score"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "25. Scenario 10: Missing UBO Data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Medium-Low Risk band\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.risk_band).to.eql(\"MEDIUM_LOW\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"customer_id\": \"UBO-MISSING-001\",\n  \"transaction_amount\": 25000.00,\n  \"transaction_type\": \"Wire Transfer (International)\",\n  \"sender_country\": \"United Kingdom\",\n  \"receiver_country\": \"United Kingdom\",\n  \"customer\": {\n    \"customer_type\": \"HNWI\",\n    \"ownership_structure\": \"Beneficial owner unidentified\"\n  }\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/score",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"score"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"variable": [
