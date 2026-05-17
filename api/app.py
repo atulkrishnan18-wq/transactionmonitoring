@@ -67,9 +67,20 @@ def score_transaction():
     sender_country = data.get("sender_country", "GB")
     receiver_country = data.get("receiver_country", "GB")
     
+    # Robustness: Ensure customer object exists and has a type
+    customer_data = data.get("customer", {})
+    if not customer_data.get("customer_type"):
+        customer_data["customer_type"] = "INDIVIDUAL"
+        
+    # Robustness: Ensure history items have dates
+    history_data = data.get("history", [])
+    for item in history_data:
+        if "date" not in item:
+            item["date"] = datetime.datetime.now().isoformat()
+    
     # Engine requires "transaction" and "customer" keys
     engine_input = {
-        "customer": data.get("customer", {}),
+        "customer": customer_data,
         "transaction": {
             "transaction_type": tx_type,
             "amount": tx_amount,
@@ -78,7 +89,7 @@ def score_transaction():
             "account_id": account_id, # Pass account_id
             "date": datetime.datetime.now() # Add date for structuring module
         },
-        "history": data.get("history", []) # Optional history for velocity rules
+        "history": history_data # Optional history for velocity rules
     }
     
     # Call scoring engine
@@ -109,8 +120,8 @@ def score_transaction():
                 last_reviewed = NOW()
         """, (
             customer_id, 
-            data.get("customer", {}).get("full_name", f"Customer {customer_id}"),
-            data.get("customer", {}).get("customer_type"),
+            customer_data.get("full_name", f"Customer {customer_id}"),
+            customer_data.get("customer_type"),
             result.get("module_scores", {}).get("customer", {}).get("raw", 0),
             get_risk_band(result.get("module_scores", {}).get("customer", {}).get("raw", 0)),
             sender_country
@@ -129,7 +140,7 @@ def score_transaction():
         """, (
             transaction_id, customer_id, timestamp,
             tx_amount, tx_currency, tx_type,
-            sender_country, receiver_country, data.get("customer", {}).get("customer_type"),
+            sender_country, receiver_country, customer_data.get("customer_type"),
             result.get("module_scores", {}).get("customer", {}).get("raw", 0),
             result.get("module_scores", {}).get("structuring", {}).get("raw", 0),
             result.get("module_scores", {}).get("geo", {}).get("raw", 0),
