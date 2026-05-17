@@ -8,6 +8,7 @@ from engine.customer_module import CustomerModule
 from engine.structuring_module import StructuringModule
 from engine.geo_module import GeoModule
 from engine.transaction_module import TransactionModule
+from engine.mule_module import MuleModule
 
 class ScoreSentinelEngine:
     def __init__(self):
@@ -15,6 +16,7 @@ class ScoreSentinelEngine:
         self.structuring_module = StructuringModule()
         self.geo_module = GeoModule()
         self.transaction_module = TransactionModule()
+        self.mule_module = MuleModule()
 
         # Weights as defined in COMPOSITE_LOGIC.md
         self.weights = {
@@ -29,7 +31,7 @@ class ScoreSentinelEngine:
     def score_transaction(self, transaction_data):
         """
         Coordinates the scoring across all modules and produces a 
-        Composite Risk Score (CRS).
+        Composite Risk Score (CRS) and Mule Probability Score (MPS).
         """
         # Step 1: Score individual modules and check for Auto-Alerts
         
@@ -90,6 +92,13 @@ class ScoreSentinelEngine:
                 "rules_fired": ["TX-AUTO-001"]
             }
         txtype_normalised = txtype_result["normalised_score"] * 100
+        
+        # Module 5: MuleCatcher™ Intelligence Layer
+        mule_result = self.mule_module.get_mps(
+            transaction_data.get("transaction", {}),
+            transaction_data.get("history", []),
+            transaction_data.get("customer", {})
+        )
 
         # Step 2: Calculate Composite Risk Score (CRS)
         crs = (
@@ -100,16 +109,18 @@ class ScoreSentinelEngine:
         )
 
         # Step 3: Determine final alert status
-        is_alert = crs >= self.alert_threshold
+        is_alert = crs >= self.alert_threshold or mule_result["is_mule_alert"]
 
         # Aggregate rules fired for audit trail
         all_rules = []
         all_rules.extend(structuring_result.get("triggered_rules", []))
-        # Geo and Tx modules could be updated to return rules too, but for now we take structuring
+        all_rules.extend(mule_result.get("triggered_rules", []))
         
-        return {
+        final_result = {
             "crs": round(crs, 2),
             "overall_crs": round(crs, 2),
+            "mps": mule_result["mps"],
+            "mule_level": mule_result["mule_level"],
             "is_alert": is_alert,
             "alert": is_alert,
             "rules_fired": all_rules,
@@ -136,6 +147,12 @@ class ScoreSentinelEngine:
                 }
             }
         }
+        
+        if mule_result["is_mule_alert"]:
+            final_result["alert_type"] = "Mule Cluster Alert"
+            final_result["trigger"] = f"Mule Probability: {mule_result['mps']}%"
+            
+        return final_result
 
 if __name__ == "__main__":
     # Test with Example 1 from CUSTOMER_RULES.md
