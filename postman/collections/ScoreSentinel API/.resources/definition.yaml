@@ -1,0 +1,4 @@
+$kind: collection
+description: Postman Collection for testing the ScoreSentinel AML Scoring Engine API.
+variables:
+  alert_id: ALT-20260514-0001

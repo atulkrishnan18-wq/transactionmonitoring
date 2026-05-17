@@ -1,0 +1,38 @@
+$kind: http-request
+url: http://localhost:5000/api/score
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "customer_id": "CUST-TEST-004",
+      "transaction_amount": 180000.00,
+      "transaction_currency": "USD",
+      "transaction_type": "Wire Transfer (International)",
+      "sender_country": "Pakistan",
+      "receiver_country": "United Kingdom",
+      "customer": {
+        "customer_type": "Non-Resident Customer",
+        "geo_tier": "Tier 2B",
+        "behaviour_indicator": "Transaction pattern broadly consistent with profile",
+        "match_type": "No PEP / Sanctions / Adverse Media match"
+      }
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status code is 200", function () {
+          pm.response.to.have.status(200);
+      });
+      pm.test("No alert generated", function () {
+          var jsonData = pm.response.json();
+          pm.expect(jsonData.alert).to.be.false;
+      });
+      pm.test("CRS matches expected (~33.61)", function () {
+          var jsonData = pm.response.json();
+          pm.expect(jsonData.crs).to.be.closeTo(33.61, 1.0);
+      });
+    language: text/javascript
+order: 5000

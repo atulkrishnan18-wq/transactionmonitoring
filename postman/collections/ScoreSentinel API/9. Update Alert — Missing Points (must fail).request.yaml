@@ -1,0 +1,24 @@
+$kind: http-request
+url: http://localhost:5000/api/alerts/{{alert_id}}
+method: PUT
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "disposition": "FALSE_POSITIVE",
+      "reviewer_id": "ANA-TEST-001"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status code is 400", function () {
+          pm.response.to.have.status(400);
+      });
+      pm.test("Audit standard error message present", function () {
+          var jsonData = pm.response.json();
+          pm.expect(jsonData.error).to.contain("Three-point standard not met");
+      });
+    language: text/javascript
+order: 9000

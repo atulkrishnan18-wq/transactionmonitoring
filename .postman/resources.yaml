@@ -1,0 +1,15 @@
+# Use this workspace to collaborate
+workspace:
+  id: c0335c73-179c-4687-84e3-b008a426066b
+
+# Each entry here maps a local resource to one or more corresponding objects in Postman Cloud
+
+cloudResources:
+  collections:
+    ..\postman\collections\ScoreSentinel API: ffb39644-3d45-4956-bc92-d19079f3b744
+
+# All resources in the `postman/` folder are automatically registered in Local View.
+# Point to additional files outside the `postman/` folder to register them individually. Example:
+#localResources:
+#  collections:
+#    - ../tests/E2E Test Collection/

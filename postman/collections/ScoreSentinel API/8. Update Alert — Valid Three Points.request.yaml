@@ -1,0 +1,32 @@
+$kind: http-request
+url: http://localhost:5000/api/alerts/{{alert_id}}
+method: PUT
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "disposition": "FALSE_POSITIVE",
+      "reviewer_id": "ANA-TEST-001",
+      "stage": "RESOLVED",
+      "reviewer_rationale": "Test clearance verified",
+      "point_1_identifier": "DOB mismatch — 35 year gap",
+      "point_1_source": "Passport on file",
+      "point_2_identifier": "Nationality mismatch",
+      "point_2_source": "KYC documentation",
+      "point_3_identifier": "Profession mismatch",
+      "point_3_source": "Employment letter"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status code is 200", function () {
+          pm.response.to.have.status(200);
+      });
+      pm.test("Update successful", function () {
+          var jsonData = pm.response.json();
+          pm.expect(jsonData.status).to.eql("updated");
+      });
+    language: text/javascript
+order: 8000

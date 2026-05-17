@@ -1,0 +1,44 @@
+$kind: http-request
+url: http://localhost:5000/api/score
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "customer_id": "CUST-TEST-003",
+      "account_id": "ACC1",
+      "transaction_amount": 9900.00,
+      "transaction_currency": "USD",
+      "transaction_type": "Wire Transfer (International)",
+      "sender_country": "Nigeria",
+      "receiver_country": "British Virgin Islands",
+      "customer": {
+        "customer_type": "Shell Company",
+        "ownership_structure": "Individual customer — direct ownership, verified",
+        "geo_tier": "Tier 4",
+        "behaviour_indicator": "Fully consistent, stable, long-established pattern",
+        "match_type": "No PEP / Sanctions / Adverse Media match"
+      },
+      "history": [
+        {"amount": 9900, "date": "2026-05-14T10:00:00", "account_id": "ACC1"},
+        {"amount": 9800, "date": "2026-05-14T11:00:00", "account_id": "ACC1"}
+      ]
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status code is 200", function () {
+          pm.response.to.have.status(200);
+      });
+      pm.test("No alert generated (just below threshold)", function () {
+          var jsonData = pm.response.json();
+          pm.expect(jsonData.alert).to.be.false;
+      });
+      pm.test("CRS is precisely calibrated (~59.04)", function () {
+          var jsonData = pm.response.json();
+          pm.expect(jsonData.crs).to.be.closeTo(59.04, 0.1);
+      });
+    language: text/javascript
+order: 4000

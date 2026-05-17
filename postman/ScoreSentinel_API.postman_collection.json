@@ -1,0 +1,478 @@
+{
+	"info": {
+		"_postman_id": "7a3b1c2d-4e5f-6a7b-8c9d-0e1f2a3b4c5d",
+		"name": "ScoreSentinel API",
+		"description": "Postman Collection for testing the ScoreSentinel AML Scoring Engine API.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Health Check",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Engine status is ok\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.status).to.eql(\"ok\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/api/health",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"health"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2. Score Clean Transaction",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"No alert generated\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.alert).to.be.false;",
+							"});",
+							"pm.test(\"CRS is low (~6.31)\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.crs).to.be.below(10);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"customer_id\": \"CUST-TEST-001\",\n  \"transaction_amount\": 500.00,\n  \"transaction_currency\": \"GBP\",\n  \"transaction_type\": \"Wire Transfer (Domestic)\",\n  \"sender_country\": \"United Kingdom\",\n  \"receiver_country\": \"United Kingdom\",\n  \"customer\": {\n    \"customer_type\": \"Verified Salaried Individual\",\n    \"ownership_structure\": \"Individual customer — direct ownership, verified\",\n    \"geo_tier\": \"Tier 4\",\n    \"behaviour_indicator\": \"Fully consistent, stable, long-established pattern\",\n    \"match_type\": \"No PEP / Sanctions / Adverse Media match\"\n  }\n}"
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/score",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"score"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3. Score Iran Sanctions",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Auto-alert triggered\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.alert).to.be.true;",
+							"    pm.expect(jsonData.crs).to.be.null;",
+							"    ",
+							"    // Save alert_id for subsequent tests",
+							"    if (jsonData.alert_id) {",
+							"        pm.environment.set(\"alert_id\", jsonData.alert_id);",
+							"        console.log(\"Saved alert_id: \" + jsonData.alert_id);",
+							"    }",
+							"});",
+							"pm.test(\"Alert type is Geography\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.alert_type).to.eql(\"Geography Auto-Alert\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"customer_id\": \"CUST-TEST-002\",\n  \"transaction_amount\": 500.00,\n  \"transaction_currency\": \"USD\",\n  \"transaction_type\": \"Wire Transfer (International)\",\n  \"sender_country\": \"United Kingdom\",\n  \"receiver_country\": \"Iran\",\n  \"customer\": {\n    \"customer_type\": \"Small/Medium Business (SMB)\",\n    \"ownership_structure\": \"Single corporate layer — owner identified and verified\",\n    \"geo_tier\": \"Tier 4\",\n    \"behaviour_indicator\": \"Fully consistent, stable, long-established pattern\",\n    \"match_type\": \"No PEP / Sanctions / Adverse Media match\"\n  }\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/score",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"score"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "4. Score SAR Generator",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"No alert generated (just below threshold)\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.alert).to.be.false;",
+							"});",
+							"pm.test(\"CRS is precisely calibrated (~59.04)\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.crs).to.be.closeTo(59.04, 0.1);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"customer_id\": \"CUST-TEST-003\",\n  \"account_id\": \"ACC1\",\n  \"transaction_amount\": 9900.00,\n  \"transaction_currency\": \"USD\",\n  \"transaction_type\": \"Wire Transfer (International)\",\n  \"sender_country\": \"Nigeria\",\n  \"receiver_country\": \"British Virgin Islands\",\n  \"customer\": {\n    \"customer_type\": \"Shell Company\",\n    \"ownership_structure\": \"Individual customer — direct ownership, verified\",\n    \"geo_tier\": \"Tier 4\",\n    \"behaviour_indicator\": \"Fully consistent, stable, long-established pattern\",\n    \"match_type\": \"No PEP / Sanctions / Adverse Media match\"\n  },\n  \"history\": [\n    {\"amount\": 9900, \"date\": \"2026-05-14T10:00:00\", \"account_id\": \"ACC1\"},\n    {\"amount\": 9800, \"date\": \"2026-05-14T11:00:00\", \"account_id\": \"ACC1\"}\n  ]\n}"
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/score",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"score"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "5. Score Pakistan Trade Payment",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"No alert generated\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.alert).to.be.false;",
+							"});",
+							"pm.test(\"CRS matches expected (~33.61)\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.crs).to.be.closeTo(33.61, 1.0);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"customer_id\": \"CUST-TEST-004\",\n  \"transaction_amount\": 180000.00,\n  \"transaction_currency\": \"USD\",\n  \"transaction_type\": \"Wire Transfer (International)\",\n  \"sender_country\": \"Pakistan\",\n  \"receiver_country\": \"United Kingdom\",\n  \"customer\": {\n    \"customer_type\": \"Non-Resident Customer\",\n    \"geo_tier\": \"Tier 2B\",\n    \"behaviour_indicator\": \"Transaction pattern broadly consistent with profile\",\n    \"match_type\": \"No PEP / Sanctions / Adverse Media match\"\n  }\n}"
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/score",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"score"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "6. Get All Transactions",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Transactions returned\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.transactions).to.be.an(\"array\");",
+							"    pm.expect(jsonData.total).to.be.at.least(0);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/api/transactions",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"transactions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "7. Get Customer Transactions",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Correct customer filtered\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    if (jsonData.transactions.length > 0) {",
+							"        pm.expect(jsonData.transactions[0].customer_id).to.eql(\"CUST-TEST-001\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/api/transactions?customer_id=CUST-TEST-001",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"transactions"
+					],
+					"query": [
+						{
+							"key": "customer_id",
+							"value": "CUST-TEST-001"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "8. Update Alert — Valid Three Points",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Update successful\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.status).to.eql(\"updated\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"disposition\": \"FALSE_POSITIVE\",\n  \"reviewer_id\": \"ANA-TEST-001\",\n  \"stage\": \"RESOLVED\",\n  \"reviewer_rationale\": \"Test clearance verified\",\n  \"point_1_identifier\": \"DOB mismatch — 35 year gap\",\n  \"point_1_source\": \"Passport on file\",\n  \"point_2_identifier\": \"Nationality mismatch\",\n  \"point_2_source\": \"KYC documentation\",\n  \"point_3_identifier\": \"Profession mismatch\",\n  \"point_3_source\": \"Employment letter\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/alerts/{{alert_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"alerts",
+						"{{alert_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "9. Update Alert — Missing Points (must fail)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"pm.test(\"Audit standard error message present\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.error).to.contain(\"Three-point standard not met\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"disposition\": \"FALSE_POSITIVE\",\n  \"reviewer_id\": \"ANA-TEST-001\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/alerts/{{alert_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"alerts",
+						"{{alert_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "10. Score Vekselberg",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"PEP Auto-alert triggered\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.alert).to.be.true;",
+							"    pm.expect(jsonData.alert_type).to.eql(\"Customer Auto-Alert\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"customer_id\": \"CUST-SANCTION-001\",\n  \"transaction_amount\": 1000000.00,\n  \"transaction_currency\": \"USD\",\n  \"transaction_type\": \"Wire Transfer (International)\",\n  \"sender_country\": \"Russia\",\n  \"receiver_country\": \"Switzerland\",\n  \"customer\": {\n    \"customer_type\": \"Politically Exposed Person (PEP)\",\n    \"ownership_structure\": \"Layered ownership — 3+ levels, offshore intermediaries\",\n    \"geo_tier\": \"Tier 1B\",\n    \"behaviour_indicator\": \"Multiple jurisdictions inconsistent with business profile\",\n    \"match_type\": \"Confirmed PEP — Tier 1\"\n  }\n}"
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/score",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"score"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "alert_id",
+			"value": "ALT-20260514-0001"
+		}
+	]
+}

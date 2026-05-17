@@ -1,0 +1,40 @@
+$kind: http-request
+url: http://localhost:5000/api/score
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "customer_id": "CUST-TEST-002",
+      "transaction_amount": 500.00,
+      "transaction_currency": "USD",
+      "transaction_type": "Wire Transfer (International)",
+      "sender_country": "United Kingdom",
+      "receiver_country": "Iran",
+      "customer": {
+        "customer_type": "Small/Medium Business (SMB)",
+        "ownership_structure": "Single corporate layer — owner identified and verified",
+        "geo_tier": "Tier 4",
+        "behaviour_indicator": "Fully consistent, stable, long-established pattern",
+        "match_type": "No PEP / Sanctions / Adverse Media match"
+      }
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status code is 200", function () {
+          pm.response.to.have.status(200);
+      });
+      pm.test("Auto-alert triggered", function () {
+          var jsonData = pm.response.json();
+          pm.expect(jsonData.alert).to.be.true;
+          pm.expect(jsonData.crs).to.be.null;
+      });
+      pm.test("Alert type is Geography", function () {
+          var jsonData = pm.response.json();
+          pm.expect(jsonData.alert_type).to.eql("Geography Auto-Alert");
+      });
+    language: text/javascript
+order: 3000

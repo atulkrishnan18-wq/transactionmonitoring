@@ -1,0 +1,15 @@
+$kind: http-request
+url: http://localhost:5000/api/health
+method: GET
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status code is 200", function () {
+          pm.response.to.have.status(200);
+      });
+      pm.test("Engine status is ok", function () {
+          var jsonData = pm.response.json();
+          pm.expect(jsonData.status).to.eql("ok");
+      });
+    language: text/javascript
+order: 1000

@@ -146,6 +146,7 @@ def score_transaction():
         ))
         
         # If alert generated, insert into alerts table
+        alert_id = None
         if alert_generated:
             alert_id = generate_id("ALT")
             cur.execute("""
@@ -174,6 +175,7 @@ def score_transaction():
         "crs": crs,
         "risk_band": risk_band,
         "alert": alert_generated,
+        "alert_id": alert_id,
         "alert_type": result.get("alert_type", "AML_RISK" if crs and crs >= 60 else None),
         "rules_fired": result.get("rules_fired", []),
         "timestamp": timestamp.isoformat()

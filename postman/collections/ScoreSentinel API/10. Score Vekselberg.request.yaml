@@ -1,0 +1,36 @@
+$kind: http-request
+url: http://localhost:5000/api/score
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "customer_id": "CUST-SANCTION-001",
+      "transaction_amount": 1000000.00,
+      "transaction_currency": "USD",
+      "transaction_type": "Wire Transfer (International)",
+      "sender_country": "Russia",
+      "receiver_country": "Switzerland",
+      "customer": {
+        "customer_type": "Politically Exposed Person (PEP)",
+        "ownership_structure": "Layered ownership — 3+ levels, offshore intermediaries",
+        "geo_tier": "Tier 1B",
+        "behaviour_indicator": "Multiple jurisdictions inconsistent with business profile",
+        "match_type": "Confirmed PEP — Tier 1"
+      }
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status code is 200", function () {
+          pm.response.to.have.status(200);
+      });
+      pm.test("PEP Auto-alert triggered", function () {
+          var jsonData = pm.response.json();
+          pm.expect(jsonData.alert).to.be.true;
+          pm.expect(jsonData.alert_type).to.eql("Customer Auto-Alert");
+      });
+    language: text/javascript
+order: 10000

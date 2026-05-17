@@ -130,3 +130,24 @@ def test_update_alert_three_point_fail():
     response = requests.put(f"{BASE_URL}/api/alerts/{alert_id}", json=payload)
     assert response.status_code == 400
     assert "Three-point standard not met" in response.json()["error"]
+
+def test_negative_audit_missing_source():
+    """TEST 7: Attempt false positive with identifiers but missing source (must fail)"""
+    alert_id = "ALT-20260514-0001"
+    payload = {
+        "disposition": "FALSE_POSITIVE",
+        "stage": "RESOLVED",
+        "reviewer_id": "ANA-TEST-001",
+        "reviewer_rationale": "Analyst reviewed the activity...",
+        "point_1_identifier": "TXN-20260516-1001",
+        "point_1_source": "Transaction monitoring system",
+        "point_2_identifier": "KYC-CUST-001",
+        "point_2_source": "KYC profile",
+        "point_3_identifier": "CDD-CASE-001"
+        # point_3_source is missing!
+    }
+    response = requests.put(f"{BASE_URL}/api/alerts/{alert_id}", json=payload)
+    assert response.status_code == 400
+    data = response.json()
+    assert "Three-point standard not met" in data["error"]
+    assert "point_3_source" in data["message"]
