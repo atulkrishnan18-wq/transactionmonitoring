@@ -44,7 +44,7 @@ CREATE TABLE transactions (
     -- Rules and alerts
     rules_fired         TEXT[],
     alert_generated     BOOLEAN DEFAULT FALSE,
-    alert_type          VARCHAR(30),
+    alert_type          VARCHAR(50),
     auto_alert_trigger  VARCHAR(100),
     
     -- Disposition
@@ -81,7 +81,7 @@ CREATE TABLE alerts (
     alert_id            VARCHAR(50) PRIMARY KEY,
     transaction_id      VARCHAR(50) REFERENCES transactions(transaction_id),
     customer_id         VARCHAR(50) REFERENCES customers(customer_id),
-    alert_type          VARCHAR(30) NOT NULL,
+    alert_type          VARCHAR(50) NOT NULL,
     
     -- Case management fields from HRDT operational experience
     stage               VARCHAR(30) DEFAULT 'PENDING_ASSESSMENT',

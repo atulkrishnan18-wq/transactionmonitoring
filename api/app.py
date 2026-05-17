@@ -59,13 +59,13 @@ def score_transaction():
     data = request.get_json()
     
     # Extract data for engine
-    customer_id = data.get("customer_id")
-    account_id = data.get("account_id", "DEFAULT_ACC") # Extract account_id
-    tx_amount = data.get("transaction_amount")
-    tx_currency = data.get("transaction_currency")
-    tx_type = data.get("transaction_type")
-    sender_country = data.get("sender_country")
-    receiver_country = data.get("receiver_country")
+    customer_id = data.get("customer_id", "UNKNOWN_CUST")
+    account_id = data.get("account_id", "DEFAULT_ACC")
+    tx_amount = data.get("transaction_amount", 0.0)
+    tx_currency = data.get("transaction_currency", "USD")
+    tx_type = data.get("transaction_type", "OTHER")
+    sender_country = data.get("sender_country", "GB")
+    receiver_country = data.get("receiver_country", "GB")
     
     # Engine requires "transaction" and "customer" keys
     engine_input = {
