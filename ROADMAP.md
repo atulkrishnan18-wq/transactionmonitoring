@@ -277,9 +277,9 @@
 | 27 | Flask API — POST /api/score endpoint | Test with 5 transactions — confirm scores returned |
 | 28 | GET /api/transactions + customer history | Test customer profile queries |
 | 29 | PUT /api/alerts — three-point enforcement | ✅ Done |
-| 30 | Full API test + back-testing methodology | Run all 20 scenarios via API — document results |
+| 30 | Full API test + back-testing methodology | ✅ Done (31/31 assertions passed) |
 
-**Deliverable:** Working API — can score transactions and manage alerts
+**Deliverable:** Working API — can score transactions and manage alerts (PHASE 2 COMPLETE)
 
 ---
 
