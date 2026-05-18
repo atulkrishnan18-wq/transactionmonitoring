@@ -735,16 +735,6 @@ ScoreSentinel Module 5 is designed for submission to the RBIH Regulatory Sandbox
 
 ---
 
-## 14. Future Roadmap — ScoreSentinel Network
-
-### Phase 1 — ScoreSentinel Core (Current)
-Single institution mule cluster detection. Rules-based. Open source. Zero cost.
-
-### Phase 2 — ScoreSentinel Network (Year 2)
-Cross-institution mule network detection. Requires data sharing consortium. RBI sandbox validation. Target — consortium of cooperative banks and fintechs.
-
-### Phase 3 — ScoreSentinel Intelligence (Year 3)
-Real-time mule network API. SaaS model. NPCI UPI data integration. Target — all RBI regulated entities via API subscription.
 
 ```
 THE PRODUCT SUITE VISION:
@@ -763,11 +753,11 @@ regulators increasingly demand.
 
 ---
 
-## 15. Version History
+## 14. Version History
 
 | Version | Change | Date | Author |
 |---|---|---|---|
-| 1.0 | Initial release — five detection dimensions, mule taxonomy, UPI-specific rules, five cluster scenarios, RBI regulatory alignment, RBIH sandbox positioning, SR 11-7 governance | 16 May 2026 | Atul Krishnan, CAMS |
+| 1.0 | Initial release — five detection dimensions, mule taxonomy, UPI-specific rules, five cluster scenarios, RBI regulatory alignment, RBIH sandbox positioning, SR 11-7 governance | 18 May 2026 | Atul Krishnan, CAMS |
 
 ---
 
