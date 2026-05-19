@@ -1,0 +1,940 @@
+{
+  "info": {
+    "name": "ScoreSentinel Full Suite (Modules 1-5)",
+    "description": "Master collection for validating all 5 modules across 25 scenarios.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Salary Earner",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"customer_id\": \"CUST-1\", \"transaction_amount\": 2000, \"transaction_currency\": \"USD\", \"transaction_type\": \"Wire Transfer (Domestic)\", \"sender_country\": \"GB\", \"receiver_country\": \"GB\", \"customer\": {\"customer_type\": \"Verified Salaried Individual\"}, \"history\": [], \"account_id\": \"ACC-DEFAULT\", \"type\": \"DEBIT\"}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/score",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "score"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Cayman Shell",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"customer_id\": \"CUST-2\", \"transaction_amount\": 50000, \"transaction_currency\": \"USD\", \"transaction_type\": \"Wire Transfer (International)\", \"sender_country\": \"United Kingdom\", \"receiver_country\": \"Cayman Islands\", \"customer\": {\"customer_type\": \"Shell Company\", \"ownership_structure\": \"Beneficial owner identified but not verified\", \"geo_tier\": \"Tier 3\"}, \"history\": [], \"account_id\": \"ACC-DEFAULT\", \"type\": \"DEBIT\"}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/score",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "score"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Smurfing",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"customer_id\": \"CUST-3\", \"transaction_amount\": 9500, \"transaction_currency\": \"USD\", \"transaction_type\": \"Cash Deposit\", \"sender_country\": \"GB\", \"receiver_country\": \"GB\", \"customer\": {\"customer_type\": \"Newly Onboarded Customer\"}, \"history\": [{\"amount\": 9500, \"date\": \"2026-05-01T00:00:00\"}, {\"amount\": 9500, \"date\": \"2026-05-02T00:00:00\"}, {\"amount\": 9500, \"date\": \"2026-05-03T00:00:00\"}], \"account_id\": \"ACC1\", \"type\": \"DEBIT\"}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/score",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "score"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Iran Sanctions",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"customer_id\": \"CUST-4\", \"transaction_amount\": 500, \"transaction_currency\": \"USD\", \"transaction_type\": \"Wire\", \"sender_country\": \"GB\", \"receiver_country\": \"Iran\", \"customer\": {\"customer_type\": \"SMB\"}, \"history\": [], \"account_id\": \"ACC-DEFAULT\", \"type\": \"DEBIT\"}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/score",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "score"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Crypto Freq",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"customer_id\": \"CUST-5\", \"transaction_amount\": 5000, \"transaction_currency\": \"USD\", \"transaction_type\": \"Cryptocurrency\", \"sender_country\": \"GB\", \"receiver_country\": \"GB\", \"customer\": {\"customer_type\": \"Crypto-Asset Business\"}, \"history\": [{\"amount\": 5000, \"date\": \"2026-05-01T00:00:00\"}, {\"amount\": 5000, \"date\": \"2026-05-01T01:00:00\"}, {\"amount\": 5000, \"date\": \"2026-05-01T02:00:00\"}, {\"amount\": 5000, \"date\": \"2026-05-01T03:00:00\"}], \"account_id\": \"ACC-DEFAULT\", \"type\": \"DEBIT\"}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/score",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "score"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. PEP Tier 2",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"customer_id\": \"CUST-6\", \"transaction_amount\": 75000, \"transaction_currency\": \"USD\", \"transaction_type\": \"Wire\", \"sender_country\": \"GB\", \"receiver_country\": \"Cyprus\", \"customer\": {\"customer_type\": \"HNWI\", \"match_type\": \"Confirmed PEP \\u2014 Tier 2\"}, \"history\": [], \"account_id\": \"ACC-DEFAULT\", \"type\": \"DEBIT\"}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/score",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "score"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. FATF Corridor",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"customer_id\": \"CUST-7\", \"transaction_amount\": 250000, \"transaction_currency\": \"USD\", \"transaction_type\": \"Correspondent\", \"sender_country\": \"Nigeria\", \"receiver_country\": \"South Africa\", \"customer\": {\"customer_type\": \"Established Business\"}, \"history\": [], \"account_id\": \"ACC-DEFAULT\", \"type\": \"DEBIT\"}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/score",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "score"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. Cash SMB",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"customer_id\": \"CUST-8\", \"transaction_amount\": 2000, \"transaction_currency\": \"USD\", \"transaction_type\": \"Cash Deposit\", \"sender_country\": \"GB\", \"receiver_country\": \"GB\", \"customer\": {\"customer_type\": \"Cash-Intensive Business\"}, \"history\": [{\"amount\": 2000, \"date\": \"2026-05-01T00:00:00\"}, {\"amount\": 2000, \"date\": \"2026-05-02T00:00:00\"}, {\"amount\": 2000, \"date\": \"2026-05-03T00:00:00\"}, {\"amount\": 2000, \"date\": \"2026-05-04T00:00:00\"}, {\"amount\": 2000, \"date\": \"2026-05-05T00:00:00\"}, {\"amount\": 2000, \"date\": \"2026-05-06T00:00:00\"}, {\"amount\": 2000, \"date\": \"2026-05-07T00:00:00\"}, {\"amount\": 2000, \"date\": \"2026-05-08T00:00:00\"}, {\"amount\": 2000, \"date\": \"2026-05-09T00:00:00\"}, {\"amount\": 2000, \"date\": \"2026-05-10T00:00:00\"}, {\"amount\": 2000, \"date\": \"2026-05-11T00:00:00\"}, {\"amount\": 2000, \"date\": \"2026-05-12T00:00:00\"}, {\"amount\": 2000, \"date\": \"2026-05-13T00:00:00\"}, {\"amount\": 2000, \"date\": \"2026-05-14T00:00:00\"}], \"account_id\": \"ACC1\", \"type\": \"DEBIT\"}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/score",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "score"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "9. SAR Generator",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"customer_id\": \"CUST-9\", \"transaction_amount\": 9900, \"transaction_currency\": \"USD\", \"transaction_type\": \"Wire\", \"sender_country\": \"Nigeria\", \"receiver_country\": \"British Virgin Islands\", \"customer\": {\"customer_type\": \"Shell Company\"}, \"history\": [{\"amount\": 9900, \"date\": \"2026-05-01T00:00:00\"}, {\"amount\": 9800, \"date\": \"2026-05-02T00:00:00\"}], \"account_id\": \"ACC-DEFAULT\", \"type\": \"DEBIT\"}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/score",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "score"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "10. Missing UBO",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"customer_id\": \"CUST-10\", \"transaction_amount\": 10000, \"transaction_currency\": \"USD\", \"transaction_type\": \"Wire\", \"sender_country\": \"GB\", \"receiver_country\": \"GB\", \"customer\": {\"customer_type\": \"HNWI\", \"ownership_structure\": \"Beneficial owner unidentified or unverifiable\"}, \"history\": [], \"account_id\": \"ACC-DEFAULT\", \"type\": \"DEBIT\"}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/score",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "score"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "11. Vekselberg",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"customer_id\": \"CUST-11\", \"transaction_amount\": 1000000, \"transaction_currency\": \"USD\", \"transaction_type\": \"Wire\", \"sender_country\": \"Russia\", \"receiver_country\": \"GB\", \"customer\": {\"customer_type\": \"Shell Company\", \"match_type\": \"Confirmed PEP \\u2014 Tier 1\"}, \"history\": [], \"account_id\": \"ACC-DEFAULT\", \"type\": \"DEBIT\"}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/score",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "score"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "12. Wirecard ML",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"customer_id\": \"CUST-12\", \"transaction_amount\": 45, \"transaction_currency\": \"USD\", \"transaction_type\": \"Online Payment\", \"sender_country\": \"GB\", \"receiver_country\": \"GB\", \"customer\": {\"customer_type\": \"Newly Onboarded\"}, \"history\": [{\"amount\": 45, \"date\": \"2026-05-01T00:00:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:59:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:58:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:57:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:56:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:55:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:54:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:53:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:52:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:51:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:50:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:49:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:48:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:47:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:46:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:45:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:44:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:43:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:42:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:41:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:40:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:39:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:38:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:37:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:36:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:35:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:34:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:33:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:32:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:31:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:30:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:29:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:28:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:27:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:26:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:25:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:24:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:23:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:22:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:21:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:20:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:19:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:18:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:17:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:16:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:15:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:14:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:13:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:12:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:11:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:10:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:09:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:08:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:07:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:06:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:05:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:04:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:03:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:02:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:01:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T23:00:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:59:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:58:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:57:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:56:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:55:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:54:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:53:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:52:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:51:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:50:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:49:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:48:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:47:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:46:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:45:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:44:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:43:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:42:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:41:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:40:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:39:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:38:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:37:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:36:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:35:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:34:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:33:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:32:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:31:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:30:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:29:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:28:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:27:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:26:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:25:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:24:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:23:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:22:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:21:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:20:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:19:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:18:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:17:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:16:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:15:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:14:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:13:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:12:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:11:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:10:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:09:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:08:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:07:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:06:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:05:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:04:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:03:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:02:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:01:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T22:00:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:59:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:58:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:57:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:56:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:55:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:54:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:53:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:52:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:51:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:50:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:49:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:48:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:47:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:46:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:45:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:44:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:43:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:42:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:41:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:40:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:39:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:38:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:37:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:36:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:35:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:34:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:33:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:32:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:31:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:30:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:29:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:28:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:27:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:26:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:25:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:24:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:23:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:22:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:21:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:20:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:19:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:18:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:17:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:16:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:15:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:14:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:13:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:12:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:11:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:10:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:09:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:08:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:07:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:06:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:05:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:04:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:03:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:02:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:01:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T21:00:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T20:59:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T20:58:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T20:57:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T20:56:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T20:55:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T20:54:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T20:53:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T20:52:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T20:51:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T20:50:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T20:49:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T20:48:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T20:47:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T20:46:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T20:45:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T20:44:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T20:43:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T20:42:00\"}, {\"amount\": 45, \"date\": \"2026-04-30T20:41:00\"}], \"account_id\": \"ACC-DEFAULT\", \"type\": \"DEBIT\"}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/score",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "score"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "13. Pakistan FP",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"customer_id\": \"CUST-13\", \"transaction_amount\": 180000, \"transaction_currency\": \"USD\", \"transaction_type\": \"Wire\", \"sender_country\": \"Pakistan\", \"receiver_country\": \"GB\", \"customer\": {\"customer_type\": \"Non-Resident\", \"geo_tier\": \"Tier 2B\"}, \"history\": [], \"account_id\": \"ACC-DEFAULT\", \"type\": \"DEBIT\"}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/score",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "score"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "14. UK Minister",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"customer_id\": \"CUST-14\", \"transaction_amount\": 5000, \"transaction_currency\": \"USD\", \"transaction_type\": \"Wire\", \"sender_country\": \"GB\", \"receiver_country\": \"GB\", \"customer\": {\"customer_type\": \"PEP\", \"match_type\": \"Confirmed PEP \\u2014 Tier 1\"}, \"history\": [], \"account_id\": \"ACC-DEFAULT\", \"type\": \"DEBIT\"}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/score",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "score"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "15. Former PEP",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"customer_id\": \"CUST-15\", \"transaction_amount\": 75000, \"transaction_currency\": \"USD\", \"transaction_type\": \"Wire\", \"sender_country\": \"GB\", \"receiver_country\": \"UAE\", \"customer\": {\"customer_type\": \"HNWI\", \"match_type\": \"Confirmed PEP \\u2014 Tier 2\"}, \"history\": [], \"account_id\": \"ACC-DEFAULT\", \"type\": \"DEBIT\"}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/score",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "score"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "16. BVI Shell",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"customer_id\": \"CUST-16\", \"transaction_amount\": 500000, \"transaction_currency\": \"USD\", \"transaction_type\": \"Wire\", \"sender_country\": \"British Virgin Islands\", \"receiver_country\": \"Cyprus\", \"customer\": {\"customer_type\": \"Shell Company\", \"geo_tier\": \"Tier 3\"}, \"history\": [], \"account_id\": \"ACC-DEFAULT\", \"type\": \"DEBIT\"}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/score",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "score"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "17. Fan-In Mule",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"customer_id\": \"CUST-17\", \"transaction_amount\": 1000, \"transaction_currency\": \"USD\", \"transaction_type\": \"P2P\", \"sender_country\": \"GB\", \"receiver_country\": \"GB\", \"customer\": {\"customer_type\": \"Newly Onboarded\"}, \"history\": [{\"amount\": 1000, \"date\": \"2026-05-01T00:00:00\", \"sender_id\": \"S_0\"}, {\"amount\": 1000, \"date\": \"2026-04-30T23:00:00\", \"sender_id\": \"S_1\"}, {\"amount\": 1000, \"date\": \"2026-04-30T22:00:00\", \"sender_id\": \"S_2\"}, {\"amount\": 1000, \"date\": \"2026-04-30T21:00:00\", \"sender_id\": \"S_3\"}, {\"amount\": 1000, \"date\": \"2026-04-30T20:00:00\", \"sender_id\": \"S_4\"}, {\"amount\": 1000, \"date\": \"2026-04-30T19:00:00\", \"sender_id\": \"S_5\"}, {\"amount\": 1000, \"date\": \"2026-04-30T18:00:00\", \"sender_id\": \"S_6\"}], \"account_id\": \"ACC-DEFAULT\", \"type\": \"DEBIT\"}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/score",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "score"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "18. Dormant Nigeria",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"customer_id\": \"CUST-18\", \"transaction_amount\": 800, \"transaction_currency\": \"USD\", \"transaction_type\": \"Cash\", \"sender_country\": \"GB\", \"receiver_country\": \"Nigeria\", \"customer\": {\"customer_type\": \"Salaried\"}, \"history\": [{\"amount\": 100, \"date\": \"2026-01-21T00:00:00\"}, {\"amount\": 800, \"date\": \"2026-05-01T00:00:00\"}, {\"amount\": 800, \"date\": \"2026-05-01T01:00:00\"}, {\"amount\": 800, \"date\": \"2026-05-01T02:00:00\"}, {\"amount\": 800, \"date\": \"2026-05-01T03:00:00\"}, {\"amount\": 800, \"date\": \"2026-05-01T04:00:00\"}, {\"amount\": 800, \"date\": \"2026-05-01T05:00:00\"}, {\"amount\": 800, \"date\": \"2026-05-01T06:00:00\"}, {\"amount\": 800, \"date\": \"2026-05-01T07:00:00\"}, {\"amount\": 800, \"date\": \"2026-05-01T08:00:00\"}, {\"amount\": 800, \"date\": \"2026-05-01T09:00:00\"}, {\"amount\": 800, \"date\": \"2026-05-01T10:00:00\"}], \"account_id\": \"ACC-DEFAULT\", \"type\": \"DEBIT\"}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/score",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "score"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "19. TBML LC",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"customer_id\": \"CUST-19\", \"transaction_amount\": 320000, \"transaction_currency\": \"USD\", \"transaction_type\": \"Trade Finance\", \"sender_country\": \"GB\", \"receiver_country\": \"Malaysia\", \"customer\": {\"customer_type\": \"SMB\", \"behaviour_indicator\": \"Frequent large cash\"}, \"history\": [], \"account_id\": \"ACC-DEFAULT\", \"type\": \"DEBIT\"}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/score",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "score"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "20. Insurance",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"customer_id\": \"CUST-20\", \"transaction_amount\": 50000, \"transaction_currency\": \"USD\", \"transaction_type\": \"Insurance\", \"sender_country\": \"GB\", \"receiver_country\": \"GB\", \"customer\": {\"customer_type\": \"HNWI\"}, \"history\": [], \"account_id\": \"ACC-DEFAULT\", \"type\": \"DEBIT\"}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/score",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "score"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "21. MC-1: Concentrator",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"customer_id\": \"CUST-21\", \"transaction_amount\": 95000, \"transaction_currency\": \"USD\", \"transaction_type\": \"Wire\", \"sender_country\": \"GB\", \"receiver_country\": \"GB\", \"customer\": {\"customer_type\": \"Individual\", \"device_nexus_count\": 5}, \"history\": [{\"sender_id\": \"S_0\", \"amount\": 9500, \"date\": \"2026-05-01T00:00:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"S_1\", \"amount\": 9500, \"date\": \"2026-04-30T23:59:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"S_2\", \"amount\": 9500, \"date\": \"2026-04-30T23:58:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"S_3\", \"amount\": 9500, \"date\": \"2026-04-30T23:57:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"S_4\", \"amount\": 9500, \"date\": \"2026-04-30T23:56:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"S_5\", \"amount\": 9500, \"date\": \"2026-04-30T23:55:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"S_6\", \"amount\": 9500, \"date\": \"2026-04-30T23:54:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"S_7\", \"amount\": 9500, \"date\": \"2026-04-30T23:53:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"S_8\", \"amount\": 9500, \"date\": \"2026-04-30T23:52:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"S_9\", \"amount\": 9500, \"date\": \"2026-04-30T23:51:00\", \"type\": \"CREDIT\"}], \"account_id\": \"CONC_1\", \"type\": \"DEBIT\"}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/score",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "score"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "22. MC-2: Salary Mule",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"customer_id\": \"CUST-22\", \"transaction_amount\": 135000, \"transaction_currency\": \"USD\", \"transaction_type\": \"Wire\", \"sender_country\": \"GB\", \"receiver_country\": \"GB\", \"customer\": {\"customer_type\": \"Individual\"}, \"history\": [{\"sender_id\": \"M_0\", \"amount\": 15000, \"date\": \"2026-05-01T00:00:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"M_1\", \"amount\": 15000, \"date\": \"2026-04-30T23:50:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"M_2\", \"amount\": 15000, \"date\": \"2026-04-30T23:40:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"M_3\", \"amount\": 15000, \"date\": \"2026-04-30T23:30:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"M_4\", \"amount\": 15000, \"date\": \"2026-04-30T23:20:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"M_5\", \"amount\": 15000, \"date\": \"2026-04-30T23:10:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"M_6\", \"amount\": 15000, \"date\": \"2026-04-30T23:00:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"M_7\", \"amount\": 15000, \"date\": \"2026-04-30T22:50:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"M_8\", \"amount\": 15000, \"date\": \"2026-04-30T22:40:00\", \"type\": \"CREDIT\"}], \"account_id\": \"MULE_1\", \"type\": \"DEBIT\"}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/score",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "score"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "23. MC-3: Dormant Activation",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"customer_id\": \"CUST-23\", \"transaction_amount\": 60000, \"transaction_currency\": \"USD\", \"transaction_type\": \"Wire\", \"sender_country\": \"GB\", \"receiver_country\": \"GB\", \"customer\": {\"customer_type\": \"Individual\", \"behaviour_indicator\": \"Dormant\"}, \"history\": [{\"sender_id\": \"M_0\", \"amount\": 10000, \"date\": \"2026-05-01T00:00:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"M_1\", \"amount\": 10000, \"date\": \"2026-04-30T23:55:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"M_2\", \"amount\": 10000, \"date\": \"2026-04-30T23:50:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"M_3\", \"amount\": 10000, \"date\": \"2026-04-30T23:45:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"M_4\", \"amount\": 10000, \"date\": \"2026-04-30T23:40:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"M_5\", \"amount\": 10000, \"date\": \"2026-04-30T23:35:00\", \"type\": \"CREDIT\"}], \"account_id\": \"DORM_1\", \"type\": \"DEBIT\"}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/score",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "score"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "24. MC-4: UPI Smurfing",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"customer_id\": \"CUST-24\", \"transaction_amount\": 74000, \"transaction_currency\": \"USD\", \"transaction_type\": \"Wire\", \"sender_country\": \"GB\", \"receiver_country\": \"GB\", \"customer\": {\"customer_type\": \"Individual\", \"device_nexus_count\": 4}, \"history\": [{\"sender_id\": \"V_0\", \"amount\": 4999, \"date\": \"2026-05-01T00:00:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"V_1\", \"amount\": 4999, \"date\": \"2026-04-30T23:59:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"V_2\", \"amount\": 4999, \"date\": \"2026-04-30T23:58:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"V_3\", \"amount\": 4999, \"date\": \"2026-04-30T23:57:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"V_4\", \"amount\": 4999, \"date\": \"2026-04-30T23:56:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"V_5\", \"amount\": 4999, \"date\": \"2026-04-30T23:55:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"V_6\", \"amount\": 4999, \"date\": \"2026-04-30T23:54:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"V_7\", \"amount\": 4999, \"date\": \"2026-04-30T23:53:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"V_8\", \"amount\": 4999, \"date\": \"2026-04-30T23:52:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"V_9\", \"amount\": 4999, \"date\": \"2026-04-30T23:51:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"V_10\", \"amount\": 4999, \"date\": \"2026-04-30T23:50:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"V_11\", \"amount\": 4999, \"date\": \"2026-04-30T23:49:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"V_12\", \"amount\": 4999, \"date\": \"2026-04-30T23:48:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"V_13\", \"amount\": 4999, \"date\": \"2026-04-30T23:47:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"V_14\", \"amount\": 4999, \"date\": \"2026-04-30T23:46:00\", \"type\": \"CREDIT\"}], \"account_id\": \"UPI_1\", \"type\": \"DEBIT\"}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/score",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "score"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "25. MC-5: Chit Fund",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"customer_id\": \"CUST-25\", \"transaction_amount\": 5000, \"transaction_currency\": \"USD\", \"transaction_type\": \"Wire\", \"sender_country\": \"GB\", \"receiver_country\": \"GB\", \"customer\": {\"customer_type\": \"Business\"}, \"history\": [{\"sender_id\": \"MEM_0\", \"amount\": 5000, \"date\": \"2026-04-01T00:00:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"MEM_1\", \"amount\": 5000, \"date\": \"2026-04-01T00:00:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"MEM_2\", \"amount\": 5000, \"date\": \"2026-04-01T00:00:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"MEM_3\", \"amount\": 5000, \"date\": \"2026-04-01T00:00:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"MEM_4\", \"amount\": 5000, \"date\": \"2026-04-01T00:00:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"MEM_5\", \"amount\": 5000, \"date\": \"2026-04-01T00:00:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"MEM_6\", \"amount\": 5000, \"date\": \"2026-04-01T00:00:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"MEM_7\", \"amount\": 5000, \"date\": \"2026-04-01T00:00:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"MEM_8\", \"amount\": 5000, \"date\": \"2026-04-01T00:00:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"MEM_9\", \"amount\": 5000, \"date\": \"2026-04-01T00:00:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"MEM_10\", \"amount\": 5000, \"date\": \"2026-04-01T00:00:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"MEM_11\", \"amount\": 5000, \"date\": \"2026-04-01T00:00:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"MEM_12\", \"amount\": 5000, \"date\": \"2026-04-01T00:00:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"MEM_13\", \"amount\": 5000, \"date\": \"2026-04-01T00:00:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"MEM_14\", \"amount\": 5000, \"date\": \"2026-04-01T00:00:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"MEM_15\", \"amount\": 5000, \"date\": \"2026-04-01T00:00:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"MEM_16\", \"amount\": 5000, \"date\": \"2026-04-01T00:00:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"MEM_17\", \"amount\": 5000, \"date\": \"2026-04-01T00:00:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"MEM_18\", \"amount\": 5000, \"date\": \"2026-04-01T00:00:00\", \"type\": \"CREDIT\"}, {\"sender_id\": \"MEM_19\", \"amount\": 5000, \"date\": \"2026-04-01T00:00:00\", \"type\": \"CREDIT\"}], \"account_id\": \"CHIT_1\", \"type\": \"CREDIT\"}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/score",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "score"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000"
+    }
+  ]
+}

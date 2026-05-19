@@ -31,76 +31,31 @@ class ScoreSentinelEngine:
     def score_transaction(self, transaction_data):
         """
         Coordinates the scoring across all modules and produces a 
-        Composite Risk Score (CRS) and Mule Probability Score (MPS).
+        Composite Risk Score (CRS) and Mule Cluster Score (MCS).
         """
-        # Step 1: Score individual modules and check for Auto-Alerts
-        
-        # Module 1: Customer Risk
+        # Step 1: customer_module
         customer_result = self.customer_module.get_ccrs(transaction_data.get("customer", {}))
-        if customer_result["is_auto_alert"]:
-            return {
-                "crs": None,
-                "overall_crs": None,
-                "alert": True,
-                "alert_type": "Customer Auto-Alert",
-                "trigger": "PEP/Sanctions or High-Risk Jurisdiction match",
-                "rules_fired": ["CUST-AUTO-001"]
-            }
         customer_normalised = (customer_result["ccrs"] / 175) * 100
 
-        # Module 2: Structuring
+        # Step 2: structuring_module
         structuring_result = self.structuring_module.get_structuring_score(
             transaction_data.get("transaction", {}), 
             transaction_data.get("history", [])
         )
-        if structuring_result["is_independent_trigger"]:
-            return {
-                "crs": None,
-                "overall_crs": None,
-                "alert": True,
-                "alert_type": "Structuring Independent Trigger",
-                "trigger": "Velocity or Structuring threshold breached",
-                "rules_fired": structuring_result["triggered_rules"]
-            }
         structuring_normalised = structuring_result["normalised_score"] * 100
 
-        # Module 3: Geography
+        # Step 3: geo_module
         geo_result = self.geo_module.get_geo_score(
             transaction_data.get("transaction", {}).get("sender_country"),
             transaction_data.get("transaction", {}).get("receiver_country")
         )
-        if geo_result["is_auto_alert"]:
-            return {
-                "crs": None,
-                "overall_crs": None,
-                "alert": True,
-                "alert_type": "Geography Auto-Alert",
-                "trigger": "Sanctioned or Prohibited Jurisdiction",
-                "rules_fired": ["GEO-AUTO-001"]
-            }
         geo_normalised = geo_result["normalised_score"] * 100
 
-        # Module 4: Transaction Type
+        # Step 4: transaction_module
         txtype_result = self.transaction_module.get_module_result(transaction_data.get("transaction", {}))
-        if txtype_result["is_auto_alert"]:
-            return {
-                "crs": None,
-                "overall_crs": None,
-                "alert": True,
-                "alert_type": "Transaction Type Auto-Alert",
-                "trigger": txtype_result.get("alert_reason"),
-                "rules_fired": ["TX-AUTO-001"]
-            }
         txtype_normalised = txtype_result["normalised_score"] * 100
         
-        # Module 5: MuleCatcher™ Intelligence Layer
-        mule_result = self.mule_module.get_mps(
-            transaction_data.get("transaction", {}),
-            transaction_data.get("history", []),
-            transaction_data.get("customer", {})
-        )
-
-        # Step 2: Calculate Composite Risk Score (CRS)
+        # Step 5: Calculate CRS
         crs = (
             (customer_normalised * self.weights["customer"]) +
             (structuring_normalised * self.weights["structuring"]) +
@@ -108,19 +63,59 @@ class ScoreSentinelEngine:
             (txtype_normalised * self.weights["transaction"])
         )
 
-        # Step 3: Determine final alert status
-        is_alert = crs >= self.alert_threshold or mule_result["is_mule_alert"]
+        # Step 6: mule_module.analyse_cluster()
+        # This MUST run even if there is an auto-alert
+        mule_result = self.mule_module.analyse_cluster(
+            transaction_data.get("transaction", {}),
+            transaction_data.get("history", []),
+            transaction_data.get("customer", {})
+        )
 
-        # Aggregate rules fired for audit trail
-        all_rules = []
-        all_rules.extend(structuring_result.get("triggered_rules", []))
-        all_rules.extend(mule_result.get("triggered_rules", []))
+        # Check for Auto-Alerts AFTER mule module run
+        # Note: If multiple auto-alerts fire, we should capture them.
+        auto_alert = False
+        alert_type = None
+        trigger = None
+        rules_fired = []
+        
+        if customer_result["is_auto_alert"]:
+            auto_alert = True
+            alert_type = "Customer Auto-Alert"
+            trigger = "PEP/Sanctions or High-Risk Jurisdiction match"
+            rules_fired.append("CUST-AUTO-001")
+            
+        if structuring_result["is_independent_trigger"]:
+            auto_alert = True
+            alert_type = "Structuring Independent Trigger"
+            trigger = "Velocity or Structuring threshold breached"
+            rules_fired.extend(structuring_result["triggered_rules"])
+            
+        if geo_result["is_auto_alert"]:
+            auto_alert = True
+            alert_type = "Geography Auto-Alert"
+            trigger = "Sanctioned or Prohibited Jurisdiction"
+            rules_fired.append("GEO-AUTO-001")
+            
+        if txtype_result["is_auto_alert"]:
+            auto_alert = True
+            alert_type = "Transaction Type Auto-Alert"
+            trigger = txtype_result.get("alert_reason")
+            rules_fired.append("TX-AUTO-001")
+
+        # Step 7: Return both CRS and MCS
+        is_alert = crs >= self.alert_threshold or mule_result["is_mule_alert"] or auto_alert
+
+        # Aggregate rules fired
+        all_rules = rules_fired.copy()
+        all_rules.extend(mule_result.get("rules_fired", []))
         
         final_result = {
-            "crs": round(crs, 2),
+            "crs": round(crs, 2) if not auto_alert else None,
             "overall_crs": round(crs, 2),
-            "mps": mule_result["mps"],
-            "mule_level": mule_result["mule_level"],
+            "mcs": mule_result["mcs"],
+            "mcs_risk_band": mule_result["mcs_risk_band"],
+            "cluster_type": mule_result["cluster_type"],
+            "mule_alert": mule_result["is_mule_alert"],
             "is_alert": is_alert,
             "alert": is_alert,
             "rules_fired": all_rules,
@@ -144,18 +139,21 @@ class ScoreSentinelEngine:
                     "raw": txtype_result["raw_score"],
                     "normalised": round(txtype_normalised, 2),
                     "is_auto_alert": txtype_result["is_auto_alert"]
-                }
+                },
+                "mule": mule_result["dimension_scores"]
             }
         }
         
-        if mule_result["is_mule_alert"]:
+        if auto_alert:
+            final_result["alert_type"] = alert_type
+            final_result["trigger"] = trigger
+        elif mule_result["is_mule_alert"]:
             final_result["alert_type"] = "Mule Cluster Alert"
-            final_result["trigger"] = f"Mule Probability: {mule_result['mps']}%"
+            final_result["trigger"] = f"Mule Cluster Score: {mule_result['mcs']}"
             
         return final_result
 
 if __name__ == "__main__":
-    # Test with Example 1 from CUSTOMER_RULES.md
     engine = ScoreSentinelEngine()
     test_data = {
         "customer": {
@@ -164,7 +162,9 @@ if __name__ == "__main__":
             "geo_tier": "Tier 4",
             "behaviour_indicator": "Fully consistent, stable, long-established pattern",
             "match_type": "No PEP / Sanctions / Adverse Media match"
-        }
+        },
+        "transaction": {"amount": 1000},
+        "history": []
     }
     result = engine.score_transaction(test_data)
-    print(f"Test Example 1 Result: {result}")
+    print(f"Test Result: {result}")

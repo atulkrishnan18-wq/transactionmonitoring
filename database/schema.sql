@@ -140,3 +140,28 @@ CREATE INDEX idx_alerts_status
     ON alerts(status);
 CREATE INDEX idx_alerts_type 
     ON alerts(alert_type);
+
+-- TABLE 4: mule_clusters
+-- Stores detected mule account networks and coordination patterns.
+CREATE TABLE mule_clusters (
+    cluster_id          VARCHAR(50) PRIMARY KEY,
+    detected_at         TIMESTAMP DEFAULT NOW(),
+    cluster_type        VARCHAR(30),
+    mcs                 DECIMAL(5,2),
+    risk_band           VARCHAR(20),
+    account_ids         TEXT[],
+    concentrator_id     VARCHAR(50),
+    dimension_scores    JSONB,
+    rules_fired         TEXT[],
+    alert_generated     BOOLEAN DEFAULT TRUE,
+    status              VARCHAR(20) DEFAULT 'PENDING',
+    reviewer_id         VARCHAR(50),
+    review_timestamp    TIMESTAMP,
+    reviewer_rationale  TEXT,
+    str_filed           BOOLEAN DEFAULT FALSE,
+    str_reference       VARCHAR(50),
+    created_at          TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX idx_mule_clusters_mcs ON mule_clusters(mcs);
+CREATE INDEX idx_mule_clusters_status ON mule_clusters(status);

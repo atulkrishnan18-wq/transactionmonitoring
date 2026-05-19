@@ -28,25 +28,32 @@ ScoreSentinel has been upgraded to include a specialized fifth module for **Mule
 | 1-20 | Phase 1: AML Logic Design | rules/, scenarios/ | ✅ Done | v1.2 |
 | 21-25 | Phase 2A: Python Scoring Engine | engine/ | ✅ Done | v1.0 |
 | 26-30 | Phase 2B: Database & API | database/, api/ | ✅ Done | v1.0 |
-| **30+** | **MuleCatcher™ Intelligence Layer** | **engine/mule_module.py** | ✅ Done | **v1.0** |
-| 31-35 | Phase 3: React Dashboard | dashboard/ | 📋 Upcoming | — |
+| 30 | MuleCatcher™ Intelligence Layer | engine/mule_module.py | ✅ Done | v1.0 |
+| 31 | Full Suite Validation (25 Scenarios) | postman/ | ✅ Done | v1.0 |
+| 32-40 | Phase 3: React Dashboard | dashboard/ | 📋 Upcoming | — |
 
 ---
 
-## Phase 2: Build (Days 21–30+) — COMPLETE ✅
+## Phase 2: Build & Validate (Days 21–31) — COMPLETE ✅
 
-### Day 30+ ✅ — MuleCatcher™ Cluster Intelligence
+### Day 30 ✅ — MuleCatcher™ Cluster Intelligence
 **Deliverable:** `rules/MULE_CLUSTER_RULES.md`, `engine/mule_module.py`
 **What was built:** 
 - **Module 5:** Coordinated Network Detection.
 - **Rules:** Rapid Depletion (MUL-001), Fan-In Nexus (MUL-002), Dormant-to-Burst (MUL-003), Profile Contrast (MUL-005).
-- **Dual-Scoring:** API now returns **CRS** (General AML) and **MPS** (Mule Probability Score).
-- **Validation:** 5 new scenarios specifically for Indian RBI mule typologies.
+- **Dual-Scoring:** API now returns **CRS** (General AML) and **MCS** (Mule Cluster Score).
+
+### Day 31 ✅ — Full Suite Postman Validation
+**Deliverable:** `postman/ScoreSentinel_Full_Suite.postman_collection.json`
+**Result:** 
+- **100% Pass Rate:** All 25 scenarios (20 AML + 5 Mule Cluster) successfully scored and stored in PostgreSQL.
+- **End-to-End Integrity:** Confirmed API connectivity, database persistence, and scoring logic accuracy.
+- **Environment Ready:** Standardized Postman environment (`base_url`) deployed.
 
 ---
 
-## Phase 3: Visualise (Days 31–45)
-**Goal:** Build the React + Vite dashboard to manage alerts, view customer risk, and **hunt mule clusters**.
+## Phase 3: Visualise & Govern (Days 32–45)
+**Goal:** Build the React + Vite dashboard to manage alerts and document Model Risk Governance (SR 11-7).
 
 | Day | What Gets Built | Your Validation Task |
 |---|---|---|

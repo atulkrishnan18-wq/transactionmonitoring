@@ -99,8 +99,10 @@ def score_transaction():
     transaction_id = generate_id("TXN")
     timestamp = datetime.datetime.now()
     crs = result.get("crs")
+    mcs = result.get("mcs")
     risk_band = get_risk_band(crs)
     alert_generated = result.get("alert", False)
+    mule_alert = result.get("mule_alert", False)
     
     # Database Persistence
     conn = get_db_connection()
@@ -156,6 +158,27 @@ def score_transaction():
             result.get("trigger")
         ))
         
+        # Step 3: Insert into mule_clusters if MCS >= 60
+        cluster_id = None
+        if mule_alert:
+            cluster_id = generate_id("CLT")
+            import json
+            cur.execute("""
+                INSERT INTO mule_clusters (
+                    cluster_id, cluster_type, mcs, risk_band, 
+                    account_ids, concentrator_id, dimension_scores, rules_fired
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            """, (
+                cluster_id,
+                result.get("cluster_type"),
+                mcs,
+                result.get("mcs_risk_band"),
+                [account_id], # Simplified: current account is the focus
+                account_id,   # Assuming current account is concentrator for now
+                json.dumps(result.get("module_scores", {}).get("mule", {})),
+                result.get("rules_fired", [])
+            ))
+
         # If alert generated, insert into alerts table
         alert_id = None
         if alert_generated:
@@ -166,7 +189,7 @@ def score_transaction():
                 ) VALUES (%s, %s, %s, %s, %s, %s)
             """, (
                 alert_id, transaction_id, customer_id, 
-                result.get("alert_type", "AML_RISK"),
+                result.get("alert_type", "Mule Cluster Alert" if mule_alert else "AML_RISK"),
                 "PENDING_ASSESSMENT", "PENDING"
             ))
             
@@ -184,10 +207,14 @@ def score_transaction():
     response = {
         "transaction_id": transaction_id,
         "crs": crs,
+        "mcs": mcs,
         "risk_band": risk_band,
+        "mcs_risk_band": result.get("mcs_risk_band"),
         "alert": alert_generated,
+        "mule_alert": mule_alert,
         "alert_id": alert_id,
-        "alert_type": result.get("alert_type", "AML_RISK" if crs and crs >= 60 else None),
+        "cluster_id": cluster_id,
+        "alert_type": result.get("alert_type"),
         "rules_fired": result.get("rules_fired", []),
         "timestamp": timestamp.isoformat()
     }
@@ -196,6 +223,41 @@ def score_transaction():
         response["trigger"] = result["trigger"]
         
     return jsonify(response)
+
+@app.route('/api/clusters', methods=['GET'])
+def get_clusters():
+    """
+    GET /api/clusters
+    Returns detected mule clusters.
+    """
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    try:
+        cur.execute("SELECT * FROM mule_clusters ORDER BY detected_at DESC")
+        rows = cur.fetchall()
+        
+        clusters = []
+        for row in rows:
+            clusters.append({
+                "cluster_id": row["cluster_id"],
+                "detected_at": row["detected_at"].isoformat(),
+                "cluster_type": row["cluster_type"],
+                "mcs": float(row["mcs"]),
+                "risk_band": row["risk_band"],
+                "account_ids": row["account_ids"],
+                "status": row["status"]
+            })
+            
+        return jsonify({
+            "clusters": clusters,
+            "total": len(clusters)
+        })
+    except Exception as e:
+        return jsonify({"error": "Database error", "message": str(e)}), 500
+    finally:
+        cur.close()
+        conn.close()
 
 @app.route('/api/transactions', methods=['GET'])
 def get_transactions():
