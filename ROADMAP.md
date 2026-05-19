@@ -2,7 +2,7 @@
 
 **ScoreSentinel AML Transaction Risk Scoring Engine**
 **Overlay:** Project MuleCatcher™ (Mule Cluster Intelligence)
-**Version:** 3.0 | **Author:** Atul Krishnan, CAMS | **Last Updated:** 17 May 2026
+**Version:** 3.1 | **Author:** Atul Krishnan, CAMS | **Last Updated:** 19 May 2026
 
 ---
 
@@ -30,7 +30,10 @@ ScoreSentinel has been upgraded to include a specialized fifth module for **Mule
 | 26-30 | Phase 2B: Database & API | database/, api/ | ✅ Done | v1.0 |
 | 30 | MuleCatcher™ Intelligence Layer | engine/mule_module.py | ✅ Done | v1.0 |
 | 31 | Full Suite Validation (25 Scenarios) | postman/ | ✅ Done | v1.0 |
-| 32-40 | Phase 3: React Dashboard | dashboard/ | 📋 Upcoming | — |
+| 32-35 | Phase 3: React Dashboard | dashboard/ | 🔄 In Progress | v1.0 |
+| 36-40 | Phase 4: Integration & Testing | — | 📋 Upcoming | — |
+| 41-45 | Phase 5: Model Governance (SR 11-7) | governance/ | 📋 Upcoming | — |
+| 46-60 | Phase 6: Deployment & Portfolio | docs/ | 📋 Planned | — |
 
 ---
 
@@ -48,22 +51,53 @@ ScoreSentinel has been upgraded to include a specialized fifth module for **Mule
 **Result:** 
 - **100% Pass Rate:** All 25 scenarios (20 AML + 5 Mule Cluster) successfully scored and stored in PostgreSQL.
 - **End-to-End Integrity:** Confirmed API connectivity, database persistence, and scoring logic accuracy.
-- **Environment Ready:** Standardized Postman environment (`base_url`) deployed.
 
 ---
 
-## Phase 3: Visualise & Govern (Days 32–45)
-**Goal:** Build the React + Vite dashboard to manage alerts and document Model Risk Governance (SR 11-7).
+## Phase 3: Visualise (Days 32–35) — IN PROGRESS 🔄
+**Goal:** Build the React + Vite dashboard to manage alerts and investigate mule clusters.
 
-| Day | What Gets Built | Your Validation Task |
+| Day | What Gets Built | Status |
 |---|---|---|
-| 31 | Alert Queue — include Mule Level indicator | Confirm MPS scores visible in queue |
-| 32 | Case Detail View — score breakdown, **Mule Signals** tab | Confirm MUL rules listed in rationale |
-| 33 | Charts — alert volume, **Mule Cluster Stats**, FP rate | Confirm metrics match COMPOSITE_LOGIC.md targets |
-| 34 | Customer Profile — transaction history, **Device Nexus** | Confirm all fields present |
-| 35 | Associated Jurisdictions + stage progression UI | Full dashboard walkthrough |
-
-**Deliverable:** Working dashboard — all four screens functional with MuleCatcher™ integration
+| 31 | **Alert Queue** — Stage workflow + MCS indicators | ✅ Done |
+| 32 | **Case Detail** — Score breakdown + Mule Signals tab | ✅ Done |
+| 33 | **Charts** — Alert volume, Risk by Country, FP Rate | ⬜ Next |
+| 34 | **Customer Profile** — History + Device Nexus | ⬜ Pending |
+| 35 | **Mule Cluster View** — Network mapping | ⬜ Pending |
 
 ---
-*ScoreSentinel | ROADMAP.md | Version 3.0 | Authored by Atul Krishnan, CAMS | 17 May 2026*
+
+## Phase 4: Integration & Testing (Days 36–40)
+
+| Day | Task | Objective |
+|---|---|---|
+| 36 | End-to-End Connectivity | Connect Dashboard to live Flask API |
+| 37 | Real-time Scoring Test | Submit 50 transactions via UI |
+| 38 | Bulk Data Validation | Verify database integrity after stress test |
+| 39 | Regression Testing | Re-run 25 master scenarios via UI |
+| 40 | System Freeze v1.0 | Bug fixing and performance tuning |
+
+---
+
+## Phase 5: Model Governance (Days 41–45)
+
+| Day | Objective | Deliverable |
+|---|---|---|
+| 41 | Model Risk Assessment | `governance/MODEL_GOVERNANCE.md` |
+| 42 | SR 11-7 Compliance Audit | `governance/SR11_7_COMPLIANCE.md` |
+| 43 | Backtesting Analysis | `governance/BACKTESTING.md` |
+| 44 | Rules Maintenance Guide | `docs/HOW_TO_MODIFY.md` |
+| 45 | Independent Model Validation | Final logic sign-off |
+
+---
+
+## Phase 6: Deployment & Launch (Days 46–60)
+
+| Day | Objective | Status |
+|---|---|---|
+| 46-50 | **Live Deployment** | Render (API) + Vercel (UI) |
+| 51-55 | **Portfolio Mastery** | GitHub README, Architecture Diagrams |
+| 56-60 | **Launch** | Demo Video + LinkedIn Publication 🚀 |
+
+---
+*ScoreSentinel | ROADMAP.md | Version 3.1 | Authored by Atul Krishnan, CAMS | 19 May 2026*
