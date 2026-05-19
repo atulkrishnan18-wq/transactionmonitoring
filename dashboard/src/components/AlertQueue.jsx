@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const AlertQueue = () => {
+const AlertQueue = ({ onViewCase }) => {
   const [activeStage, setActiveStage] = useState('PENDING_ASSESSMENT');
 
   // Stages based on HRDT Workflow (TECHNICAL_OVERVIEW.md Section 6)
@@ -90,6 +90,7 @@ const AlertQueue = () => {
               mcs="12" 
               color={getRiskColor('AUTO')} 
               styles={styles}
+              onViewCase={onViewCase}
             />
             <AlertRow 
               id="ALT-20260514-0002" 
@@ -99,6 +100,7 @@ const AlertQueue = () => {
               mcs="85" 
               color={getRiskColor('HIGH')} 
               styles={styles}
+              onViewCase={onViewCase}
             />
           </tbody>
         </table>
@@ -108,7 +110,7 @@ const AlertQueue = () => {
 };
 
 // Sub-components for cleaner structure
-const AlertRow = ({ id, name, type, crs, mcs, color, styles }) => (
+const AlertRow = ({ id, name, type, crs, mcs, color, styles, onViewCase }) => (
   <tr style={styles.tr}>
     <td style={{...styles.td, borderLeft: `4px solid ${color}`}}>{id}</td>
     <td style={styles.td}>
@@ -121,7 +123,12 @@ const AlertRow = ({ id, name, type, crs, mcs, color, styles }) => (
       <span style={styles.typeTag}>{type}</span>
     </td>
     <td style={styles.td}>
-      <button style={styles.viewBtn}>View Case</button>
+      <button 
+        style={styles.viewBtn}
+        onClick={() => onViewCase(id)}
+      >
+        View Case
+      </button>
     </td>
   </tr>
 );
