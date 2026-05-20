@@ -61,8 +61,8 @@ ScoreSentinel has been upgraded to include a specialized fifth module for **Mule
 |---|---|---|
 | 31 | **Alert Queue** — Stage workflow + MCS indicators | ✅ Done |
 | 32 | **Case Detail** — Score breakdown + Mule Signals tab | ✅ Done |
-| 33 | **Charts** — Alert volume, Risk by Country, FP Rate | ⬜ Next |
-| 34 | **Customer Profile** — History + Device Nexus | ⬜ Pending |
+| 33 | **Charts** — Alert volume, Risk by Country, FP Rate | ✅ Done |
+| 34 | **Customer Profile** — History + Device Nexus | ⬜ Next |
 | 35 | **Mule Cluster View** — Network mapping | ⬜ Pending |
 
 ---
