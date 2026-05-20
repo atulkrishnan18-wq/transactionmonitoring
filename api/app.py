@@ -10,6 +10,7 @@ import datetime
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from scoring_engine import ScoreSentinelEngine
 from dotenv import load_dotenv
 
@@ -17,6 +18,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
+CORS(app)
 engine = ScoreSentinelEngine()
 
 # Database connection configuration
@@ -224,6 +226,182 @@ def score_transaction():
         
     return jsonify(response)
 
+@app.route('/api/alerts', methods=['GET'])
+def get_alerts():
+    """
+    GET /api/alerts
+    Returns all alerts. Supports stage filter.
+    """
+    stage = request.args.get('stage')
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    try:
+        if stage:
+            cur.execute("SELECT * FROM alerts WHERE stage = %s ORDER BY created_at DESC", (stage,))
+        else:
+            cur.execute("SELECT * FROM alerts ORDER BY created_at DESC")
+            
+        rows = cur.fetchall()
+        
+        alerts = []
+        for row in rows:
+            # We need to fetch customer name for the alert queue
+            cur.execute("SELECT full_name FROM customers WHERE customer_id = %s", (row["customer_id"],))
+            cust_row = cur.fetchone()
+            
+            # We also need the CRS from the transaction
+            cur.execute("SELECT crs FROM transactions WHERE transaction_id = %s", (row["transaction_id"],))
+            tx_row = cur.fetchone()
+            
+            alerts.append({
+                "alert_id": row["alert_id"],
+                "transaction_id": row["transaction_id"],
+                "customer_id": row["customer_id"],
+                "customer_name": cust_row["full_name"] if cust_row else "Unknown",
+                "alert_type": row["alert_type"],
+                "stage": row["stage"],
+                "status": row["status"],
+                "crs": float(tx_row["crs"]) if tx_row and tx_row["crs"] is not None else "AUTO",
+                "created_at": row["created_at"].isoformat()
+            })
+            
+        return jsonify({
+            "alerts": alerts,
+            "total": len(alerts)
+        })
+    except Exception as e:
+        return jsonify({"error": "Database error", "message": str(e)}), 500
+    finally:
+        cur.close()
+        conn.close()
+
+@app.route('/api/alerts/<alert_id>', methods=['GET'])
+def get_alert_detail(alert_id):
+    """
+    GET /api/alerts/<alert_id>
+    Returns full alert detail including transaction scores and three-point standard.
+    """
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    try:
+        cur.execute("SELECT * FROM alerts WHERE alert_id = %s", (alert_id,))
+        alert = cur.fetchone()
+        
+        if not alert:
+            return jsonify({"error": "Not found"}), 404
+            
+        # Get transaction details
+        cur.execute("SELECT * FROM transactions WHERE transaction_id = %s", (alert["transaction_id"],))
+        tx = cur.fetchone()
+        
+        # Get customer details
+        cur.execute("SELECT * FROM customers WHERE customer_id = %s", (alert["customer_id"],))
+        cust = cur.fetchone()
+        
+        # Get MCS if it's a mule alert
+        mcs = None
+        if "Mule" in alert["alert_type"]:
+            cur.execute("SELECT mcs FROM mule_clusters WHERE %s = ANY(account_ids) LIMIT 1", (tx["account_id"] if tx and "account_id" in tx else "DEFAULT_ACC",))
+            cluster = cur.fetchone()
+            if cluster:
+                mcs = float(cluster["mcs"])
+        
+        return jsonify({
+            "alert": {
+                "alert_id": alert["alert_id"],
+                "transaction_id": alert["transaction_id"],
+                "customer_id": alert["customer_id"],
+                "customer_name": cust["full_name"] if cust else "Unknown",
+                "alert_type": alert["alert_type"],
+                "stage": alert["stage"],
+                "status": alert["status"],
+                "client_rp": alert["client_rp"],
+                "worldcheck_id": alert["worldcheck_id"],
+                "internal_summary": alert["internal_summary"],
+                "disposition": alert["disposition"],
+                "point_1_identifier": alert["point_1_identifier"],
+                "point_1_source": alert["point_1_source"],
+                "point_2_identifier": alert["point_2_identifier"],
+                "point_2_source": alert["point_2_source"],
+                "point_3_identifier": alert["point_3_identifier"],
+                "point_3_source": alert["point_3_source"],
+                "three_point_met": alert["three_point_met"],
+                "reviewer_rationale": alert["reviewer_rationale"]
+            },
+            "transaction": {
+                "amount": float(tx["transaction_amount"]) if tx else 0,
+                "currency": tx["transaction_currency"] if tx else "USD",
+                "type": tx["transaction_type"] if tx else "UNKNOWN",
+                "crs": float(tx["crs"]) if tx and tx["crs"] is not None else None,
+                "mcs": mcs,
+                "modules": {
+                    "customer": float(tx["customer_normalised"]) if tx else 0,
+                    "structuring": float(tx["structuring_normalised"]) if tx else 0,
+                    "geo": float(tx["geography_normalised"]) if tx else 0,
+                    "transaction": float(tx["transaction_normalised"]) if tx else 0
+                },
+                "rules_fired": tx["rules_fired"] if tx else []
+            }
+        })
+    except Exception as e:
+        return jsonify({"error": "Database error", "message": str(e)}), 500
+    finally:
+        cur.close()
+        conn.close()
+
+@app.route('/api/customers/<customer_id>', methods=['GET'])
+def get_customer(customer_id):
+    """
+    GET /api/customers/<customer_id>
+    Returns customer profile and transaction history.
+    """
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    try:
+        cur.execute("SELECT * FROM customers WHERE customer_id = %s", (customer_id,))
+        cust = cur.fetchone()
+        
+        if not cust:
+            return jsonify({"error": "Not found"}), 404
+            
+        # Get recent transactions
+        cur.execute("SELECT * FROM transactions WHERE customer_id = %s ORDER BY timestamp_processed DESC LIMIT 10", (customer_id,))
+        txs = cur.fetchall()
+        
+        transaction_history = []
+        for tx in txs:
+            transaction_history.append({
+                "transaction_id": tx["transaction_id"],
+                "date": tx["timestamp_processed"].isoformat(),
+                "amount": float(tx["transaction_amount"]),
+                "currency": tx["transaction_currency"],
+                "type": tx["transaction_type"],
+                "status": tx["disposition_status"]
+            })
+            
+        return jsonify({
+            "customer": {
+                "customer_id": cust["customer_id"],
+                "full_name": cust["full_name"],
+                "customer_type": cust["customer_type"],
+                "ccrs": cust["ccrs"],
+                "risk_band": cust["risk_band"],
+                "pep_tier": cust["pep_tier"],
+                "country_of_domicile": cust["country_of_domicile"],
+                "last_reviewed": cust["last_reviewed"].isoformat() if cust["last_reviewed"] else None
+            },
+            "history": transaction_history
+        })
+    except Exception as e:
+        return jsonify({"error": "Database error", "message": str(e)}), 500
+    finally:
+        cur.close()
+        conn.close()
+
 @app.route('/api/clusters', methods=['GET'])
 def get_clusters():
     """
@@ -311,6 +489,9 @@ def update_alert(alert_id):
     stage = data.get("stage")
     reviewer_id = data.get("reviewer_id")
     rationale = data.get("reviewer_rationale")
+    client_rp = data.get("client_rp")
+    worldcheck_id = data.get("worldcheck_id")
+    internal_summary = data.get("internal_summary")
     
     # Extract identifiers
     p1_id = data.get("point_1_identifier")
@@ -346,6 +527,9 @@ def update_alert(alert_id):
                 review_timestamp = NOW(),
                 reviewer_rationale = %s,
                 stage = %s,
+                client_rp = %s,
+                worldcheck_id = %s,
+                internal_summary = %s,
                 point_1_identifier = %s,
                 point_1_source = %s,
                 point_2_identifier = %s,
@@ -361,6 +545,9 @@ def update_alert(alert_id):
             reviewer_id,
             rationale,
             stage,
+            client_rp,
+            worldcheck_id,
+            internal_summary,
             p1_id, p1_src, p2_id, p2_src, p3_id, p3_src,
             True if all([p1_id, p1_src, p2_id, p2_src, p3_id, p3_src]) else False,
             alert_id
