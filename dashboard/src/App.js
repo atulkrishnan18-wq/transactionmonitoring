@@ -4,6 +4,7 @@ import AlertQueue from './components/AlertQueue';
 import CaseDetail from './components/CaseDetail';
 import Charts from './components/Charts';
 import CustomerProfile from './components/CustomerProfile';
+import MuleClusterView from './components/MuleClusterView';
 import { LayoutGrid, BarChart3, Users, Network, ShieldAlert, LogOut } from 'lucide-react';
 
 function App() {
@@ -91,17 +92,12 @@ function App() {
         {view === 'queue' && <AlertQueue onViewCase={handleViewCase} />}
         {view === 'charts' && <Charts />}
         {view === 'profile' && <CustomerProfile />}
+        {view === 'mule' && <MuleClusterView />}
         {view === 'detail' && (
           <CaseDetail 
             alertData={selectedAlert} 
             onBack={() => setView('queue')} 
           />
-        )}
-        {view === 'mule' && (
-          <div style={{padding: '40px', textAlign: 'center', color: '#8c8c8c'}}>
-            <h2>Coming Soon</h2>
-            <p>This module is scheduled for implementation in the next phase of the roadmap.</p>
-          </div>
         )}
       </div>
     </div>
