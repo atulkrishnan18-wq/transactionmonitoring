@@ -30,8 +30,8 @@ ScoreSentinel has been upgraded to include a specialized fifth module for **Mule
 | 26-30 | Phase 2B: Database & API | database/, api/ | ✅ Done | v1.0 |
 | 30 | MuleCatcher™ Intelligence Layer | engine/mule_module.py | ✅ Done | v1.0 |
 | 31 | Full Suite Validation (25 Scenarios) | postman/ | ✅ Done | v1.0 |
-| 32-35 | Phase 3: React Dashboard | dashboard/ | 🔄 In Progress | v1.0 |
-| 36-40 | Phase 4: Integration & Testing | — | 📋 Upcoming | — |
+| 32-35 | Phase 3: React Dashboard | dashboard/ | ✅ Done | v1.0 |
+| 36-40 | Phase 4: Integration & Testing | — | 🔄 In Progress | — |
 | 41-45 | Phase 5: Model Governance (SR 11-7) | governance/ | 📋 Upcoming | — |
 | 46-60 | Phase 6: Deployment & Portfolio | docs/ | 📋 Planned | — |
 
