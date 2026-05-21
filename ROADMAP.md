@@ -31,7 +31,7 @@ ScoreSentinel has been upgraded to include a specialized fifth module for **Mule
 | 30 | MuleCatcher™ Intelligence Layer | engine/mule_module.py | ✅ Done | v1.0 |
 | 31 | Full Suite Validation (25 Scenarios) | postman/ | ✅ Done | v1.0 |
 | 32-35 | Phase 3: React Dashboard | dashboard/ | ✅ Done | v1.0 |
-| 36-40 | Phase 4: Integration & Testing | — | 🔄 In Progress | — |
+| 36-40 | Phase 4: Integration & Testing | — | 🔄 In Progress | v1.0 |
 | 41-45 | Phase 5: Model Governance (SR 11-7) | governance/ | 📋 Upcoming | — |
 | 46-60 | Phase 6: Deployment & Portfolio | docs/ | 📋 Planned | — |
 
@@ -54,7 +54,7 @@ ScoreSentinel has been upgraded to include a specialized fifth module for **Mule
 
 ---
 
-## Phase 3: Visualise (Days 32–35) — IN PROGRESS 🔄
+## Phase 3: Visualise (Days 32–35) — COMPLETE ✅
 **Goal:** Build the React + Vite dashboard to manage alerts and investigate mule clusters.
 
 | Day | What Gets Built | Status |
@@ -67,12 +67,12 @@ ScoreSentinel has been upgraded to include a specialized fifth module for **Mule
 
 ---
 
-## Phase 4: Integration & Testing (Days 36–40)
+## Phase 4: Integration & Testing (Days 36–40) — IN PROGRESS 🔄
 
-| Day | Task | Objective |
-|---|---|---|
-| 36 | End-to-End Connectivity | Connect Dashboard to live Flask API |
-| 37 | Real-time Scoring Test | Submit 50 transactions via UI |
+| Day | Task | Objective | Status |
+|---|---|---|---|
+| 36 | End-to-End Connectivity | Connect Dashboard to live Flask API | ✅ Done |
+| 37 | Real-time Scoring Test | Submit 50 transactions via UI | 📋 Upcoming |
 | 38 | Bulk Data Validation | Verify database integrity after stress test |
 | 39 | Regression Testing | Re-run 25 master scenarios via UI |
 | 40 | System Freeze v1.0 | Bug fixing and performance tuning |
