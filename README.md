@@ -1,61 +1,45 @@
 # ScoreSentinel 🛡️
 
-## Automated AML Transaction Risk Scoring Engine
+## Automated AML Transaction Risk Scoring Engine + MuleCatcher™
 
 **Author:** Atul Krishnan, CAMS
 **Build:** 60-Day Independent Project | 1 Hour Per Day
-**Status:** Phase 2 In Progress — Python Scoring Engine Complete (Days 21–25)
-**Last Updated:** 13 May 2026
+**Status:** Phase 4 Complete — Full Integration & Testing (v1.0)
+**Last Updated:** 21 May 2026
 
 ---
 
 ## What Is ScoreSentinel?
 
-ScoreSentinel is a **risk-based, rules-based AML transaction risk scoring engine** designed to automatically assess the money laundering risk of financial transactions across four independent dimensions — producing a defensible, explainable Composite Risk Score (CRS) on a normalised 0–100 scale.
+ScoreSentinel is a **risk-based, rules-based AML transaction risk scoring engine** designed to automatically assess the money laundering risk of financial transactions. It produces a defensible, explainable **Composite Risk Score (CRS)** and a specialized **Mule Cluster Score (MCS)**.
 
 Every score is traceable to a documented rule. Every threshold is justified. Every decision is auditable. No black-box ML.
 
-Built by a CAMS-certified financial crime compliance professional applying 6+ years of Tier 1 bank AML experience (Bank of America HRDT) to design a system aligned with:
-
-- **SR 11-7** Model Risk Governance
-- **FATF Recommendations** 1, 10, 12, 16, 19
-- **UK MLR 2017** PEP and beneficial owner framework
-- **OFAC** sanctions screening and 50% ownership rule
-- **BSA/AML** structuring detection and CTR threshold logic
-- **FinCEN CDD Rule** beneficial ownership requirements
+### 🛡️ Project MuleCatcher™ (Overlay)
+The system includes a specialized module for **Mule Cluster Detection**, targeting coordinated networks and organized fraud rings. It detects Fan-In/Fan-Out bursts, dormant-to-active transitions, and high device nexus counts.
 
 ---
 
-## How It Works
+## How It Works (The Dual-Scoring Engine)
 
 ```
-TRANSACTION INPUT
-      ↓
-┌─────────────────────────────────────────┐
-│  Module 1: Customer Risk (30%)          │
-│  Shell companies, PEPs, BO opacity      │
-├─────────────────────────────────────────┤
-│  Module 2: Structuring (25%)            │
-│  Smurfing, velocity, micro-structuring  │
-├─────────────────────────────────────────┤
-│  Module 3: Geography (25%)              │
-│  OFAC, FATF, CPI — sender + receiver    │
-├─────────────────────────────────────────┤
-│  Module 4: Transaction Type (20%)       │
-│  Crypto, wire, cash, correspondent      │
-└─────────────────────────────────────────┘
-      ↓
-NORMALISE each module to 0–100
-      ↓
-APPLY weights → Composite Risk Score (CRS)
-      ↓
-CHECK independent triggers (sanctions, PEP, structuring)
-      ↓
-GENERATE alert + audit log
+        TRANSACTION INPUT
+               ↓
+┌──────────────┴──────────────┐
+│ MODULE 1: CUSTOMER (30%)    │ ← PEPs, Shell Companies, UBO
+│ MODULE 2: STRUCTURING (25%) │ ← Smurfing, Velocity
+│ MODULE 3: GEOGRAPHY (25%)   │ ← OFAC, FATF, CPI
+│ MODULE 4: TX TYPE (20%)     │ ← Crypto, Wire, Cash
+└──────────────┬──────────────┘
+               ↓
+    COMPOSITE RISK SCORE (CRS) → 0-100 Normalised
+               ↓
+┌──────────────┴──────────────┐
+│ MODULE 5: MULECATCHER™      │ ← Coordinated Clusters
+└──────────────┬──────────────┘
+               ↓
+    MULE CLUSTER SCORE (MCS) → Organised Network Detection
 ```
-
-**Alert Threshold:** CRS ≥ 60
-**Auto-Alert Triggers:** Tier 1A/1B sanctions, PEP Tier 1, Structuring ≥ 75%
 
 ---
 
@@ -64,30 +48,16 @@ GENERATE alert + audit log
 ```
 transactionmonitoring/
 │
-├── README.md
-│
-├── rules/                          # Core AML detection rules
-│   ├── AML_RULES.md               # Master framework & index
-│   ├── STRUCTURING_RULES.md       # Smurfing & structuring detection
-│   ├── GEO_RULES.md               # Geographic risk — OFAC/FATF/CPI
-│   ├── CUSTOMER_RULES.md          # Customer risk taxonomy & CCRS
-│   ├── TRANSACTION_RULES.md       # 19 transaction types + velocity
-│   ├── VELOCITY_RULES.md          # Fan-In/Fan-Out, behavioural patterns
-│   └── PEP_RULES.md               # UK MLR 2017 PEP tiers + BO logic
-│
-├── scoring/                        # Composite scoring methodology
-│   └── COMPOSITE_LOGIC.md         # Normalisation, weights, CRS formula
-│
-├── scenarios/                      # Validation & test cases
-│   ├── TEST_SCENARIOS.md          # 10 core validation scenarios
-│   ├── EDGE_CASES.md              # False positive prevention library
-│   └── VALIDATION_SCENARIOS.md    # 10 extended scenarios (Scenarios 11–20)
-│
-├── governance/                     # Model risk & compliance
-│   └── AUDIT_REQUIREMENTS.md      # Three-point standard, audit trail
-│
-└── gaps/                           # Intellectual honesty
-    └── GAPS_TO_ADDRESS.md         # 18 resolved gaps, 6 open, 2.0 roadmap
+├── api/                            # Flask REST API (v1.0)
+├── dashboard/                      # React + Vite UI Dashboard
+├── engine/                         # Python Scoring Modules (1-5)
+├── rules/                          # Core AML & Mule detection logic
+├── database/                       # PostgreSQL Schema & Migrations
+├── tests/                          # Automated Scenario Suite (25+ cases)
+├── scoring/                        # Composite logic & Normalisation
+├── governance/                     # Model Risk Management (SR 11-7)
+├── postman/                        # API Validation Collections
+└── docs/                           # Technical Documentation
 ```
 
 ---

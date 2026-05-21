@@ -239,32 +239,31 @@ def get_alerts():
     cur = conn.cursor()
     
     try:
+        query = """
+            SELECT a.*, c.full_name as customer_name, t.crs 
+            FROM alerts a
+            LEFT JOIN customers c ON a.customer_id = c.customer_id
+            LEFT JOIN transactions t ON a.transaction_id = t.transaction_id
+        """
+        
         if stage:
-            cur.execute("SELECT * FROM alerts WHERE stage = %s ORDER BY created_at DESC", (stage,))
+            cur.execute(query + " WHERE a.stage = %s ORDER BY a.created_at DESC", (stage,))
         else:
-            cur.execute("SELECT * FROM alerts ORDER BY created_at DESC")
+            cur.execute(query + " ORDER BY a.created_at DESC")
             
         rows = cur.fetchall()
         
         alerts = []
         for row in rows:
-            # We need to fetch customer name for the alert queue
-            cur.execute("SELECT full_name FROM customers WHERE customer_id = %s", (row["customer_id"],))
-            cust_row = cur.fetchone()
-            
-            # We also need the CRS from the transaction
-            cur.execute("SELECT crs FROM transactions WHERE transaction_id = %s", (row["transaction_id"],))
-            tx_row = cur.fetchone()
-            
             alerts.append({
                 "alert_id": row["alert_id"],
                 "transaction_id": row["transaction_id"],
                 "customer_id": row["customer_id"],
-                "customer_name": cust_row["full_name"] if cust_row else "Unknown",
+                "customer_name": row["customer_name"] if row["customer_name"] else "Unknown",
                 "alert_type": row["alert_type"],
                 "stage": row["stage"],
                 "status": row["status"],
-                "crs": float(tx_row["crs"]) if tx_row and tx_row["crs"] is not None else "AUTO",
+                "crs": float(row["crs"]) if row["crs"] is not None else "AUTO",
                 "created_at": row["created_at"].isoformat()
             })
             
