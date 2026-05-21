@@ -30,8 +30,9 @@ def get_db_connection():
     return conn
 
 def generate_id(prefix):
-    """Generates a formatted ID: PREFIX-YYYYMMDD-RANDOM4"""
-    date_str = datetime.datetime.now().strftime("%Y%m%d")
+    """Generates a formatted ID: PREFIX-YYYYMMDD-HHMMSS-RANDOM4"""
+    now = datetime.datetime.now()
+    date_str = now.strftime("%Y%m%d-%H%M%S")
     random_digits = "".join([str(random.randint(0, 9)) for _ in range(4)])
     return f"{prefix}-{date_str}-{random_digits}"
 

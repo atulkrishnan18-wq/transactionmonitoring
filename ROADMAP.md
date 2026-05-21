@@ -72,8 +72,8 @@ ScoreSentinel has been upgraded to include a specialized fifth module for **Mule
 | Day | Task | Objective | Status |
 |---|---|---|---|
 | 36 | End-to-End Connectivity | Connect Dashboard to live Flask API | ✅ Done |
-| 37 | Real-time Scoring Test | Submit 50 transactions via UI | 📋 Upcoming |
-| 38 | Bulk Data Validation | Verify database integrity after stress test |
+| 37 | Real-time Scoring Test | Submit 50 transactions via UI | ✅ Done |
+| 38 | Bulk Data Validation | Verify database integrity after stress test | 📋 Upcoming |
 | 39 | Regression Testing | Re-run 25 master scenarios via UI |
 | 40 | System Freeze v1.0 | Bug fixing and performance tuning |
 
