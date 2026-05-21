@@ -2,7 +2,7 @@ import json
 from datetime import datetime, timedelta
 
 def generate_postman():
-    base_date = datetime(2026, 5, 1)
+    base_date = datetime.now()
     
     scenarios = [
         # Original 20 (simplified data for Postman)
