@@ -23,11 +23,24 @@ engine = ScoreSentinelEngine()
 
 # Database connection configuration
 DATABASE_URL = os.environ.get('DATABASE_URL')
+DEMO_API_KEY = os.environ.get('DEMO_API_KEY', 'SCORESENTINEL_DEMO_2027')
 
 def get_db_connection():
     """Establishes a connection to the PostgreSQL database."""
     conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
     return conn
+
+@app.before_request
+def check_auth():
+    """
+    SIMPLE AUTH (Demo Wall)
+    Protects all POST/PUT endpoints with a static API Key for the demo.
+    Allows GET requests for public dashboard viewing.
+    """
+    if request.method in ['POST', 'PUT']:
+        key = request.headers.get('X-DEMO-API-KEY')
+        if key != DEMO_API_KEY:
+            return jsonify({"error": "Unauthorized", "message": "Demo API Key required for this action."}), 401
 
 def generate_id(prefix):
     """Generates a formatted ID: PREFIX-YYYYMMDD-HHMMSS-RANDOM4"""
