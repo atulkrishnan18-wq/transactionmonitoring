@@ -1,10 +1,10 @@
 # ScoreSentinel 🛡️
 
-## Automated AML Transaction Risk Scoring Engine + MuleCatcher™
+## Automated AML Transaction Risk Scoring Engine + MuleCatcher
 
 **Author:** Atul Krishnan, CAMS
 **Build:** 60-Day Independent Project | 1 Hour Per Day
-**Status:** Phase 4 Complete — Full Integration & Testing (v1.0)
+**Status:** Phase 2 — Days 36-40 Complete — Full Integration & Testing (v1.0)
 **Last Updated:** 21 May 2026
 
 ---
@@ -15,7 +15,7 @@ ScoreSentinel is a **risk-based, rules-based AML transaction risk scoring engine
 
 Every score is traceable to a documented rule. Every threshold is justified. Every decision is auditable. No black-box ML.
 
-### 🛡️ Project MuleCatcher™ (Overlay)
+### 🛡️ Project MuleCatcher (Overlay)
 The system includes a specialized module for **Mule Cluster Detection**, targeting coordinated networks and organized fraud rings. It detects Fan-In/Fan-Out bursts, dormant-to-active transitions, and high device nexus counts.
 
 ---
@@ -35,7 +35,7 @@ The system includes a specialized module for **Mule Cluster Detection**, targeti
     COMPOSITE RISK SCORE (CRS) → 0-100 Normalised
                ↓
 ┌──────────────┴──────────────┐
-│ MODULE 5: MULECATCHER™      │ ← Coordinated Clusters
+│ MODULE 5: MULECATCHER      │ ← Coordinated Clusters
 └──────────────┬──────────────┘
                ↓
     MULE CLUSTER SCORE (MCS) → Organised Network Detection
@@ -135,8 +135,10 @@ ScoreSentinel has been validated against **20 scenarios** covering the full risk
 | Phase | Days | Status |
 |---|---|---|
 | Phase 1 — AML Logic Design | Days 1–20 | ✅ Complete |
-| Phase 2 — Python Engine Build | Days 21–45 | 🔄 In Progress — Engine Build Complete |
+| Phase 2 — Python Engine Build | Days 21–45 | 🔄 In Progress — Integration Complete — v1.0 Stable |
 | Phase 3 — Deploy & Portfolio | Days 46–60 | 📋 Planned |
+
+**Recalibration schedule active — see scoring/COMPOSITE_LOGIC.md Section 8 for review schedule.**
 
 **Full 60-day roadmap:** See `ROADMAP.md`
 
@@ -156,4 +158,4 @@ APAC Regional Screening | PEP | Sanctions | EDD | FinCrime SME
 
 ---
 
-*ScoreSentinel | Automated AML Transaction Risk Scoring Engine | Authored by Atul Krishnan, CAMS | Version 1.0 | 4 May 2026*
+*ScoreSentinel | Automated AML Transaction Risk Scoring Engine | Authored by Atul Krishnan, CAMS | Version 1.0 | 21 May 2026*

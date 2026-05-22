@@ -58,6 +58,7 @@ This document tracks all identified gaps, limitations, and planned improvements 
 | 22 | Independent model validation not yet completed | 🔴 High | Planned Day 45 | Day 45 |
 | 23 | Alert-to-SAR ratio not yet measured — no live data | 🟠 Medium | Measurable after Python engine live — Day 25+ | Day 35 |
 | 24 | Fuzzy match threshold (85%) based on industry benchmarks only — not back-tested on own population | 🔴 High | Validate during Day 30 back-testing | Day 30 |
+| 25 | Alert rate in synthetic test data is 22% — above the 15% production target | 🟠 Medium | Production calibration to be validated with real transaction data via RBIH sandbox | Day 40 |
 
 ---
 
