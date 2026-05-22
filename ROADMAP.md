@@ -49,7 +49,8 @@ ScoreSentinel has been upgraded to include a specialized fifth module for **Mule
 - **Objective:** Compliance documentation and rule maintenance guides.
 - **Day 41 ✅** — STR Filing Workflow: Implemented `str_filed` and `str_reference` tracking for MC-1 alerts.
 - **Day 42 ✅** — SR 11-7 Compliance Audit: `governance/SR11_7_COMPLIANCE.md` (COMPLIANT).
-- **Day 43 📋** — Back-testing Analysis: `governance/BACKTESTING.md`.
+- **Day 43 ✅** — Back-testing Analysis: `governance/BACKTESTING.md`.
+- **Day 44 📋** — Rules Maintenance Guide: `docs/HOW_TO_MODIFY.md`.
 
 ---
 
