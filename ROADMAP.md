@@ -45,9 +45,9 @@ ScoreSentinel has been upgraded to include a specialized fifth module for **Mule
 - **Objective:** End-to-End Connectivity & Real-time Scoring.
 - **Result:** Dashboard connected to live API; 50-transaction stress test complete; data integrity verified.
 
-### Day 41-45 ✅ — Model Governance (SR 11-7)
+### Day 41-45 ✅ — Model Governance
 - **Objective:** Compliance documentation and rule maintenance guides.
-- **Deliverables:** `SR11_7_COMPLIANCE.md`, `BACKTESTING.md`, `HOW_TO_MODIFY.md`, `INDEPENDENT_VALIDATION.md`.
+- **Deliverables:** `UNIFIED_MRM_COMPLIANCE.md` (RBI + SR 11-7), `BACKTESTING.md`, `HOW_TO_MODIFY.md`, `INDEPENDENT_VALIDATION.md`.
 - **Status:** Final Model Sign-off received on Day 45.
 
 ---
