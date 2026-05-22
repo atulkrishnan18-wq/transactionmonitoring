@@ -56,9 +56,15 @@ ScoreSentinel has been upgraded to include a specialized fifth module for **Mule
 
 | Day | Objective | Status |
 |---|---|---|
-| 46-50 | **Live Deployment** | 📋 Planned |
-| 51-55 | **Portfolio Mastery** | 📋 Planned |
-| 56-60 | **Launch** | 📋 Planned |
+| 46 | **System Deep Dive** | ✅ Done |
+| 47 | **Deployment Strategy** | ✅ Done |
+| 48 | **Supabase Database Migration** | 📋 Planned |
+
+---
+### Day 47 ✅ — Deployment Strategy & Containerization
+- **Deliverable:** `Dockerfile`, `requirements.txt`, `.env.template`.
+- **Infrastructure:** Finalized Render.com (API) + Supabase (Postgres) stack.
+- **Portability:** Containerized the engine to ensure identical behavior across local and cloud environments.
 
 ---
 *ScoreSentinel | ROADMAP.md | Version 3.2 | Authored by Atul Krishnan, CAMS | 21 May 2026*
