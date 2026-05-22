@@ -26,12 +26,12 @@ ScoreSentinel has been upgraded to include a specialized fifth module for **Mule
 | Day | Deliverable | Location | Status | Version |
 |---|---|---|---|---|
 | 1-20 | Phase 1: AML Logic Design | rules/, scenarios/ | ✅ Done | v1.2 |
-| 21-45 | Phase 2: Build & Validate | engine/, database/, api/, dashboard/, governance/ | 🔄 In Progress | v1.0 |
+| 21-45 | Phase 2: Build & Validate | engine/, database/, api/, dashboard/, governance/ | ✅ Done | v1.0 |
 | 46-60 | Phase 3: Deployment & Portfolio | docs/ | 📋 Planned | — |
 
 ---
 
-## Phase 2: Build & Validate (Days 21–45) — IN PROGRESS 🔄
+## Phase 2: Build & Validate (Days 21–45) — COMPLETE ✅
 
 ### Day 21-31 ✅ — Engine & API Core
 - **Deliverable:** `engine/`, `database/`, `api/`, `postman/`
@@ -45,17 +45,14 @@ ScoreSentinel has been upgraded to include a specialized fifth module for **Mule
 - **Objective:** End-to-End Connectivity & Real-time Scoring.
 - **Result:** Dashboard connected to live API; 50-transaction stress test complete; data integrity verified.
 
-### Day 41-45 🔄 — Model Governance (SR 11-7)
+### Day 41-45 ✅ — Model Governance (SR 11-7)
 - **Objective:** Compliance documentation and rule maintenance guides.
-- **Day 41 ✅** — STR Filing Workflow: Implemented `str_filed` and `str_reference` tracking for MC-1 alerts.
-- **Day 42 ✅** — SR 11-7 Compliance Audit: `governance/SR11_7_COMPLIANCE.md` (COMPLIANT).
-- **Day 43 ✅** — Back-testing Analysis: `governance/BACKTESTING.md`.
-- **Day 44 ✅** — Rules Maintenance Guide: `docs/HOW_TO_MODIFY.md`.
-- **Day 45 📋** — Independent Model Validation: Final logic sign-off.
+- **Deliverables:** `SR11_7_COMPLIANCE.md`, `BACKTESTING.md`, `HOW_TO_MODIFY.md`, `INDEPENDENT_VALIDATION.md`.
+- **Status:** Final Model Sign-off received on Day 45.
 
 ---
 
-## Phase 3: Deployment & Launch (Days 46–60) — PLANNED 📋
+## Phase 3: Deployment & Launch (Days 46–60) — IN PROGRESS 🔄
 
 | Day | Objective | Status |
 |---|---|---|
