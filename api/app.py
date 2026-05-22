@@ -424,7 +424,9 @@ def get_clusters():
                 "mcs": float(row["mcs"]),
                 "risk_band": row["risk_band"],
                 "account_ids": row["account_ids"],
-                "status": row["status"]
+                "status": row["status"],
+                "str_filed": row["str_filed"],
+                "str_reference": row["str_reference"]
             })
             
         return jsonify({
@@ -432,6 +434,47 @@ def get_clusters():
             "total": len(clusters)
         })
     except Exception as e:
+        return jsonify({"error": "Database error", "message": str(e)}), 500
+    finally:
+        cur.close()
+        conn.close()
+
+@app.route('/api/clusters/<cluster_id>', methods=['PUT'])
+def update_cluster(cluster_id):
+    """
+    PUT /api/clusters/<cluster_id>
+    Updates a mule cluster status and STR filing info.
+    """
+    data = request.get_json()
+    status = data.get("status")
+    reviewer_id = data.get("reviewer_id")
+    rationale = data.get("reviewer_rationale")
+    str_filed = data.get("str_filed", False)
+    str_reference = data.get("str_reference")
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    try:
+        cur.execute("SELECT * FROM mule_clusters WHERE cluster_id = %s", (cluster_id,))
+        if cur.fetchone() is None:
+            return jsonify({"error": "Not found", "message": f"Cluster {cluster_id} not found"}), 404
+            
+        cur.execute("""
+            UPDATE mule_clusters SET 
+                status = %s,
+                reviewer_id = %s,
+                review_timestamp = NOW(),
+                reviewer_rationale = %s,
+                str_filed = %s,
+                str_reference = %s
+            WHERE cluster_id = %s
+        """, (status, reviewer_id, rationale, str_filed, str_reference, cluster_id))
+        
+        conn.commit()
+        return jsonify({"status": "updated", "cluster_id": cluster_id})
+    except Exception as e:
+        conn.rollback()
         return jsonify({"error": "Database error", "message": str(e)}), 500
     finally:
         cur.close()
