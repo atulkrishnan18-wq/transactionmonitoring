@@ -128,13 +128,14 @@ def score_transaction():
         # Step 1: Upsert Customer Record
         cur.execute("""
             INSERT INTO customers (
-                customer_id, full_name, customer_type, ccrs, risk_band, country_of_domicile
-            ) VALUES (%s, %s, %s, %s, %s, %s)
+                customer_id, full_name, customer_type, ccrs, risk_band, country_of_domicile, device_nexus_count
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s)
             ON CONFLICT (customer_id) DO UPDATE SET
                 customer_type = EXCLUDED.customer_type,
                 ccrs = EXCLUDED.ccrs,
                 risk_band = EXCLUDED.risk_band,
                 country_of_domicile = EXCLUDED.country_of_domicile,
+                device_nexus_count = EXCLUDED.device_nexus_count,
                 last_reviewed = NOW()
         """, (
             customer_id, 
@@ -142,7 +143,8 @@ def score_transaction():
             customer_data.get("customer_type"),
             result.get("module_scores", {}).get("customer", {}).get("raw", 0),
             get_risk_band(result.get("module_scores", {}).get("customer", {}).get("raw", 0)),
-            sender_country
+            sender_country,
+            customer_data.get("device_nexus_count", 0)
         ))
 
         # Step 2: Insert into transactions table
@@ -405,6 +407,7 @@ def get_customer(customer_id):
                 "risk_band": cust["risk_band"],
                 "pep_tier": cust["pep_tier"],
                 "country_of_domicile": cust["country_of_domicile"],
+                "device_nexus_count": cust["device_nexus_count"],
                 "last_reviewed": cust["last_reviewed"].isoformat() if cust["last_reviewed"] else None
             },
             "history": transaction_history

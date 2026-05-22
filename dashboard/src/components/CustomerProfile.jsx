@@ -83,6 +83,7 @@ const CustomerProfile = () => {
             <div style={styles.infoGrid}>
               <InfoItem label="Customer ID" value={customer.customer_id} styles={styles} />
               <InfoItem label="CCRS Score" value={customer.ccrs} styles={styles} />
+              <InfoItem label="Device Nexus" value={customer.device_nexus_count} styles={styles} />
               <InfoItem label="PEP Tier" value={customer.pep_tier || 'None'} styles={styles} />
               <InfoItem label="Last Reviewed" value={customer.last_reviewed || 'Never'} styles={styles} />
               <InfoItem label="Entity Type" value={customer.customer_type} styles={styles} />
