@@ -96,8 +96,10 @@ const TransactionHistory = () => {
   const [transactions, setTransactions] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
 
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
   React.useEffect(() => {
-    fetch('http://localhost:5000/api/transactions')
+    fetch(`${API_URL}/api/transactions`)
       .then(res => res.json())
       .then(data => {
         setTransactions(data.transactions || []);

@@ -9,13 +9,15 @@ const AlertQueue = () => {
   const [activeStage, setActiveStage] = useState('ALL');
   const [typeFilter, setTypeFilter] = useState('ALL');
 
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
   useEffect(() => {
     const fetchAlerts = async () => {
       setLoading(true);
       try {
         const url = activeStage === 'ALL' 
-          ? 'http://localhost:5000/api/alerts' 
-          : `http://localhost:5000/api/alerts?stage=${activeStage}`;
+          ? `${API_URL}/api/alerts` 
+          : `${API_URL}/api/alerts?stage=${activeStage}`;
         const response = await fetch(url);
         const data = await response.json();
         setAlerts(data.alerts || []);

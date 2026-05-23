@@ -9,11 +9,13 @@ const CustomerProfile = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
   useEffect(() => {
     const fetchCustomer = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`http://localhost:5000/api/customers/${customerId}`);
+        const response = await fetch(`${API_URL}/api/customers/${customerId}`);
         const result = await response.json();
         setData(result);
       } catch (error) {

@@ -27,8 +27,10 @@ DEMO_API_KEY = os.environ.get('DEMO_API_KEY', 'SCORESENTINEL_DEMO_2027')
 
 def get_db_connection():
     """Establishes a connection to the PostgreSQL database."""
-    conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
-    return conn
+    # Handle sslmode for cloud environments (Supabase/Render)
+    if "localhost" not in DATABASE_URL and "127.0.0.1" not in DATABASE_URL:
+        return psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor, sslmode='require')
+    return psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
 
 @app.before_request
 def check_auth():

@@ -22,10 +22,12 @@ const CaseDetail = () => {
     p3_id: '', p3_src: ''
   });
 
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
   useEffect(() => {
     const fetchDetail = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/alerts/${id}`);
+        const response = await fetch(`${API_URL}/api/alerts/${id}`);
         const result = await response.json();
         setData(result);
         if (result.alert) {
@@ -64,7 +66,7 @@ const CaseDetail = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/api/alerts/${id}`, {
+      const response = await fetch(`${API_URL}/api/alerts/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -9,10 +9,12 @@ const MuleClusterView = () => {
   const [loading, setLoading] = useState(true);
   const [selectedCluster, setSelectedCluster] = useState(null);
 
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
   useEffect(() => {
     const fetchClusters = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/clusters');
+        const response = await fetch(`${API_URL}/api/clusters`);
         const data = await response.json();
         setClusters(data.clusters || []);
         if (data.clusters && data.clusters.length > 0) {
