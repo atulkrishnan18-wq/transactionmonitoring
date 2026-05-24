@@ -77,11 +77,11 @@ graph TD
 
 ScoreSentinel is designed to run entirely on "Free Tier" cloud infrastructure without sacrificing performance for a portfolio-scale project.
 
-| Layer | Provider | Plan | Cost |
-|---|---|---|---|
-| API & Engine | **Render.com** | Web Service (Free Tier) | £0 |
-| Database | **Render.com** | PostgreSQL (Free Tier) | £0 |
-| Dashboard | **Vercel.com** | Hobby Plan | £0 |
+| Layer | Provider | URL | Plan | Cost |
+|---|---|---|---|---|
+| API & Engine | **Render.com** | [scoresentinel-api.onrender.com](https://scoresentinel-api.onrender.com) | Web Service | £0 |
+| Database | **Supabase** | [Tokyo/Singapore Region] | PostgreSQL | £0 |
+| Dashboard | **Vercel.com** | [transactionmonitoring.vercel.app](https://transactionmonitoring.vercel.app) | Hobby Plan | £0 |
 | SSL / Security | **Cloudflare** | Free Plan | £0 |
 
 ---

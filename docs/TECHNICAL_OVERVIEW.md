@@ -205,12 +205,13 @@ ScoreSentinel was designed against the following regulatory frameworks:
 
 ScoreSentinel is deployed on free, open-source infrastructure:
 
-| Component | Platform | Cost |
-|---|---|---|
-| Scoring engine + API | Render.com | Free |
-| Database | Render.com PostgreSQL | Free |
-| Dashboard | Vercel.com | Free |
-| Source code | GitHub | Free |
+| Component | Platform | URL | Cost |
+|---|---|---|---|
+| Scoring engine + API | Render.com | [scoresentinel-api.onrender.com](https://scoresentinel-api.onrender.com) | Free |
+| Database | Supabase | [PostgreSQL Tokyo/Singapore] | Free |
+| Dashboard | Vercel.com | [transactionmonitoring.vercel.app](https://transactionmonitoring.vercel.app) | Free |
+| Source code | GitHub | [Project Repository] | Free |
+
 
 **Total infrastructure cost: £0**
 
