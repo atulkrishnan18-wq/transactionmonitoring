@@ -214,7 +214,7 @@ ScoreSentinel is deployed on free, open-source infrastructure:
 
 **Total infrastructure cost: £0**
 
-The system is accessible via public URLs — any hiring manager, regulator, or interview panel can test it live without installation or credentials.
+The system is accessible via public URLs — any industry expert, regulator, or external reviewer can test it live without installation or credentials.
 
 ---
 

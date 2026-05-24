@@ -20,7 +20,7 @@ ScoreSentinel has been upgraded to include a specialized fifth module for **Mule
 | 1-20 | Phase 1: AML Logic Design | rules/, scenarios/ | ✅ Done | v1.2 |
 | 21-45 | Phase 2: Build & Validate | engine/, database/, api/, dashboard/, governance/ | ✅ Done | v1.0 |
 | 46-51 | Phase 3: Deployment & Portfolio | api/, dashboard/, README.md | ✅ Done | v1.2 |
-| 52-60 | Phase 4: Final Launch | docs/, Interview Prep | 🔄 In Progress | — |
+| 52-60 | Phase 4: Final Launch | docs/, Model Validation | 🔄 In Progress | — |
 
 ---
 
@@ -50,7 +50,7 @@ ScoreSentinel has been upgraded to include a specialized fifth module for **Mule
 
 | Day | Objective | Status |
 |---|---|---|
-| 52 | **Interview Simulation** | 📋 Planned |
+| 52 | **Expert Review Simulation** | 📋 Planned |
 | 53 | **Documentation Sweep** | 📋 Planned |
 | 54 | **LinkedIn Project Launch** | 📋 Planned |
 | 60 | **Master Project Handover** | 📋 Planned |
