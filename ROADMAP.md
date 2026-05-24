@@ -2,21 +2,13 @@
 
 **ScoreSentinel AML Transaction Risk Scoring Engine**
 **Overlay:** Project MuleCatcher (Mule Cluster Intelligence)
-**Version:** 3.2 | **Author:** Atul Krishnan, CAMS | **Last Updated:** 21 May 2026
+**Version:** 3.5 | **Author:** Atul Krishnan, CAMS | **Date:** 23 May 2026
 
 ---
 
-## Overview
+## The Vision
+To build a professional, rules-based AML scoring engine from scratch, demonstrating that compliance expertise can be translated directly into technical systems without "black-box" risks. 
 
-| | AK | AI assistance (Days 21–60) |
-|---|---|---|
-| **Focus** | Design AML + Mule logic, validate builds, own every decision | Build Python engine, Database, API, Mule Layer, Dashboard |
-| **Result** | Live AML + Anti-Mule system designed |  Understand every component |
-| **By Day 60** |  Project completion | Full stack run with Dual-Scoring |
-
----
-
-## Strategic Pivot: The MuleCatcher Upgrade
 ScoreSentinel has been upgraded to include a specialized fifth module for **Mule Cluster Detection**. This targets the ₹11,0,00,00,000 (₹11,000 Crore) annual fraud loss in India via coordinated networks.
 
 ---
@@ -27,44 +19,41 @@ ScoreSentinel has been upgraded to include a specialized fifth module for **Mule
 |---|---|---|---|---|
 | 1-20 | Phase 1: AML Logic Design | rules/, scenarios/ | ✅ Done | v1.2 |
 | 21-45 | Phase 2: Build & Validate | engine/, database/, api/, dashboard/, governance/ | ✅ Done | v1.0 |
-| 46-60 | Phase 3: Deployment & Portfolio | docs/ | 📋 Planned | — |
+| 46-51 | Phase 3: Deployment & Portfolio | api/, dashboard/, README.md | ✅ Done | v1.2 |
+| 52-60 | Phase 4: Final Launch | docs/, Interview Prep | 🔄 In Progress | — |
 
 ---
 
-## Phase 2: Build & Validate (Days 21–45) — COMPLETE ✅
+## Phase 3: Deployment & Launch (Days 46–51) — COMPLETE ✅
 
-### Day 21-31 ✅ — Engine & API Core
-- **Deliverable:** `engine/`, `database/`, `api/`, `postman/`
-- **Result:** 100% pass rate for all 25 validation scenarios.
+### Day 46-47 ✅ — Infrastructure Selection
+- **Objective:** Design a persistent, cloud-hosted architecture.
+- **Result:** Selected Render (API) + Supabase (PostgreSQL) + Vercel (Dashboard).
 
-### Day 32-35 ✅ — React Dashboard
-- **Deliverable:** `dashboard/`
-- **Result:** Functional UI for alert management and cluster investigation.
+### Day 48 ✅ — Database Migration
+- **Objective:** Move data from local PostgreSQL to Supabase Tokyo.
+- **Result:** Successfully migrated all tables and seeded 8 professional demo cases.
 
-### Day 36-40 ✅ — Integration & Testing
-- **Objective:** End-to-End Connectivity & Real-time Scoring.
-- **Result:** Dashboard connected to live API; 50-transaction stress test complete; data integrity verified.
+### Day 49-50 ✅ — Deployment & Going Live
+- **Objective:** Deploy system to the internet.
+- **Result:** 
+  - API Live: `https://scoresentinel-api.onrender.com`
+  - Dashboard Live: `https://transactionmonitoring.vercel.app`
 
-### Day 41-45 ✅ — Model Governance
-- **Objective:** Compliance documentation and rule maintenance guides.
-- **Deliverables:** `UNIFIED_MRM_COMPLIANCE.md` (RBI + SR 11-7), `BACKTESTING.md`, `HOW_TO_MODIFY.md`, `INDEPENDENT_VALIDATION.md`.
-- **Status:** Final Model Sign-off received on Day 45.
+### Day 51 ✅ — Portfolio Preparation
+- **Objective:** Create professional portfolio presentation.
+- **Result:** Overhauled README with live links and CAMS-certified logic documentation.
 
 ---
 
-## Phase 3: Deployment & Launch (Days 46–60) — IN PROGRESS 🔄
+## Phase 4: The Final Polish (Days 52–60) — UPCOMING 🚀
 
 | Day | Objective | Status |
 |---|---|---|
-| 46 | **System Deep Dive** | ✅ Done |
-| 47 | **Deployment Strategy** | ✅ Done |
-| 48 | **Supabase Database Migration** | 📋 Planned |
+| 52 | **Interview Simulation** | 📋 Planned |
+| 53 | **Documentation Sweep** | 📋 Planned |
+| 54 | **LinkedIn Project Launch** | 📋 Planned |
+| 60 | **Master Project Handover** | 📋 Planned |
 
 ---
-### Day 47 ✅ — Deployment Strategy & Containerization
-- **Deliverable:** `Dockerfile`, `requirements.txt`, `.env.template`.
-- **Infrastructure:** Finalized Render.com (API) + Supabase (Postgres) stack.
-- **Portability:** Containerized the engine to ensure identical behavior across local and cloud environments.
-
----
-*ScoreSentinel | ROADMAP.md | Version 3.2 | Authored by Atul Krishnan, CAMS | 21 May 2026*
+*ScoreSentinel | ROADMAP.md | Version 3.5 | Authored by Atul Krishnan, CAMS | 23 May 2026*
