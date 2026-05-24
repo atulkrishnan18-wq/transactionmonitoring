@@ -1,161 +1,102 @@
 # ScoreSentinel 🛡️
 
-## Automated AML Transaction Risk Scoring Engine + MuleCatcher
+## Automated AML Transaction Risk Scoring Engine + MuleCatcher™
 
 **Author:** Atul Krishnan, CAMS
 **Build:** 60-Day Independent Project | 1 Hour Per Day
-**Status:** Phase 2 — Days 36-40 Complete — Full Integration & Testing (v1.0)
-**Last Updated:** 21 May 2026
+**Status:** **PHASE 3 COMPLETE — LIVE & SEEDED (v1.2)**
+**Last Updated:** 23 May 2026
 
 ---
 
-## What Is ScoreSentinel?
-
-ScoreSentinel is a **risk-based, rules-based AML transaction risk scoring engine** designed to automatically assess the money laundering risk of financial transactions. It produces a defensible, explainable **Composite Risk Score (CRS)** and a specialized **Mule Cluster Score (MCS)**.
-
-Every score is traceable to a documented rule. Every threshold is justified. Every decision is auditable. No black-box ML.
-
-### 🛡️ Project MuleCatcher (Overlay)
-The system includes a specialized module for **Mule Cluster Detection**, targeting coordinated networks and organized fraud rings. It detects Fan-In/Fan-Out bursts, dormant-to-active transitions, and high device nexus counts.
+### 🚀 Live Demo & Infrastructure
+*   🛡️ **Live Dashboard:** [transactionmonitoring.vercel.app](https://transactionmonitoring.vercel.app)
+*   ⚙️ **API Health:** [scoresentinel-api.onrender.com/api/health](https://scoresentinel-api.onrender.com/api/health)
+*   📦 **Architecture:** Supabase (PostgreSQL) + Render (Python/Docker) + Vercel (React)
 
 ---
 
-## How It Works (The Dual-Scoring Engine)
+## 💎 What Is ScoreSentinel?
 
-```
-        TRANSACTION INPUT
-               ↓
-┌──────────────┴──────────────┐
-│ MODULE 1: CUSTOMER (30%)    │ ← PEPs, Shell Companies, UBO
-│ MODULE 2: STRUCTURING (25%) │ ← Smurfing, Velocity
-│ MODULE 3: GEOGRAPHY (25%)   │ ← OFAC, FATF, CPI
-│ MODULE 4: TX TYPE (20%)     │ ← Crypto, Wire, Cash
-└──────────────┬──────────────┘
-               ↓
-    COMPOSITE RISK SCORE (CRS) → 0-100 Normalised
-               ↓
-┌──────────────┴──────────────┐
-│ MODULE 5: MULECATCHER      │ ← Coordinated Clusters
-└──────────────┬──────────────┘
-               ↓
-    MULE CLUSTER SCORE (MCS) → Organised Network Detection
-```
+ScoreSentinel is a **CAMS-certified, risk-based AML engine** designed to solve the "black-box" problem in transaction monitoring. It produces a defensible **Composite Risk Score (CRS)** and specialized **Mule Cluster Intelligence (MCS)**, ensuring every alert is 100% explainable to regulators.
+
+> *"ScoreSentinel is not just code; it is a regulatory framework in software form."*
+
+### 🕸️ Project MuleCatcher™ (Overlay)
+A proprietary intelligence layer targeting organized fraud rings. It identifies:
+*   **Fan-In/Fan-Out:** Coordinated bursts to a single concentrator.
+*   **Device Nexus:** Cross-account identification via shared hardware signatures.
+*   **Dormant Activation:** Instant alerting on high-velocity shifts in stale accounts.
 
 ---
 
-## Repository Structure
+## 🧠 Proprietary Compliance Logic
+
+### 1. The 3-Point Identifier Standard (Audit Lock)
+Unlike standard case managers, ScoreSentinel enforces a **Hard Block** on case resolution. An analyst **cannot** close an alert as a "False Positive" or "Cleared" without documenting the **Three-Point Standard**:
+*   **Identifiers:** Passport Number, Entity Registry ID, etc.
+*   **Sources:** Government Database, Utility Bill, Site Visit.
+*   **Why:** This ensures zero "rubber-stamping" and provides a bulletproof audit trail for regulators.
+
+### 2. Composite Risk Scoring (CRS) Calibration
+The engine uses a four-dimension weighted matrix:
+*   👤 **Customer Risk (30%):** PEPs, UBO complexity, Entity type.
+*   📈 **Structuring (25%):** Smurfing, micro-structuring, CTR thresholds.
+*   🌍 **Geography (25%):** OFAC, FATF Grey lists, CPI Corridors.
+*   💸 **TX Type (20%):** Crypto, Correspondent Banking, Cash Intensives.
+
+**The "Scenario 9" Proof:** In validation, a high-risk shell company wire through a grey-list corridor returns a score of **59.04**. By keeping this below the alert threshold (60), the engine proves it is calibrated to avoid unnecessary noise while maintaining high sensitivity.
+
+---
+
+## 🖼️ Dashboard Preview
+
+*(Screenshots coming soon! Replace placeholders with your own captures)*
+
+| Alert Queue | Case Investigation | Mule Network Graph |
+| :--- | :--- | :--- |
+| ![Queue Placeholder](https://via.placeholder.com/400x200?text=Alert+Queue+Live+Data) | ![Case Placeholder](https://via.placeholder.com/400x200?text=3-Point+Audit+Enforcement) | ![Graph Placeholder](https://via.placeholder.com/400x200?text=MuleCatcher+Network+Graph) |
+
+---
+
+## 🛠️ Repository Structure
 
 ```
 transactionmonitoring/
 │
-├── api/                            # Flask REST API (v1.0)
-├── dashboard/                      # React + Vite UI Dashboard
-├── engine/                         # Python Scoring Modules (1-5)
-├── rules/                          # Core AML & Mule detection logic
-├── database/                       # PostgreSQL Schema & Migrations
-├── tests/                          # Automated Scenario Suite (25+ cases)
-├── scoring/                        # Composite logic & Normalisation
-├── governance/                     # Model Risk Management (SR 11-7)
-├── postman/                        # API Validation Collections
-└── docs/                           # Technical Documentation
+├── api/                            # Flask REST API (Render Hosted)
+├── dashboard/                      # React Case Management (Vercel Hosted)
+├── engine/                         # Python Scoring Modules (CAMS Logic)
+├── rules/                          # AML & Mule detection logic docs
+├── database/                       # PostgreSQL (Supabase Hosted)
+├── tests/                          # Automated Suite (25+ Live Scenarios)
+└── governance/                     # Model Risk Management (SR 11-7)
 ```
 
 ---
 
-## Key Design Decisions
+## ⚖️ Regulatory Alignment
 
-### Why Rules-Based, Not ML?
-
-ScoreSentinel deliberately uses a rules-based architecture for three reasons:
-
-1. **SR 11-7 compliance** — Every score must be explainable to a regulator in plain English. Rules-based engines provide this by design. ML models require additional XAI tooling and validation burden.
-
-2. **Auditability** — Every alert includes a full breakdown of which rules fired and why. A compliance officer can reconstruct any decision from the audit log alone.
-
-3. **Regulatory defensibility** — When an OCC or FCA examiner asks "why did you flag this transaction?" — the answer is a documented rule, not a probabilistic output.
-
-### Why 85% Fuzzy Match?
-
-The 85% threshold optimises between false positive rate (~12%) and false negative rate (~4–5%) simultaneously. Below 85%, false positives exceed the 15% operational target. Above 85%, miss rate increases materially on transliteration variations — the most documented sanctions evasion technique. Aligns with SWIFT, Refinitiv, and Actimize default settings.
-
-### Why a Universal Alert Threshold of 60?
-
-The CRS threshold of 60 cannot be reached without at least two independent risk factors being elevated simultaneously — preventing single-factor false positives while ensuring genuine multi-factor risk is captured. Full justification in `scoring/COMPOSITE_LOGIC.md` Section 5.1.
-
----
-
-## Validation
-
-ScoreSentinel has been validated against **20 scenarios** covering the full risk spectrum:
-
-| Scenario | Typology | Result |
-|---|---|---|
-| Clean salary earner | Low risk baseline | ✅ No alert — CRS 6.33 |
-| Shell company wire to Cayman | Offshore layering | ⚠️ Medium-High + EDD |
-| Classic smurfing | Structuring | 🚨 Alert — independent trigger |
-| Iran sanctions | Tier 1A auto-alert | 🚨 Auto-Alert |
-| High-frequency crypto | Velocity + type risk | ⚠️ Medium-High + VEL-015 |
-| PEP Tier 2 wire | PEP EDD | ⚠️ EDD mandatory |
-| FATF corridor | Grey list geography | ⚠️ Medium-Low |
-| Cash SMB micro-structuring | Structuring | 🚨 Alert — 100% trigger |
-| SAR Generator | Multi-factor | ⚠️ 59.04 — calibration evidence |
-| Missing UBO | Data quality | ⚠️ Data flag |
-| Vekselberg / Sulzer | Sanctions + ownership engineering | 🚨 Triple Auto-Alert |
-| Wirecard-style merchant ML | Card-not-present fraud | 🚨 Alert — structuring |
-| Pakistani trade payment | False positive | ✅ Cleared — documented |
-| UK Cabinet Minister | Domestic PEP Tier 1 | 🚨 Auto-Alert |
-| Former PEP 18 months | De-escalation | ⚠️ EDD maintained |
-| BVI shell unknown BO | Fallback BO | ⚠️ Data block |
-| Fan-In mule network | Velocity | 🚨 Alert |
-| Dormant account Nigeria | Account takeover | 🚨 Alert |
-| TBML Letter of Credit | Trade-based ML | ⚠️ TBML flag |
-| Insurance early surrender | Integration stage | ⚠️ Insurance ML escalation |
-
----
-
-## Regulatory Coverage
-
-| Framework | Coverage |
+| Framework | Implementation |
 |---|---|
-| SR 11-7 Model Risk | Threshold justification, weight derivation, normalisation, false positive targets, recalibration schedule, audit trail |
-| FATF Rec 1 — RBA | Risk-based philosophy throughout all modules |
-| FATF Rec 10 — CDD | Customer risk taxonomy, beneficial owner identification |
-| FATF Rec 12 — PEPs | Three-tier PEP structure, UK MLR 2017, de-escalation framework |
-| FATF Rec 16 — Wire Transfers | Travel Rule reference, domestic vs international scoring |
-| FATF Rec 19 — High-Risk Countries | Tier 1A/1B/1C/2A/2B classification with CPI overlay |
-| UK MLR 2017 | Domestic PEP inclusion, 25% BO threshold, EDD requirements |
-| OFAC Sanctions | SDN screening, 50% ownership rule, 40–50% enhanced monitoring zone |
-| BSA/AML | CTR threshold, structuring detection, SAR workflow |
-| FinCEN CDD Rule | Beneficial ownership identification and fallback BO rule |
+| **SR 11-7 Model Risk** | Documented weight derivation, FP targets, and recalibration schedule. |
+| **FATF Rec 12 — PEPs** | Three-tier PEP structure with domestic/foreign de-escalation. |
+| **UK MLR 2017** | Domestic PEP inclusion and 25% UBO threshold enforcement. |
+| **OFAC Sanctions** | 50% Ownership Rule engine and SDN fuzzy matching. |
+| **BSA/AML** | CTR threshold monitoring and SAR-ready investigation reports. |
 
 ---
 
-## Build Progress
-
-| Phase | Days | Status |
-|---|---|---|
-| Phase 1 — AML Logic Design | Days 1–20 | ✅ Complete |
-| Phase 2 — Python Engine Build | Days 21–45 | 🔄 In Progress — Integration Complete — v1.0 Stable |
-| Phase 3 — Deploy & Portfolio | Days 46–60 | 📋 Planned |
-
-**Recalibration schedule active — see scoring/COMPOSITE_LOGIC.md Section 8 for review schedule.**
-
-**Full 60-day roadmap:** See `ROADMAP.md`
-
----
-
-## About the Author
+## ✍️ About the Author
 
 **Atul Krishnan, CAMS**
-Senior Financial Crimes Compliance Professional
-Bank of America — High Risk Detection Team (HRDT)
-APAC Regional Screening | PEP | Sanctions | EDD | FinCrime SME
+Senior Financial Crimes Professional | Bank of America HRDT
+APAC Regional Screening | PEP | Sanctions | FinCrime SME
 
-*ScoreSentinel is an independent project demonstrating the application of CAMS-certified financial crime expertise to compliance technology design — without a coding background.*
+*ScoreSentinel is a professional demonstration of AML technology design, built by a compliance expert to bridge the gap between regulatory theory and technical execution.*
 
 **GitHub:** github.com/atulkrishnan18-wq/transactionmonitoring
-**Publications:** chainsutra.in
+**Professional Portfolio:** chainsutra.in
 
 ---
-
-*ScoreSentinel | Automated AML Transaction Risk Scoring Engine | Authored by Atul Krishnan, CAMS | Version 1.0 | 21 May 2026*
+*ScoreSentinel | Version 1.2 | Authored by Atul Krishnan, CAMS | 23 May 2026*
