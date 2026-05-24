@@ -7,8 +7,10 @@ Authored by Atul Krishnan, CAMS | Day 27 of 60
 import os
 import random
 import datetime
+import json
 import psycopg2
 from psycopg2.extras import RealDictCursor
+from psycopg2.pool import ThreadedConnectionPool
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from scoring_engine import ScoreSentinelEngine
@@ -23,14 +25,29 @@ engine = ScoreSentinelEngine()
 
 # Database connection configuration
 DATABASE_URL = os.environ.get('DATABASE_URL')
-DEMO_API_KEY = os.environ.get('DEMO_API_KEY', 'SCORESENTINEL_DEMO_2027')
+DEMO_API_KEY = os.environ.get('DEMO_API_KEY')
+
+# CRITICAL FIX 1 — Remove hardcoded API key fallback
+if not DEMO_API_KEY:
+    raise RuntimeError("CRITICAL ERROR: DEMO_API_KEY environment variable is not set. The app cannot start without a secure key.")
+
+# CRITICAL FIX 3 — Connection Pool initialization
+# minconn=2, maxconn=10 as per professional requirements
+try:
+    # Handle sslmode for cloud environments (Supabase/Render)
+    pool_kwargs = {"dsn": DATABASE_URL, "cursor_factory": RealDictCursor}
+    if "localhost" not in DATABASE_URL and "127.0.0.1" not in DATABASE_URL:
+        pool_kwargs["sslmode"] = 'require'
+    
+    db_pool = ThreadedConnectionPool(2, 10, **pool_kwargs)
+    print("Database connection pool initialized successfully.")
+except Exception as e:
+    print(f"Error initializing connection pool: {e}")
+    raise RuntimeError("Failed to initialize database connection pool.")
 
 def get_db_connection():
-    """Establishes a connection to the PostgreSQL database."""
-    # Handle sslmode for cloud environments (Supabase/Render)
-    if "localhost" not in DATABASE_URL and "127.0.0.1" not in DATABASE_URL:
-        return psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor, sslmode='require')
-    return psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
+    """Returns a connection from the ThreadedConnectionPool."""
+    return db_pool.getconn()
 
 @app.before_request
 def check_auth():
@@ -75,15 +92,31 @@ def score_transaction():
     Receives a transaction, calls the scoring engine, stores result, returns score.
     """
     data = request.get_json()
+
+    # CRITICAL FIX 2 — Add input validation on POST /api/score
+    tx_amount = data.get("transaction_amount")
+    if tx_amount is None or not isinstance(tx_amount, (int, float)) or tx_amount < 0:
+        return jsonify({"error": "Validation failed", "message": "transaction_amount is missing, not a number, or negative"}), 400
+
+    tx_currency = data.get("transaction_currency")
+    if not tx_currency or not isinstance(tx_currency, str) or len(tx_currency) != 3:
+        return jsonify({"error": "Validation failed", "message": "transaction_currency is missing or not a 3-character string"}), 400
+
+    tx_type = data.get("transaction_type")
+    if not tx_type or not isinstance(tx_type, str) or tx_type.strip() == "":
+        return jsonify({"error": "Validation failed", "message": "transaction_type is missing or empty"}), 400
+
+    sender_country = data.get("sender_country")
+    if not sender_country or not isinstance(sender_country, str) or len(sender_country) != 2:
+        return jsonify({"error": "Validation failed", "message": "sender_country is missing or not a 2-character string"}), 400
+
+    receiver_country = data.get("receiver_country")
+    if not receiver_country or not isinstance(receiver_country, str) or len(receiver_country) != 2:
+        return jsonify({"error": "Validation failed", "message": "receiver_country is missing or not a 2-character string"}), 400
     
-    # Extract data for engine
+    # Extract remaining data for engine
     customer_id = data.get("customer_id", "UNKNOWN_CUST")
     account_id = data.get("account_id", "DEFAULT_ACC")
-    tx_amount = data.get("transaction_amount", 0.0)
-    tx_currency = data.get("transaction_currency", "USD")
-    tx_type = data.get("transaction_type", "OTHER")
-    sender_country = data.get("sender_country", "GB")
-    receiver_country = data.get("receiver_country", "GB")
     
     # Robustness: Ensure customer object exists and has a type
     customer_data = data.get("customer", {})
@@ -182,7 +215,7 @@ def score_transaction():
         cluster_id = None
         if mule_alert:
             cluster_id = generate_id("CLT")
-            import json
+            # CRITICAL FIX 4 — Misplaced import moved to top
             cur.execute("""
                 INSERT INTO mule_clusters (
                     cluster_id, cluster_type, mcs, risk_band, 
@@ -221,7 +254,8 @@ def score_transaction():
         return jsonify({"error": "Database error", "message": str(e)}), 500
     finally:
         cur.close()
-        conn.close()
+        # CRITICAL FIX 3 — Connection Pool putconn instead of close
+        db_pool.putconn(conn)
         
     # Prepare Response
     response = {
@@ -292,7 +326,8 @@ def get_alerts():
         return jsonify({"error": "Database error", "message": str(e)}), 500
     finally:
         cur.close()
-        conn.close()
+        # CRITICAL FIX 3 — Connection Pool putconn instead of close
+        db_pool.putconn(conn)
 
 @app.route('/api/alerts/<alert_id>', methods=['GET'])
 def get_alert_detail(alert_id):
@@ -367,7 +402,8 @@ def get_alert_detail(alert_id):
         return jsonify({"error": "Database error", "message": str(e)}), 500
     finally:
         cur.close()
-        conn.close()
+        # CRITICAL FIX 3 — Connection Pool putconn instead of close
+        db_pool.putconn(conn)
 
 @app.route('/api/customers/<customer_id>', methods=['GET'])
 def get_customer(customer_id):
@@ -418,7 +454,8 @@ def get_customer(customer_id):
         return jsonify({"error": "Database error", "message": str(e)}), 500
     finally:
         cur.close()
-        conn.close()
+        # CRITICAL FIX 3 — Connection Pool putconn instead of close
+        db_pool.putconn(conn)
 
 @app.route('/api/clusters', methods=['GET'])
 def get_clusters():
@@ -455,7 +492,8 @@ def get_clusters():
         return jsonify({"error": "Database error", "message": str(e)}), 500
     finally:
         cur.close()
-        conn.close()
+        # CRITICAL FIX 3 — Connection Pool putconn instead of close
+        db_pool.putconn(conn)
 
 @app.route('/api/clusters/<cluster_id>', methods=['PUT'])
 def update_cluster(cluster_id):
@@ -496,7 +534,8 @@ def update_cluster(cluster_id):
         return jsonify({"error": "Database error", "message": str(e)}), 500
     finally:
         cur.close()
-        conn.close()
+        # CRITICAL FIX 3 — Connection Pool putconn instead of close
+        db_pool.putconn(conn)
 
 @app.route('/api/transactions', methods=['GET'])
 def get_transactions():
@@ -537,7 +576,8 @@ def get_transactions():
         return jsonify({"error": "Database error", "message": str(e)}), 500
     finally:
         cur.close()
-        conn.close()
+        # CRITICAL FIX 3 — Connection Pool putconn instead of close
+        db_pool.putconn(conn)
 
 @app.route('/api/alerts/<alert_id>', methods=['PUT'])
 def update_alert(alert_id):
@@ -623,7 +663,8 @@ def update_alert(alert_id):
         return jsonify({"error": "Database error", "message": str(e)}), 500
     finally:
         cur.close()
-        conn.close()
+        # CRITICAL FIX 3 — Connection Pool putconn instead of close
+        db_pool.putconn(conn)
 
 if __name__ == '__main__':
     # When running locally, ensure PYTHONPATH includes the root directory 
