@@ -1,11 +1,11 @@
 import React from 'react';
 import { 
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   BarChart, Bar, 
   PieChart, Pie, Cell,
   AreaChart, Area
 } from 'recharts';
-import { AlertTriangle, Globe, CheckCircle, TrendingUp, Filter } from 'lucide-react';
+import { AlertTriangle, Globe, Filter } from 'lucide-react';
 
 const Charts = () => {
   // Mock Data: Alert Volume over the last 30 days (requested)
@@ -30,12 +30,6 @@ const Charts = () => {
     { name: 'Mule Cluster', value: 30, color: '#722ed1' },
     { name: 'Sanctions', value: 15, color: '#cf1322' },
     { name: 'PEP Match', value: 10, color: '#fa8c16' },
-  ];
-
-  // Mock Data: False Positive Rate (requested)
-  const fpData = [
-    { name: 'True Positive', value: 65, color: '#cf1322' },
-    { name: 'False Positive', value: 35, color: '#d9d9d9' },
   ];
 
   const styles = {

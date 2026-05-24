@@ -106,7 +106,7 @@ const TransactionHistory = () => {
         setLoading(false);
       })
       .catch(err => console.error(err));
-  }, []);
+  }, [API_URL]);
 
   const styles = {
     container: { padding: '24px' },
