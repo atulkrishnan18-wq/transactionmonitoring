@@ -188,11 +188,14 @@ const CaseDetail = () => {
               <div>
                 <h3 style={styles.sectionTitle}><FileText size={18}/> Rules Fired</h3>
                 <div style={{display: 'flex', flexDirection: 'column', gap: '8px'}}>
-                  {transaction.rules_fired.map((rule, idx) => (
+                  {(transaction.rules_fired || []).map((rule, idx) => (
                     <div key={idx} style={{padding: '8px 12px', backgroundColor: '#f5f5f5', borderRadius: '4px', fontSize: '13px', borderLeft: '4px solid #1890ff'}}>
                       <strong>{rule}</strong>: Rule trigger detected by ScoreSentinel engine.
                     </div>
                   ))}
+                  {(!transaction.rules_fired || transaction.rules_fired.length === 0) && (
+                    <div style={{color: '#8c8c8c', fontSize: '13px', fontStyle: 'italic'}}>No specific rules recorded for this case.</div>
+                  )}
                 </div>
               </div>
             </div>
