@@ -27,7 +27,7 @@ def run_golden_path():
             "geo_tier": "Tier 4"
         }
     }
-    r1 = requests.post(f"{BASE_URL}/api/score", json=payload_1, headers=headers)
+    r1 = requests.post(f"{BASE_URL}/api/score", json=payload_1, headers=headers, timeout=10)
     print(f"Result: CRS {r1.json().get('crs')} | Alert: {r1.json().get('alert')}")
     
     # 2. Sanctions Auto-Alert
@@ -44,7 +44,7 @@ def run_golden_path():
             "full_name": "Demo User (Sanctions Hit)"
         }
     }
-    r2 = requests.post(f"{BASE_URL}/api/score", json=payload_2, headers=headers)
+    r2 = requests.post(f"{BASE_URL}/api/score", json=payload_2, headers=headers, timeout=10)
     alert_id = r2.json().get('alert_id')
     print(f"Result: AUTO-ALERT TRIGGERED | Alert ID: {alert_id}")
     
@@ -62,7 +62,7 @@ def run_golden_path():
         "point_3_identifier": "Profession Mismatch (Teacher)",
         "point_3_source": "Employer Verification"
     }
-    requests.put(f"{BASE_URL}/api/alerts/{alert_id}", json=resolve_payload, headers=headers)
+    requests.put(f"{BASE_URL}/api/alerts/{alert_id}", json=resolve_payload, headers=headers, timeout=10)
     print(f"Result: ALERT RESOLVED & AUDITED.")
     
     # 4. Mule Cluster Detection
@@ -78,7 +78,7 @@ def run_golden_path():
         "customer": {"customer_type": "Individual", "device_nexus_count": 8},
         "history": [{"sender_id": f"S_{i}", "amount": 9500, "date": datetime.now().isoformat(), "type": "CREDIT"} for i in range(10)]
     }
-    r3 = requests.post(f"{BASE_URL}/api/score", json=payload_3, headers=headers)
+    r3 = requests.post(f"{BASE_URL}/api/score", json=payload_3, headers=headers, timeout=10)
     cluster_id = r3.json().get('cluster_id')
     print(f"Result: MULE CLUSTER DETECTED | MCS: {r3.json().get('mcs')} | Cluster ID: {cluster_id}")
     

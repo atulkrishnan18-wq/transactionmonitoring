@@ -28,7 +28,7 @@ def test_str_workflow():
         "type": "DEBIT"
     }
     
-    resp = requests.post(f"{BASE_URL}/api/score", json=payload)
+    resp = requests.post(f"{BASE_URL}/api/score", json=payload, timeout=10)
     if resp.status_code != 200:
         print(f"❌ Transaction submission failed: {resp.text}")
         return
@@ -43,7 +43,7 @@ def test_str_workflow():
 
     # Step 2: Verify str_filed defaults to false
     print("\nStep 2: Verifying str_filed defaults to False...")
-    c_resp = requests.get(f"{BASE_URL}/api/clusters")
+    c_resp = requests.get(f"{BASE_URL}/api/clusters", timeout=10)
     clusters = c_resp.json().get("clusters", [])
     mc1_cluster = next((c for c in clusters if c['cluster_id'] == cluster_id), None)
     
@@ -64,7 +64,7 @@ def test_str_workflow():
         "str_reference": fiu_ref
     }
     
-    u_resp = requests.put(f"{BASE_URL}/api/clusters/{cluster_id}", json=update_payload)
+    u_resp = requests.put(f"{BASE_URL}/api/clusters/{cluster_id}", json=update_payload, timeout=10)
     if u_resp.status_code == 200:
         print(f"✅ Cluster updated. STR Reference: {fiu_ref}")
     else:
@@ -73,7 +73,7 @@ def test_str_workflow():
 
     # Step 4: Final verification via API
     print("\nStep 4: Verifying final state via API...")
-    v_resp = requests.get(f"{BASE_URL}/api/clusters")
+    v_resp = requests.get(f"{BASE_URL}/api/clusters", timeout=10)
     v_clusters = v_resp.json().get("clusters", [])
     updated_cluster = next((c for c in v_clusters if c['cluster_id'] == cluster_id), None)
     

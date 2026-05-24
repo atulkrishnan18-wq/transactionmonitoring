@@ -111,7 +111,7 @@ def run_demo():
     for tx in demo_transactions:
         print(f"\nProcessing {tx['name']}...")
         try:
-            response = requests.post(f"{BASE_URL}/api/score", json=tx['payload'], headers=headers)
+            response = requests.post(f"{BASE_URL}/api/score", json=tx['payload'], headers=headers, timeout=10)
             if response.status_code == 200:
                 result = response.json()
                 print(f"  CRS Score: {result.get('crs') if result.get('crs') is not None else 'AUTO-ALERT'}")

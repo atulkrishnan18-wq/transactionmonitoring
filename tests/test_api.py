@@ -20,7 +20,7 @@ def wait_for_api():
     max_retries = 5
     for i in range(max_retries):
         try:
-            response = requests.get(f"{BASE_URL}/api/health")
+            response = requests.get(f"{BASE_URL}/api/health", timeout=10)
             if response.status_code == 200:
                 return
         except requests.exceptions.ConnectionError:
@@ -31,7 +31,7 @@ def wait_for_api():
 
 def test_api_health():
     """Verify the health check endpoint."""
-    response = requests.get(f"{BASE_URL}/api/health")
+    response = requests.get(f"{BASE_URL}/api/health", timeout=10)
     assert response.status_code == 200
     assert response.json()["status"] == "ok"
 
@@ -52,7 +52,7 @@ def test_clean_transaction():
             "match_type": "No PEP / Sanctions / Adverse Media match"
         }
     }
-    response = requests.post(f"{BASE_URL}/api/score", json=payload)
+    response = requests.post(f"{BASE_URL}/api/score", json=payload, timeout=10)
     assert response.status_code == 200
     data = response.json()
     assert data["alert"] == False
@@ -75,7 +75,7 @@ def test_sanctions_auto_alert():
             "match_type": "No PEP / Sanctions / Adverse Media match"
         }
     }
-    response = requests.post(f"{BASE_URL}/api/score", json=payload)
+    response = requests.post(f"{BASE_URL}/api/score", json=payload, timeout=10)
     assert response.status_code == 200
     data = response.json()
     assert data["alert"] == True
@@ -105,7 +105,7 @@ def test_sar_generator():
             {"amount": 9800, "date": (now - timedelta(days=2)).isoformat(), "account_id": "ACC1"}
         ]
     }
-    response = requests.post(f"{BASE_URL}/api/score", json=payload)
+    response = requests.post(f"{BASE_URL}/api/score", json=payload, timeout=10)
     assert response.status_code == 200
     data = response.json()
     assert data["alert"] == False
@@ -113,7 +113,7 @@ def test_sar_generator():
 
 def test_get_transactions():
     """TEST 4: GET transactions for CUST-TEST-003"""
-    response = requests.get(f"{BASE_URL}/api/transactions?customer_id=CUST-TEST-003")
+    response = requests.get(f"{BASE_URL}/api/transactions?customer_id=CUST-TEST-003", timeout=10)
     assert response.status_code == 200
     data = response.json()
     assert len(data["transactions"]) >= 1
@@ -127,7 +127,7 @@ def test_update_alert_three_point_fail():
         "disposition": "FALSE_POSITIVE",
         "reviewer_id": "ANA-TEST-001"
     }
-    response = requests.put(f"{BASE_URL}/api/alerts/{alert_id}", json=payload)
+    response = requests.put(f"{BASE_URL}/api/alerts/{alert_id}", json=payload, timeout=10)
     assert response.status_code == 400
     assert "Three-point standard not met" in response.json()["error"]
 
@@ -146,7 +146,7 @@ def test_negative_audit_missing_source():
         "point_3_identifier": "CDD-CASE-001"
         # point_3_source is missing!
     }
-    response = requests.put(f"{BASE_URL}/api/alerts/{alert_id}", json=payload)
+    response = requests.put(f"{BASE_URL}/api/alerts/{alert_id}", json=payload, timeout=10)
     assert response.status_code == 400
     data = response.json()
     assert "Three-point standard not met" in data["error"]

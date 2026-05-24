@@ -61,7 +61,7 @@ def run_simulation(count=50):
         payload = generate_random_transaction(i)
         try:
             start_time = time.time()
-            resp = requests.post(f"{BASE_URL}/api/score", json=payload)
+            resp = requests.post(f"{BASE_URL}/api/score", json=payload, timeout=10)
             latency = (time.time() - start_time) * 1000
             
             if resp.status_code == 200:
@@ -89,7 +89,7 @@ def run_simulation(count=50):
     
     # Final check of the alert queue
     try:
-        q_resp = requests.get(f"{BASE_URL}/api/alerts")
+        q_resp = requests.get(f"{BASE_URL}/api/alerts", timeout=10)
         if q_resp.status_code == 200:
             total_alerts = q_resp.json().get("total", 0)
             print(f"Live Alert Queue Total: {total_alerts}")

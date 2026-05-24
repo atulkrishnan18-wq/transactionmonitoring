@@ -669,4 +669,8 @@ def update_alert(alert_id):
 if __name__ == '__main__':
     # When running locally, ensure PYTHONPATH includes the root directory 
     # to find scoring_engine and the engine/ module.
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    host = os.environ.get('FLASK_RUN_HOST', '127.0.0.1')
+    port = int(os.environ.get('FLASK_RUN_PORT', 5000))
+    debug = os.environ.get('FLASK_DEBUG', 'false').lower() == 'true'
+    
+    app.run(debug=debug, host=host, port=port)

@@ -8,7 +8,7 @@ cur = conn.cursor()
 
 def print_table(name):
     print(f"\n--- {name} ---")
-    cur.execute(f"SELECT column_name, data_type FROM information_schema.columns WHERE table_name = '{name}'")
+    cur.execute("SELECT column_name, data_type FROM information_schema.columns WHERE table_name = %s", (name,))
     for row in cur.fetchall():
         print(f"{row[0]}: {row[1]}")
 
