@@ -1,8 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Network, Search, Filter, AlertTriangle, CheckCircle2, 
-  Ban, FileText, Smartphone, Globe
-} from 'lucide-react';
 
 const MuleClusterView = () => {
   const [clusters, setClusters] = useState([]);
@@ -27,7 +23,7 @@ const MuleClusterView = () => {
       }
     };
     fetchClusters();
-  }, []);
+  }, [API_URL]);
 
   const styles = {
     container: { padding: '24px', backgroundColor: '#f5f7fa', minHeight: '100vh', fontFamily: 'Segoe UI, Roboto, sans-serif' },

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Shield, User, MapPin, Activity, FileText, CheckCircle, AlertTriangle, ArrowLeft } from 'lucide-react';
+import { Shield, User, Activity, FileText, CheckCircle, ArrowLeft } from 'lucide-react';
 
 const CaseDetail = () => {
   const { id } = useParams();
@@ -53,7 +53,7 @@ const CaseDetail = () => {
       }
     };
     fetchDetail();
-  }, [id]);
+  }, [id, API_URL]);
 
   const handleUpdate = async (newStage) => {
     // Validation for 3-point standard if resolving

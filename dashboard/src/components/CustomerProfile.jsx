@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  User, Activity, Smartphone, MapPin, 
-  ExternalLink, ShieldCheck, AlertCircle, Clock, Search
+  User, Activity, Search
 } from 'lucide-react';
 
 const CustomerProfile = () => {
@@ -25,7 +24,7 @@ const CustomerProfile = () => {
       }
     };
     fetchCustomer();
-  }, [customerId]);
+  }, [customerId, API_URL]);
 
   const styles = {
     container: { padding: '24px', backgroundColor: '#f5f7fa', minHeight: '100vh', fontFamily: 'Segoe UI, Roboto, sans-serif' },

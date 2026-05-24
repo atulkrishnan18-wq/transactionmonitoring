@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Filter, AlertCircle, Network } from 'lucide-react';
 
 const AlertQueue = () => {
   const navigate = useNavigate();
@@ -28,7 +27,7 @@ const AlertQueue = () => {
       }
     };
     fetchAlerts();
-  }, [activeStage]);
+  }, [activeStage, API_URL]);
 
   const stages = [
     { id: 'ALL', label: 'All Alerts' },
