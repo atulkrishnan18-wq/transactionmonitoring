@@ -59,11 +59,19 @@ While the CRS looks at *one* person, MuleCatcher™ looks at the **Network**.
 
 ---
 
-## ⚖️ 4. The 3-Point Standard (Regulatory Defensibility)
+## ⚖️ 4. The Dual-Resolution Standard (Regulatory Defensibility)
 
-The most unique feature of ScoreSentinel is the **Resolution Block**.
+The most unique feature of ScoreSentinel is the **Resolution Block**, which applies a risk-based standard to case closure:
+
+### 4.1 The Three-Point Identifier Standard
+*   **Target:** Screening Matches (Sanctions, PEPs, Adverse Media).
 *   **The Requirement:** Analysts MUST provide 3 unique Identifiers (e.g., Passport, Utility Bill, Gov DB) to close a case.
-*   **Expert Rationale:** This enforces **Operational Discipline**. It ensures that if a regulator audits the bank 5 years later, the "False Positive" decision is backed by forensic evidence, not just an analyst's "hunch."
+*   **Expert Rationale:** This enforces **Identity Disambiguation**. It ensures the "False Positive" decision is backed by forensic evidence that the customer is NOT the person on the watchlist.
+
+### 4.2 The Mandatory Rationale Standard
+*   **Target:** Transaction Risk (CRS >= 60, Structuring, Velocity).
+*   **The Requirement:** Analysts MUST provide a detailed investigative rationale and reviewer ID.
+*   **Expert Rationale:** Behavioral alerts require **Investigative Depth**. This standard prevents "blank rationale" closures and ensures the analyst has actually reviewed the activity pattern.
 
 ---
 *ScoreSentinel | AML Logic Documentation | Prepared by Atul Krishnan, CAMS | Day 54 of 60*

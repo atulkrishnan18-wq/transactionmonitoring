@@ -149,6 +149,21 @@ To clear a hit as a false positive, the analyst must establish at least three po
 | **Point 6 — Employer Mismatch** | Employer/business has no connection to matched entity | Customer employed by NHS — SDN entity is private arms trader |
 | **Point 7 — Independent Source** | Third-party source confirms customer is different person | Companies House, LinkedIn, public records confirm distinct identity |
 
+### 3.4 Risk-Based Application of the Standard
+
+> **The evidentiary requirement for case disposal in ScoreSentinel is risk-based, distinguishing between Identity Disambiguation and Investigative Depth.**
+
+#### 3.4.1 Screening Match Alerts (Identity Disambiguation)
+*   **Case Types:** Sanctions Hits, PEP Matches, Adverse Media.
+*   **Standard:** **THREE-POINT STANDARD (MANDATORY)**.
+*   **Rationale:** These cases require forensic proof of identity. The standard ensures that the customer is correctly identified as either a genuine match or a false positive via multi-factor corroboration.
+
+#### 3.4.2 Transaction Risk Alerts (Investigative Depth)
+*   **Case Types:** CRS >= 60, Structuring, Velocity, Mule Cluster Alerts.
+*   **Standard:** **MANDATORY RATIONALE STANDARD**.
+*   **Requirement:** Detailed step-by-step reasoning for the disposition, documenting why the activity is either suspicious or legitimate. 
+*   **Note:** While the three-point standard is not technically enforced for these alerts, analysts are encouraged to use corroborating evidence (CDD docs) to support their rationale.
+
 ```
 FALSE POSITIVE DOCUMENTATION TEMPLATE:
 

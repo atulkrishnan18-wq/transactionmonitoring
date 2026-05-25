@@ -30,8 +30,10 @@ Outcomes analysis is performed by running a 25-scenario master validation suite.
 ---
 
 ## 5. Operational Controls
-### 5.1 Three-Point Standard
-The model enforces a mandatory "Three-Point Standard" for alert disambiguation. Analysts must provide three independent identifiers (e.g., DOB, Nationality, Profession) before an alert can be marked as CLEARED or FALSE_POSITIVE.
+### 5.1 Dual-Resolution Standard (Audit Lock)
+The model enforces a risk-based "Audit Lock" for alert disambiguation to prevent operational error:
+*   **Screening Matches (Sanctions/PEP):** Enforces a mandatory **Three-Point Standard**. Analysts must provide three independent identifiers (e.g., DOB, Nationality, Profession) before an alert can be marked as CLEARED or FALSE_POSITIVE.
+*   **Transaction Risk (Behavioral):** Enforces a **Mandatory Rationale Standard**. High-CRS alerts require a detailed investigative write-up before closure, ensuring human review of the behavioural patterns.
 
 ### 5.2 STR Workflow
 A formal STR (Suspicious Transaction Report) workflow is integrated. High-risk mule clusters require a documented filing decision, capturing the FIU-IND reference within the audit trail.

@@ -56,12 +56,20 @@ const CaseDetail = () => {
   }, [id, API_URL]);
 
   const handleUpdate = async (newStage) => {
-    // Validation for 3-point standard if resolving
-    if (newStage === 'RESOLVED' || form.disposition === 'FALSE_POSITIVE') {
-      const { p1_id, p1_src, p2_id, p2_src, p3_id, p3_src } = form;
-      if (!p1_id || !p1_src || !p2_id || !p2_src || !p3_id || !p3_src) {
-        alert("CRITICAL ERROR: Three-point standard not met. All 6 identifier/source fields are required for this disposition.");
-        return;
+    // Validation for compliance standards if resolving
+    if (newStage === 'RESOLVED' || form.disposition === 'FALSE_POSITIVE' || form.disposition === 'CLEARED') {
+      if (alert.alert_type === 'SCREENING_MATCH') {
+        const { p1_id, p1_src, p2_id, p2_src, p3_id, p3_src } = form;
+        if (!p1_id || !p1_src || !p2_id || !p2_src || !p3_id || !p3_src) {
+          window.alert("CRITICAL ERROR: Three-point standard required for screening match dispositions. All 6 identifier/source fields are mandatory.");
+          return;
+        }
+      } else {
+        // TRANSACTION_RISK
+        if (!form.reviewer_rationale || form.reviewer_rationale.trim() === '') {
+          window.alert("CRITICAL ERROR: Reviewer rationale mandatory for transaction risk dispositions.");
+          return;
+        }
       }
     }
 
@@ -204,9 +212,11 @@ const CaseDetail = () => {
 
         {activeTab === 'audit' && (
           <div style={styles.section}>
-            <h3 style={styles.sectionTitle}><Shield size={18}/> Three-Point Identifier Audit</h3>
+            <h3 style={styles.sectionTitle}><Shield size={18}/> {alert.alert_type === 'SCREENING_MATCH' ? 'Three-Point Identifier Standard (MANDATORY)' : 'Identifier Verification (OPTIONAL)'}</h3>
             <p style={{fontSize: '13px', color: '#8c8c8c', marginBottom: '20px'}}>
-              Standard operational requirement per AUDIT_REQUIREMENTS.md. All fields must be verified against source documentation.
+              {alert.alert_type === 'SCREENING_MATCH' 
+                ? 'CRITICAL: As this is a Screening Match (Sanctions/PEP), the Three-Point Standard is MANDATORY for resolution per AML Policy.' 
+                : 'This is a Behavioral Alert. Identity verification is recommended but not mandatory for resolution. Rationale is the primary requirement.'}
             </p>
             
             <div style={styles.grid}>

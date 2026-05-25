@@ -24,8 +24,10 @@
 **Talk Track:**
 *   "Inside the case, we have total model transparency. The **Score Breakdown** shows exactly which module—Customer, Geography, or Structuring—contributed to the score."
 *   "This satisfies **SR 11-7** requirements for model explainability. There is no 'black box' here."
-*   "The most critical feature is the **AML Audit (3-Point Standard)**. I've programmed a 'Hard Block' into the system. As an analyst, I **cannot** resolve this case without entering three unique identifiers and their sources."
-*   **Action:** Try to click 'Resolve' without filling the audit form to show the error message.
+*   "The most critical feature is the **Dual-Resolution Standard (Audit Lock)**. I've programmed a 'Hard Block' into the system that adjusts based on the risk type."
+*   "For **Screening Matches** (Sanctions/PEP), I **cannot** resolve this case without entering the **Three-Point Identifier Standard**—three unique IDs and their sources."
+*   "For **Transaction Risk** (Behavioral), the system enforces a **Mandatory Rationale Standard**, requiring a detailed investigative write-up before closure."
+*   **Action:** Try to click 'Resolve' on a screening match without filling the audit form to show the error message.
 *   "This ensures operational integrity and provides a bulletproof audit trail for regulators."
 
 ---

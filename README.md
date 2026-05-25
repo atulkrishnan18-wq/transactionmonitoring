@@ -32,11 +32,11 @@ A proprietary intelligence layer targeting organized fraud rings. It identifies:
 
 ## 🧠 Proprietary Compliance Logic
 
-### 1. The 3-Point Identifier Standard (Audit Lock)
-Unlike standard case managers, ScoreSentinel enforces a **Hard Block** on case resolution. An analyst **cannot** close an alert as a "False Positive" or "Cleared" without documenting the **Three-Point Standard**:
-*   **Identifiers:** Passport Number, Entity Registry ID, etc.
-*   **Sources:** Government Database, Utility Bill, Site Visit.
-*   **Why:** This ensures zero "rubber-stamping" and provides a bulletproof audit trail for regulators.
+### 1. The Dual-Resolution Standard (Audit Lock)
+Unlike standard case managers, ScoreSentinel enforces a **Hard Block** on case resolution tailored to the risk type:
+*   **For Screening Matches (Sanctions/PEP):** Enforces the **Three-Point Identifier Standard**. An analyst must provide 3 unique identifiers and sources (e.g., Passport, Utility Bill) to prove the customer is NOT a match.
+*   **For Transaction Risk (Behavioral):** Enforces the **Mandatory Rationale Standard**. An analyst must provide a detailed investigative rationale before clearing behavioral alerts.
+*   **Why:** This ensures zero "rubber-stamping" and provides a bulletproof, risk-appropriate audit trail for regulators.
 
 ### 2. Composite Risk Scoring (CRS) Calibration
 The engine uses a four-dimension weighted matrix:
