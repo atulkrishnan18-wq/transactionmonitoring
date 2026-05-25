@@ -236,13 +236,23 @@ def score_transaction():
         alert_id = None
         if alert_generated:
             alert_id = generate_id("ALT")
+            
+            # Map engine alert types to the new compliance categories
+            # SCREENING_MATCH: Sanctions, PEP, Adverse Media
+            # TRANSACTION_RISK: CRS >= 60, Structuring, Velocity, Mule Clusters
+            engine_alert_type = result.get("alert_type")
+            if engine_alert_type in ["Customer Auto-Alert", "Geography Auto-Alert"]:
+                final_alert_type = "SCREENING_MATCH"
+            else:
+                final_alert_type = "TRANSACTION_RISK"
+
             cur.execute("""
                 INSERT INTO alerts (
                     alert_id, transaction_id, customer_id, alert_type, stage, status
                 ) VALUES (%s, %s, %s, %s, %s, %s)
             """, (
                 alert_id, transaction_id, customer_id, 
-                result.get("alert_type", "Mule Cluster Alert" if mule_alert else "AML_RISK"),
+                final_alert_type,
                 "PENDING_ASSESSMENT", "PENDING"
             ))
             
@@ -602,22 +612,35 @@ def update_alert(alert_id):
     p3_id = data.get("point_3_identifier")
     p3_src = data.get("point_3_source")
     
-    # VALIDATION RULE: Three-point standard
-    if disposition in ["FALSE_POSITIVE", "CLEARED"]:
-        if not all([p1_id, p1_src, p2_id, p2_src, p3_id, p3_src]):
-            return jsonify({
-                "error": "Three-point standard not met",
-                "message": "point_1_identifier, point_1_source, point_2_identifier, point_2_source, point_3_identifier, point_3_source are all required for this disposition"
-            }), 400
-            
     conn = get_db_connection()
     cur = conn.cursor()
     
     try:
-        # Verify alert exists
+        # Verify alert exists and get its type
         cur.execute("SELECT * FROM alerts WHERE alert_id = %s", (alert_id,))
-        if cur.fetchone() is None:
+        alert = cur.fetchone()
+        
+        if alert is None:
             return jsonify({"error": "Not found", "message": f"Alert {alert_id} not found"}), 404
+            
+        # VALIDATION RULE: Compliance Standards
+        if disposition in ["FALSE_POSITIVE", "CLEARED"]:
+            alert_type = alert["alert_type"]
+            
+            if alert_type == "SCREENING_MATCH":
+                # Screening matches require identity confirmation (3-point standard)
+                if not all([p1_id, p1_src, p2_id, p2_src, p3_id, p3_src]):
+                    return jsonify({
+                        "error": "Three-point standard required for screening match dispositions",
+                        "message": "point_1_identifier, point_1_source, point_2_identifier, point_2_source, point_3_identifier, point_3_source are all required for screening match resolution"
+                    }), 400
+            else:
+                # Behavioral alerts (TRANSACTION_RISK) require documented rationale
+                if not reviewer_id or not disposition or not rationale or rationale.strip() == "":
+                    return jsonify({
+                        "error": "Reviewer rationale mandatory for transaction risk dispositions",
+                        "message": "reviewer_id, disposition, and non-empty reviewer_rationale are required for transaction risk resolution"
+                    }), 400
             
         # Update alert
         cur.execute("""
