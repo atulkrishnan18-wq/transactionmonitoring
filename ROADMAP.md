@@ -2,7 +2,7 @@
 
 **ScoreSentinel AML Transaction Risk Scoring Engine**
 **Overlay:** Project MuleCatcher (Mule Cluster Intelligence)
-**Version:** 3.5 | **Author:** Atul Krishnan, CAMS | **Date:** 23 May 2026
+**Version:** 3.6 | **Author:** Atul Krishnan, CAMS | **Date:** 24 May 2026
 
 ---
 
@@ -19,7 +19,7 @@ ScoreSentinel has been upgraded to include a specialized fifth module for **Mule
 |---|---|---|---|---|
 | 1-20 | Phase 1: AML Logic Design | rules/, scenarios/ | ✅ Done | v1.2 |
 | 21-45 | Phase 2: Build & Validate | engine/, database/, api/, dashboard/, governance/ | ✅ Done | v1.0 |
-| 46-51 | Phase 3: Deployment & Portfolio | api/, dashboard/, README.md | ✅ Done | v1.2 |
+| 46-51 | Phase 3: Deployment & Portfolio | api/, dashboard/, README.md | ✅ Done | v1.3 |
 | 52-60 | Phase 4: Final Launch | docs/, Model Validation | 🔄 In Progress | — |
 
 ---
@@ -46,14 +46,14 @@ ScoreSentinel has been upgraded to include a specialized fifth module for **Mule
 
 ---
 
-## Phase 4: The Final Polish (Days 52–60) — UPCOMING 🚀
+## Phase 4: The Final Polish (Days 52–60) — IN PROGRESS 🚀
 
 | Day | Objective | Status |
 |---|---|---|
-| 52 | **Expert Review Simulation** | 📋 Planned |
-| 53 | **Documentation Sweep** | 📋 Planned |
+| 52 | **Expert Review Simulation** | ✅ Complete |
+| 53 | **Documentation Sweep** | ✅ Complete |
 | 54 | **LinkedIn Project Launch** | 📋 Planned |
 | 60 | **Master Project Handover** | 📋 Planned |
 
 ---
-*ScoreSentinel | ROADMAP.md | Version 3.5 | Authored by Atul Krishnan, CAMS | 23 May 2026*
+*ScoreSentinel | ROADMAP.md | Version 3.6 | Authored by Atul Krishnan, CAMS | 24 May 2026*

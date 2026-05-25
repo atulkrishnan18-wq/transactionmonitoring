@@ -1,8 +1,8 @@
 # AML_RULES.md — Master Detection Framework
 
 **ScoreSentinel AML Transaction Risk Scoring Engine**
-**Version:** 1.2 | **Status:** Master Ruleset | **Author:** Atul Krishnan, CAMS
-**Last Updated:** 3 May 2026
+**Version:** 1.3 | **Status:** Master Ruleset | **Author:** Atul Krishnan, CAMS
+**Last Updated:** 24 May 2026
 
 ---
 
@@ -18,11 +18,11 @@
 
 ## 1. Executive Summary
 
-ScoreSentinel is a rules-based AML transaction risk scoring engine designed for full regulatory defensibility under **SR 11-7** model risk governance standards. It moves beyond binary detection by employing a **Weighted Composite Risk Score (CRS)** that evaluates every transaction across four independent risk dimensions.
+ScoreSentinel is a rules-based AML transaction risk scoring engine designed for full regulatory defensibility under **SR 11-7** model risk governance standards. It moves beyond binary detection by employing a **Weighted Composite Risk Score (CRS)** that evaluates every transaction across four independent risk dimensions, supplemented by a specialized **MuleCatcher™** overlay for network intelligence.
 
 ScoreSentinel is not a machine learning model. Every score is traceable to a documented rule with explicit justification. Any compliance officer can explain any score to a regulator in plain English.
 
-### 1.1 The Four-Module Architecture
+### 1.1 The Five-Module Architecture
 
 | Module | Core Logic | Weight | Baseline Document |
 |---|---|---|---|
@@ -30,9 +30,10 @@ ScoreSentinel is not a machine learning model. Every score is traceable to a doc
 | **Structuring** | Smurfing patterns, velocity, micro-structuring, near-threshold behaviour | 25% | `STRUCTURING_RULES.md` |
 | **Geography** | Jurisdictional risk — sender and receiver — OFAC, FATF, CPI | 25% | `GEO_RULES.md` |
 | **Transaction Type** | Mechanism-inherent risk — crypto, cash, wire, correspondent banking | 20% | `TRANSACTION_RULES.md` |
+| **MuleCatcher™** | Network Intelligence, Fan-In/Fan-Out, Device Nexus, Coordinated Clusters | Overlay | `MULE_CLUSTER_RULES.md` |
 
-> **Design Note — Why Four Modules, Not Five:**
-> Data integrity (missing beneficial owner, incomplete KYC fields) is handled within the Customer Risk module through the Ownership Transparency dimension defined in `CUSTOMER_RULES.md` Section 3.3. It is not a standalone scoring module. This prevents double-counting and keeps the composite score architecture clean and SR 11-7 compliant.
+> **Design Note — Why Four Modules + One Overlay:**
+> Core AML risk is evaluated through the four weighted modules (CRS). The MuleCatcher™ module acts as a specialized network overlay that evaluates coordinated activity across multiple accounts. This allows for deep typology detection (Mule Clusters) without diluting the individual transaction risk score.
 
 ---
 
@@ -184,9 +185,10 @@ AUDIT LOG — MANDATORY FIELDS PER TRANSACTION:
 | Version | Change | Date | Author |
 |---|---|---|---|
 | 1.0 | Initial draft — five-module architecture, dynamic segmentation | 26 April 2026 | Atul Krishnan, CAMS |
+| 1.3 | Integrated MuleCatcher™ as the fifth module overlay. Updated master index. | 24 May 2026 | Atul Krishnan, CAMS |
 | 1.2 | Updated master index — added VELOCITY_RULES.md, PEP_RULES.md, VALIDATION_SCENARIOS.md. Updated date. | 1 May 2026 | Atul Krishnan, CAMS |
 | 1.1 | Corrected to four-module architecture. Removed unvalidated dynamic threshold segmentation — replaced with universal threshold of 60 with SR 11-7 justification. Clarified data integrity as customer module dimension, not standalone module. Added master index with day references. Added version history. | 03 May 2026 | Atul Krishnan, CAMS |
 
 ---
 
-*ScoreSentinel | AML_RULES.md | Master Detection Framework | Authored by Atul Krishnan, CAMS | Version 1.1 | 03 May 2026*
+*ScoreSentinel | AML_RULES.md | Master Detection Framework | Authored by Atul Krishnan, CAMS | Version 1.3 | 24 May 2026*

@@ -1,8 +1,8 @@
 # MULE_CLUSTER_RULES.md — Mule Account Network Detection
 
 **ScoreSentinel AML Transaction Risk Scoring Engine**
-**Version:** 1.0 | **Module:** 5 of 5 | **Author:** Atul Krishnan, CAMS
-**Last Updated:** 18 May 2026
+**Version:** 1.1 | **Module:** 5 of 5 | **Author:** Atul Krishnan, CAMS
+**Last Updated:** 24 May 2026
 
 ---
 
