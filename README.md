@@ -57,6 +57,8 @@ The engine uses a four-dimension weighted matrix:
 | :--- | :--- | :--- |
 | ![Queue Placeholder](https://via.placeholder.com/400x200?text=Alert+Queue+Live+Data) | ![Case Placeholder](https://via.placeholder.com/400x200?text=3-Point+Audit+Enforcement) | ![Graph Placeholder](https://via.placeholder.com/400x200?text=MuleCatcher+Network+Graph) |
 
+> 📊 **View Visual Documentation:** [System Architecture & Data Flow Diagrams](docs/ARCHITECTURE.md)
+
 ---
 
 ## 🛠️ Repository Structure
