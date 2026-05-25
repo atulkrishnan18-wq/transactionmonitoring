@@ -2,58 +2,52 @@
 
 **ScoreSentinel AML Transaction Risk Scoring Engine**
 **Overlay:** Project MuleCatcher (Mule Cluster Intelligence)
-**Version:** 3.6 | **Author:** Atul Krishnan, CAMS | **Date:** 24 May 2026
+**Version:** 4.0 | **Author:** Atul Krishnan, CAMS | **Status:** PROJECT COMPLETE ✅
 
 ---
 
 ## The Vision
 To build a professional, rules-based AML scoring engine from scratch, demonstrating that compliance expertise can be translated directly into technical systems without "black-box" risks. 
 
-ScoreSentinel has been upgraded to include a specialized fifth module for **Mule Cluster Detection**. This targets the ₹11,0,00,00,000 (₹11,000 Crore) annual fraud loss in India via coordinated networks.
+ScoreSentinel has been upgraded to include a specialized fifth module for **Mule Cluster Detection**, targeting organized fraud rings and enhancing regulatory defensibility through the **Audit Lock** framework.
 
 ---
 
 ## Master Progress Tracker
 
-| Day | Deliverable | Location | Status | Version |
+| Phase | Milestone | Days | Status | Results |
 |---|---|---|---|---|
-| 1-20 | Phase 1: AML Logic Design | rules/, scenarios/ | ✅ Done | v1.2 |
-| 21-45 | Phase 2: Build & Validate | engine/, database/, api/, dashboard/, governance/ | ✅ Done | v1.0 |
-| 46-51 | Phase 3: Deployment & Portfolio | api/, dashboard/, README.md | ✅ Done | v1.3 |
-| 52-60 | Phase 4: Final Launch | docs/, Model Validation | 🔄 In Progress | — |
+| **1** | **AML Logic Design** | 1-20 | ✅ Done | 100+ rules, 20 scenarios documented. |
+| **2** | **Technical Build** | 21-45 | ✅ Done | Python engine, Flask API, React UI. |
+| **3** | **Cloud Deployment** | 46-51 | ✅ Done | Live on Supabase, Render, Vercel. |
+| **4** | **Master Launch** | 52-60 | ✅ Done | Hardened, Documented, and Complete. |
 
 ---
 
-## Phase 3: Deployment & Launch (Days 46–51) — COMPLETE ✅
+## Phase 4: Final Launch & Polish (Days 52–60) — COMPLETE ✅
 
-### Day 46-47 ✅ — Infrastructure Selection
-- **Objective:** Design a persistent, cloud-hosted architecture.
-- **Result:** Selected Render (API) + Supabase (PostgreSQL) + Vercel (Dashboard).
+### Day 52-53 ✅ — Security Hardening
+- **Objective:** Production-grade security audit and documentation.
+- **Result:** Zero vulnerabilities (pip-audit), Bandit hardened, Architecture diagrams complete.
 
-### Day 48 ✅ — Database Migration
-- **Objective:** Move data from local PostgreSQL to Supabase Tokyo.
-- **Result:** Successfully migrated all tables and seeded 8 professional demo cases.
+### Day 54-55 ✅ — Compliance Alignment
+- **Objective:** Final logic polish and demo scripting.
+- **Result:** Implemented Dual-Resolution Standard (Identity vs Behavior). Demo Guide complete.
 
-### Day 49-50 ✅ — Deployment & Going Live
-- **Objective:** Deploy system to the internet.
-- **Result:** 
-  - API Live: `https://scoresentinel-api.onrender.com`
-  - Dashboard Live: `https://transactionmonitoring.vercel.app`
+### Day 56-59 ✅ — Public Launch
+- **Objective:** Share project story and master the narrative.
+- **Result:** Technical Case Study published. Private Expert Q&A Master List complete.
 
-### Day 51 ✅ — Portfolio Preparation
-- **Objective:** Create professional portfolio presentation.
-- **Result:** Overhauled README with live links and CAMS-certified logic documentation.
+### Day 60 ✅ — Master Project Handover
+- **Objective:** Final repository polish and quality audit.
+- **Result:** Repository cleaned, gaps resolved, project officially marked as **COMPLETE**.
 
 ---
 
-## Phase 4: The Final Polish (Days 52–60) — IN PROGRESS 🚀
-
-| Day | Objective | Status |
-|---|---|---|
-| 52 | **Expert Review Simulation** | ✅ Complete |
-| 53 | **Documentation Sweep** | ✅ Complete |
-| 54 | **LinkedIn Project Launch** | 📋 Planned |
-| 60 | **Master Project Handover** | 📋 Planned |
+## Future Roadmap (ScoreSentinel 2.0)
+*   **Temporal Graph Intelligence:** Historical link analysis for long-term mule network detection.
+*   **Real-time API Feeds:** Direct integration with SDN/OFAC and UBO registry APIs.
+*   **AI-Assisted Explainability:** Layering XAI (Explainable AI) for advanced pattern matching without the black-box risk.
 
 ---
-*ScoreSentinel | ROADMAP.md | Version 3.6 | Authored by Atul Krishnan, CAMS | 24 May 2026*
+*ScoreSentinel | ROADMAP.md | Version 4.0 | Authored by Atul Krishnan, CAMS | 25 May 2026*
