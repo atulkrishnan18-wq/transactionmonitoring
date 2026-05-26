@@ -23,11 +23,15 @@ const CaseDetail = () => {
   });
 
   const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+  const DEMO_KEY = process.env.REACT_APP_DEMO_API_KEY || 'SCORESENTINEL_DEMO_2027';
+  const READ_KEY = process.env.REACT_APP_READ_API_KEY || 'SCORESENTINEL_READ_2027';
 
   useEffect(() => {
     const fetchDetail = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/alerts/${id}`);
+        const response = await fetch(`${API_URL}/api/alerts/${id}`, {
+          headers: { 'X-READ-API-KEY': READ_KEY }
+        });
         const result = await response.json();
         setData(result);
         if (result.alert) {
@@ -53,7 +57,7 @@ const CaseDetail = () => {
       }
     };
     fetchDetail();
-  }, [id, API_URL]);
+  }, [id, API_URL, READ_KEY]);
 
   const handleUpdate = async (newStage) => {
     // Validation for compliance standards if resolving
@@ -76,7 +80,10 @@ const CaseDetail = () => {
     try {
       const response = await fetch(`${API_URL}/api/alerts/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-DEMO-API-KEY': DEMO_KEY
+        },
         body: JSON.stringify({
           ...form,
           stage: newStage || form.stage,

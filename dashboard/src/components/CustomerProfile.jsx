@@ -9,12 +9,15 @@ const CustomerProfile = () => {
   const [loading, setLoading] = useState(true);
 
   const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+  const READ_KEY = process.env.REACT_APP_READ_API_KEY || 'SCORESENTINEL_READ_2027';
 
   useEffect(() => {
     const fetchCustomer = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`${API_URL}/api/customers/${customerId}`);
+        const response = await fetch(`${API_URL}/api/customers/${customerId}`, {
+          headers: { 'X-READ-API-KEY': READ_KEY }
+        });
         const result = await response.json();
         setData(result);
       } catch (error) {

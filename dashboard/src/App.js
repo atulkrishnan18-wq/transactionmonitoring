@@ -97,9 +97,12 @@ const TransactionHistory = () => {
   const [loading, setLoading] = React.useState(true);
 
   const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+  const READ_KEY = process.env.REACT_APP_READ_API_KEY || 'SCORESENTINEL_READ_2027';
 
   React.useEffect(() => {
-    fetch(`${API_URL}/api/transactions`)
+    fetch(`${API_URL}/api/transactions`, {
+      headers: { 'X-READ-API-KEY': READ_KEY }
+    })
       .then(res => res.json())
       .then(data => {
         setTransactions(data.transactions || []);

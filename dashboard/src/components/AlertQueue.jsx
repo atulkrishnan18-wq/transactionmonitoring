@@ -9,6 +9,7 @@ const AlertQueue = () => {
   const [typeFilter, setTypeFilter] = useState('ALL');
 
   const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+  const READ_KEY = process.env.REACT_APP_READ_API_KEY || 'SCORESENTINEL_READ_2027';
 
   useEffect(() => {
     const fetchAlerts = async () => {
@@ -17,7 +18,9 @@ const AlertQueue = () => {
         const url = activeStage === 'ALL' 
           ? `${API_URL}/api/alerts` 
           : `${API_URL}/api/alerts?stage=${activeStage}`;
-        const response = await fetch(url);
+        const response = await fetch(url, {
+          headers: { 'X-READ-API-KEY': READ_KEY }
+        });
         const data = await response.json();
         setAlerts(data.alerts || []);
       } catch (error) {

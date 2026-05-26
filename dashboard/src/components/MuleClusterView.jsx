@@ -6,11 +6,14 @@ const MuleClusterView = () => {
   const [selectedCluster, setSelectedCluster] = useState(null);
 
   const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+  const READ_KEY = process.env.REACT_APP_READ_API_KEY || 'SCORESENTINEL_READ_2027';
 
   useEffect(() => {
     const fetchClusters = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/clusters`);
+        const response = await fetch(`${API_URL}/api/clusters`, {
+          headers: { 'X-READ-API-KEY': READ_KEY }
+        });
         const data = await response.json();
         setClusters(data.clusters || []);
         if (data.clusters && data.clusters.length > 0) {
