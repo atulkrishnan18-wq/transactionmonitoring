@@ -30,7 +30,7 @@ const AlertQueue = () => {
       }
     };
     fetchAlerts();
-  }, [activeStage, API_URL]);
+  }, [activeStage, API_URL, READ_KEY]);
 
   const stages = [
     { id: 'ALL', label: 'All Alerts' },

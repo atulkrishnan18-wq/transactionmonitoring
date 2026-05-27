@@ -109,7 +109,7 @@ const TransactionHistory = () => {
         setLoading(false);
       })
       .catch(err => console.error(err));
-  }, [API_URL]);
+  }, [API_URL, READ_KEY]);
 
   const styles = {
     container: { padding: '24px' },
