@@ -8,7 +8,7 @@ const AlertQueue = () => {
   const [activeStage, setActiveStage] = useState('ALL');
   const [typeFilter, setTypeFilter] = useState('ALL');
 
-  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+  const API_URL = process.env.REACT_APP_API_URL || 'https://scoresentinel-api.onrender.com';
   const READ_KEY = process.env.REACT_APP_READ_API_KEY || 'SCORESENTINEL_READ_2027';
 
   useEffect(() => {
@@ -121,9 +121,8 @@ const AlertQueue = () => {
             onChange={(e) => setTypeFilter(e.target.value)}
           >
             <option value="ALL">All Types</option>
-            <option value="AML_RISK">AML Risk</option>
-            <option value="Mule Cluster Alert">Mule Cluster</option>
-            <option value="SANCTIONS">Sanctions</option>
+            <option value="TRANSACTION_RISK">Transaction Risk</option>
+            <option value="SCREENING_MATCH">Screening Match</option>
           </select>
         </div>
       </div>

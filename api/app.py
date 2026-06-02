@@ -236,6 +236,7 @@ def get_alerts():
                 alerts.append({
                     "alert_id": row["alert_id"],
                     "transaction_id": row["transaction_id"],
+                    "customer_id": row["customer_id"],
                     "customer_name": row["customer_name"] or "Unknown",
                     "alert_type": row["alert_type"],
                     "stage": row["stage"],
