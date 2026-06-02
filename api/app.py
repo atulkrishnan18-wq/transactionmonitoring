@@ -22,12 +22,8 @@ load_dotenv()
 
 app = Flask(__name__)
 
-# MEDIUM FIX 5 — Restrict CORS to dashboard domain
-ALLOWED_ORIGINS = os.environ.get(
-  'ALLOWED_ORIGINS', 
-  'http://localhost:3000'
-).split(',')
-CORS(app, origins=ALLOWED_ORIGINS)
+# Open CORS for production (allows Vercel dashboard to connect)
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # MEDIUM FIX 2 — Add rate limiting
 limiter = Limiter(
