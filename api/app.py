@@ -23,7 +23,10 @@ load_dotenv()
 app = Flask(__name__)
 
 # Open CORS for production (allows Vercel dashboard to connect)
-CORS(app, resources={r"/api/*": {"origins": "*"}})
+CORS(app, resources={r"/api/*": {
+    "origins": "*",
+    "allow_headers": ["Content-Type", "X-READ-API-KEY", "X-DEMO-API-KEY"]
+}})
 
 # MEDIUM FIX 2 — Add rate limiting
 limiter = Limiter(
