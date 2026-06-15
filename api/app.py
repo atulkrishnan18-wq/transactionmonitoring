@@ -47,10 +47,10 @@ engine = ScoreSentinelEngine()
 
 # Database connection configuration
 DATABASE_URL = os.environ.get('DATABASE_URL')
-DEMO_API_KEY = os.environ.get('DEMO_API_KEY', 'SCORESENTINEL_DEMO_2027')
+DEMO_API_KEY = os.environ.get('DEMO_API_KEY') or 'SCORESENTINEL_DEMO_2027'
 
 # MEDIUM FIX 1 — Protect GET endpoints with read-only API key
-READ_API_KEY = os.environ.get('READ_API_KEY', 'SCORESENTINEL_READ_2027')
+READ_API_KEY = os.environ.get('READ_API_KEY') or 'SCORESENTINEL_READ_2027'
 
 if not DEMO_API_KEY:
     raise RuntimeError("CRITICAL ERROR: DEMO_API_KEY environment variable is not set.")
@@ -529,4 +529,6 @@ if __name__ == '__main__':
     host = os.environ.get('FLASK_RUN_HOST', '127.0.0.1')
     port = int(os.environ.get('FLASK_RUN_PORT', 5000))
     app.run(debug=False, host=host, port=port)
+False, host=host, port=port)
+lse, host=host, port=port)
 False, host=host, port=port)
