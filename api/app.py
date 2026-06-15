@@ -66,7 +66,9 @@ def get_db_connection():
 
 @app.before_request
 def check_auth():
-    # Exempt GET /api/health from any auth check
+    # Exempt OPTIONS and health check from any auth check
+    if request.method == 'OPTIONS':
+        return
     if request.path == '/api/health' and request.method == 'GET':
         return
 
@@ -529,6 +531,3 @@ if __name__ == '__main__':
     host = os.environ.get('FLASK_RUN_HOST', '127.0.0.1')
     port = int(os.environ.get('FLASK_RUN_PORT', 5000))
     app.run(debug=False, host=host, port=port)
-False, host=host, port=port)
-lse, host=host, port=port)
-False, host=host, port=port)
