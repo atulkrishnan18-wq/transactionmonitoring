@@ -29,4 +29,4 @@ ENV PYTHONPATH=/app
 EXPOSE 5000
 
 # Use Gunicorn for production instead of the built-in Flask server
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "api.app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:10000", "--access-logfile", "-", "--error-logfile", "-", "api.app:app"]
