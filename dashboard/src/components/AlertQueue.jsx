@@ -29,9 +29,8 @@ const AlertQueue = () => {
         setLoading(false);
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     fetchAlerts();
-  }, [activeStage, API_URL]);
+  }, [activeStage, API_URL, READ_KEY]);
 
   const stages = [
     { id: 'ALL', label: 'All Alerts' },

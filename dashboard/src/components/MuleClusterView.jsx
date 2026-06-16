@@ -25,9 +25,8 @@ const MuleClusterView = () => {
         setLoading(false);
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     fetchClusters();
-  }, [API_URL]);
+  }, [API_URL, READ_KEY]);
 
   const styles = {
     container: { padding: '24px', backgroundColor: '#f5f7fa', minHeight: '100vh', fontFamily: 'Segoe UI, Roboto, sans-serif' },

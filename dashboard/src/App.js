@@ -109,8 +109,7 @@ const TransactionHistory = () => {
         setLoading(false);
       })
       .catch(err => console.error(err));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [API_URL]);
+  }, [API_URL, READ_KEY]);
 
   const styles = {
     container: { padding: '24px' },

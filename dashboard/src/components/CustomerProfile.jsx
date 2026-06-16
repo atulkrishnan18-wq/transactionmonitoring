@@ -26,9 +26,8 @@ const CustomerProfile = () => {
         setLoading(false);
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     fetchCustomer();
-  }, [customerId, API_URL]);
+  }, [customerId, API_URL, READ_KEY]);
 
   const styles = {
     container: { padding: '24px', backgroundColor: '#f5f7fa', minHeight: '100vh', fontFamily: 'Segoe UI, Roboto, sans-serif' },

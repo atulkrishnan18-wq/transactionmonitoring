@@ -56,14 +56,13 @@ const CaseDetail = () => {
         setLoading(false);
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     fetchDetail();
-  }, [id, API_URL]);
+  }, [id, API_URL, READ_KEY]);
 
   const handleUpdate = async (newStage) => {
     // Validation for compliance standards if resolving
     if (newStage === 'RESOLVED' || form.disposition === 'FALSE_POSITIVE' || form.disposition === 'CLEARED') {
-      if (alert.alert_type === 'SCREENING_MATCH') {
+      if (data.alert.alert_type === 'SCREENING_MATCH') {
         const { p1_id, p1_src, p2_id, p2_src, p3_id, p3_src } = form;
         if (!p1_id || !p1_src || !p2_id || !p2_src || !p3_id || !p3_src) {
           window.alert("CRITICAL ERROR: Three-point standard required for screening match dispositions. All 6 identifier/source fields are mandatory.");
