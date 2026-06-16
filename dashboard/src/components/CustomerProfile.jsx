@@ -26,6 +26,7 @@ const CustomerProfile = () => {
         setLoading(false);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     fetchCustomer();
   }, [customerId, API_URL]);
 
