@@ -56,8 +56,9 @@ const CaseDetail = () => {
         setLoading(false);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     fetchDetail();
-  }, [id, API_URL, READ_KEY]);
+  }, [id, API_URL]);
 
   const handleUpdate = async (newStage) => {
     // Validation for compliance standards if resolving
