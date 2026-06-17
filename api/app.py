@@ -47,10 +47,10 @@ engine = ScoreSentinelEngine()
 
 # Database connection configuration
 DATABASE_URL = os.environ.get('DATABASE_URL')
-DEMO_API_KEY = os.environ.get('DEMO_API_KEY') or 'SCORESENTINEL_DEMO_2027'
+DEMO_API_KEY = os.environ.get('DEMO_API_KEY')
 
 # MEDIUM FIX 1 — Protect GET endpoints with read-only API key
-READ_API_KEY = os.environ.get('READ_API_KEY') or 'SCORESENTINEL_READ_2027'
+READ_API_KEY = os.environ.get('READ_API_KEY')
 
 if not DEMO_API_KEY:
     raise RuntimeError("CRITICAL ERROR: DEMO_API_KEY environment variable is not set.")
@@ -77,11 +77,9 @@ def check_auth():
         if key != DEMO_API_KEY:
             return jsonify({"error": "Unauthorized", "message": "Demo API Key required for this action."}), 401
     elif request.method == 'GET':
-        # Temporary: Allow GET without key to guarantee dashboard resurrection
-        return
-        # key = request.headers.get('X-READ-API-KEY')
-        # if key != READ_API_KEY:
-        #     return jsonify({"error": "Unauthorized", "message": "Read-only API Key required for this action."}), 401
+        key = request.headers.get('X-READ-API-KEY')
+        if key != READ_API_KEY:
+            return jsonify({"error": "Unauthorized", "message": "Read-only API Key required for this action."}), 401
 
 # MEDIUM FIX 3 — Replace random ID suffix with UUID
 def generate_id(prefix):
