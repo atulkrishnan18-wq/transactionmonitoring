@@ -9,7 +9,7 @@ const CustomerProfile = () => {
   const [loading, setLoading] = useState(true);
 
   const API_URL = process.env.REACT_APP_API_URL || 'https://scoresentinel-api.onrender.com';
-  const READ_KEY = process.env.REACT_APP_READ_API_KEY || 'SCORESENTINEL_READ_2027';
+  const READ_KEY = process.env.REACT_APP_READ_API_KEY;
 
   useEffect(() => {
     const fetchCustomer = async () => {
