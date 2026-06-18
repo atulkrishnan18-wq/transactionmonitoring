@@ -10,8 +10,8 @@ Evolution from simple rules to **Graph-based Intelligence** and **Automated Rati
 ### Week 1: Link Analysis & Graph Intelligence (MuleCatcher™ Evolution)
 *Focus: Detecting how accounts are connected beyond just transactions.*
 
-*   **Day 01:** **Database Resurrection:** Unpause Supabase, run `check_db.py`, and run the full test suite.
-*   **Day 02:** **Link Analysis Design:** Draft a schema for a `customer_links` table (Shared IP, Shared Device, Shared Address).
+*   **Day 01:** **Database Resurrection:** ✅ Unpause Supabase, run `check_db.py`, and run the full test suite.
+*   **Day 02:** **Link Analysis Design:** ✅ Draft a schema for a `customer_links` table (Shared IP, Shared Device, Shared Address).
 *   **Day 03:** **Schema Execution:** Apply the `customer_links` SQL migration to Supabase.
 *   **Day 04:** **Nexus Logic:** Implement "Shared Device ID" detection in the scoring engine.
 *   **Day 05:** **Circular Logic:** Build a rule to detect "Circular Flow of Funds" (User A -> B -> C -> A).
