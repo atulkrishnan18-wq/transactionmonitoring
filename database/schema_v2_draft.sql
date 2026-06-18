@@ -11,6 +11,7 @@ CREATE TABLE customer_links (
     first_seen          TIMESTAMP DEFAULT NOW(),
     last_seen           TIMESTAMP DEFAULT NOW(),
     link_strength       DECIMAL(5,2) DEFAULT 1.00,
+    link_count          INTEGER DEFAULT 1,
     is_active           BOOLEAN DEFAULT TRUE,
     metadata            JSONB,                -- Store context like 'count', 'frequency', or 'source'
     created_at          TIMESTAMP DEFAULT NOW(),
@@ -22,8 +23,8 @@ CREATE TABLE customer_links (
 );
 
 -- Performance Indexes for Link Analysis
-CREATE INDEX idx_customer_links_c1 ON customer_links(customer_id_1);
-CREATE INDEX idx_customer_links_c2 ON customer_links(customer_id_2);
+CREATE INDEX idx_links_customer_1 ON customer_links(customer_id_1);
+CREATE INDEX idx_links_customer_2 ON customer_links(customer_id_2);
 CREATE INDEX idx_customer_links_type ON customer_links(link_type);
 CREATE INDEX idx_customer_links_value ON customer_links(link_value);
 
