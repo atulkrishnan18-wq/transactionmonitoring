@@ -15,6 +15,7 @@ from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from scoring_engine import ScoreSentinelEngine
+from engine.scenario_engine import ScenarioEngine
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -44,6 +45,7 @@ def ratelimit_handler(e):
     }), 429
 
 engine = ScoreSentinelEngine()
+scenario_engine = ScenarioEngine()
 
 # Database connection configuration
 DATABASE_URL = os.environ.get('DATABASE_URL')
@@ -526,6 +528,109 @@ def update_alert(alert_id):
     except Exception as e:
         app.logger.error(f"Error in update_alert: {str(e)}")
         return jsonify({"error": "Internal server error", "message": "An unexpected error occurred. Please try again."}), 500
+
+# ==========================================
+# ENTERPRISE SCENARIO ENGINE (v2.0) ENDPOINTS
+# ==========================================
+
+@app.route('/api/v2/scenarios', methods=['GET'])
+@limiter.limit("60 per minute")
+def get_scenarios_catalog():
+    """
+    GET /api/v2/scenarios
+    Returns active scenario detection catalog with current threshold configurations.
+    """
+    try:
+        catalog = scenario_engine.get_catalog()
+        return jsonify(catalog), 200
+    except Exception as e:
+        app.logger.error(f"Error retrieving scenario catalog: {str(e)}")
+        return jsonify({"error": "Failed to retrieve scenario catalog", "details": str(e)}), 500
+
+@app.route('/api/v2/scenarios/evaluate', methods=['POST'])
+@limiter.limit("120 per minute")
+def evaluate_scenarios():
+    """
+    POST /api/v2/scenarios/evaluate
+    Evaluates a transaction or batch of transactions against configured detection scenarios.
+    Accepts transient parameter overrides for 2LoD threshold tuning simulations.
+    """
+    try:
+        data = request.get_json() or {}
+        parameter_overrides = data.get("parameters", data.get("parameter_overrides", {}))
+        customer_profile = data.get("customer", data.get("customer_profile", {}))
+        history = data.get("history", [])
+
+        if "transactions" in data and isinstance(data["transactions"], list):
+            # Batch evaluation
+            result = scenario_engine.evaluate_batch(
+                transactions=data["transactions"],
+                history=history,
+                customer_profile=customer_profile,
+                parameter_overrides=parameter_overrides
+            )
+            return jsonify(result), 200
+
+        transaction = data.get("transaction", data)
+        # Verify transaction has minimum required fields
+        if not transaction or not isinstance(transaction, dict):
+            return jsonify({"error": "Invalid payload", "message": "Transaction object is required"}), 400
+
+        result = scenario_engine.evaluate_transaction(
+            transaction=transaction,
+            history=history,
+            customer_profile=customer_profile,
+            parameter_overrides=parameter_overrides
+        )
+        return jsonify(result), 200
+
+    except Exception as e:
+        app.logger.error(f"Error evaluating scenarios: {str(e)}")
+        return jsonify({"error": "Evaluation error", "message": str(e)}), 500
+
+@app.route('/api/v2/scenarios/<scenario_id>/parameters', methods=['PUT'])
+@limiter.limit("30 per minute")
+def update_scenario_parameters(scenario_id):
+    """
+    PUT /api/v2/scenarios/<scenario_id>/parameters
+    Updates active threshold parameters for a specific scenario (e.g. from Tuning Lab).
+    """
+    try:
+        data = request.get_json() or {}
+        new_params = data.get("parameters", data)
+        if not isinstance(new_params, dict):
+            return jsonify({"error": "Bad request", "message": "Parameters must be an object"}), 400
+
+        success = scenario_engine.update_parameters(scenario_id, new_params)
+        if not success:
+            return jsonify({"error": "Not found", "message": f"Scenario {scenario_id} not found"}), 404
+
+        scenario = scenario_engine.get_scenario(scenario_id)
+        return jsonify({
+            "status": "updated",
+            "scenario_id": scenario_id,
+            "active_parameters": scenario.parameters
+        }), 200
+    except Exception as e:
+        app.logger.error(f"Error updating parameters: {str(e)}")
+        return jsonify({"error": "Update error", "message": str(e)}), 500
+
+@app.route('/api/v2/scenarios/reset', methods=['POST'])
+@limiter.limit("30 per minute")
+def reset_scenario_parameters():
+    """
+    POST /api/v2/scenarios/reset
+    Resets all scenario parameters to baseline defaults.
+    """
+    try:
+        data = request.get_json() or {}
+        scenario_id = data.get("scenario_id")
+        scenario_engine.reset_parameters(scenario_id)
+        return jsonify({"status": "reset", "message": f"Parameters reset to baseline for {'all' if not scenario_id else scenario_id}"}), 200
+    except Exception as e:
+        app.logger.error(f"Error resetting parameters: {str(e)}")
+        return jsonify({"error": "Reset error", "message": str(e)}), 500
+
 
 if __name__ == '__main__':
     host = os.environ.get('FLASK_RUN_HOST', '127.0.0.1')

@@ -4,8 +4,8 @@
 
 **Author:** Atul Krishnan, CAMS
 **Build:** 60-Day Independent Project | 1 Hour Per Day
-**Status:** **PROJECT COMPLETE ✅ (v1.4)**
-**Last Updated:** 25 May 2026
+**Status:** **ENTERPRISE EDITION ✅ (v2.0)**
+**Last Updated:** September 2026
 
 ---
 
@@ -47,6 +47,13 @@ The engine uses a four-dimension weighted matrix:
 
 **The "Scenario 9" Proof:** In validation, a high-risk shell company wire through a grey-list corridor returns a score of **59.04**. By keeping this below the alert threshold (60), the engine proves it is calibrated to avoid unnecessary noise while maintaining high sensitivity.
 
+### 3. Enterprise Configurable Scenario Engine (v2.0)
+Decouples compliance detection rules from hardcoded Python numbers into a parameterized, dynamic scenario catalog conforming to **Fed SR 11-7 / OCC 2011-12**:
+*   **`SCEN-STRUC-01` (Structuring / Smurfing):** Rolling-window sub-CTR analysis with configurable bounds ($9,000–$9,999.99), lookback days, and aggregate threshold checks (*FinCEN Advisory FIN-2012-A008 / BSA 31 U.S.C. § 5324*).
+*   **`SCEN-VEL-01` (Rapid Fund Movement / Pass-Through):** Evaluates credit inflow vs. rapid debit dissipation velocity within narrow time windows (*FATF Mule Networks / FinCEN FIN-2020-A003*).
+*   **`SCEN-CORR-01` (High-Risk Corridor Spike):** Dynamic geographic scoring combined with volume multiplier spikes against customer 30-day baselines (*FATF Rec 19 / OFAC Risk Matrix*).
+*   **Dynamic 2LoD Sensitivity Tuning:** Exposes REST API v2 endpoints (`GET /api/v2/scenarios`, `POST /api/v2/scenarios/evaluate`, `PUT /api/v2/scenarios/<id>/parameters`) enabling compliance officers to simulate threshold shifts without code redeployments.
+
 ---
 
 ## 🖼️ Dashboard Preview
@@ -66,12 +73,14 @@ The engine uses a four-dimension weighted matrix:
 ```
 transactionmonitoring/
 │
-├── api/                            # Flask REST API (Render Hosted)
+├── api/                            # Flask REST API (v1.0 & v2.0 Enterprise Endpoints)
 ├── dashboard/                      # React Case Management (Vercel Hosted)
-├── engine/                         # Python Scoring Modules (CAMS Logic)
-├── rules/                          # AML & Mule detection logic docs
+├── engine/                         # Python Scoring Modules & CAMS Scenario Engine
+│   ├── scenarios/                  # Modular Scenario Detectors (STRUC, VEL, CORR)
+│   └── scenario_engine.py          # Dynamic Coordinator & Batch Evaluation Runner
+├── rules/                          # AML Typology Docs & scenario_catalog.json
 ├── database/                       # PostgreSQL (Supabase Hosted)
-├── tests/                          # Automated Suite (25+ Live Scenarios)
+├── tests/                          # Automated Suite (20 Master Scenarios + v2 Test Suite)
 └── governance/                     # Model Risk Management (SR 11-7)
 ```
 
