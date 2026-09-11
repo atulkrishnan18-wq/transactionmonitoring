@@ -6,7 +6,8 @@ import CaseDetail from './components/CaseDetail';
 import Charts from './components/Charts';
 import CustomerProfile from './components/CustomerProfile';
 import MuleClusterView from './components/MuleClusterView';
-import { LayoutGrid, BarChart3, Users, Network, ShieldAlert, LogOut, Activity } from 'lucide-react';
+import TuningLab from './components/TuningLab';
+import { LayoutGrid, BarChart3, Users, Network, ShieldAlert, LogOut, Activity, Sliders } from 'lucide-react';
 
 function AppContent() {
   const location = useLocation();
@@ -63,6 +64,10 @@ function AppContent() {
             <Network size={18} />
             <span>Mule Clusters</span>
           </Link>
+          <Link to="/tuning" style={styles.navItem(currentPath === '/tuning')}>
+            <Sliders size={18} />
+            <span>Tuning Lab</span>
+          </Link>
         </div>
 
         <div style={{...styles.navItem(false), marginTop: 'auto', marginBottom: '8px'}}>
@@ -71,7 +76,7 @@ function AppContent() {
         </div>
         
         <div style={styles.footer}>
-          ScoreSentinel v1.0.2<br/>
+          ScoreSentinel v2.0 (Enterprise)<br/>
           System Status: Healthy
         </div>
       </div>
@@ -85,6 +90,7 @@ function AppContent() {
           <Route path="/analytics" element={<Charts />} />
           <Route path="/customers" element={<CustomerProfile />} />
           <Route path="/clusters" element={<MuleClusterView />} />
+          <Route path="/tuning" element={<TuningLab />} />
         </Routes>
       </div>
     </div>

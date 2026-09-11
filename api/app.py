@@ -16,6 +16,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from scoring_engine import ScoreSentinelEngine
 from engine.scenario_engine import ScenarioEngine
+from engine.tuning_module import ThresholdTuningEngine
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -46,6 +47,7 @@ def ratelimit_handler(e):
 
 engine = ScoreSentinelEngine()
 scenario_engine = ScenarioEngine()
+tuning_engine = ThresholdTuningEngine(scenario_engine=scenario_engine)
 
 # Database connection configuration
 DATABASE_URL = os.environ.get('DATABASE_URL')
@@ -630,6 +632,61 @@ def reset_scenario_parameters():
     except Exception as e:
         app.logger.error(f"Error resetting parameters: {str(e)}")
         return jsonify({"error": "Reset error", "message": str(e)}), 500
+
+# ==========================================
+# THRESHOLD-TUNING & ATL/BTL SIMULATION ENDPOINTS
+# ==========================================
+
+@app.route('/api/v2/tuning/simulate', methods=['POST'])
+@limiter.limit("60 per minute")
+def simulate_tuning():
+    """
+    POST /api/v2/tuning/simulate
+    Simulates parameter sensitivity sweep, ATL alert curves, and BTL false-negative populations.
+    """
+    try:
+        data = request.get_json() or {}
+        scenario_id = data.get("scenario_id", "SCEN-STRUC-01")
+        parameter_name = data.get("parameter_name", "lower_bound")
+        min_val = float(data.get("min_val", 8000.0))
+        max_val = float(data.get("max_val", 10000.0))
+        step = float(data.get("step", 250.0))
+        btl_margin_pct = float(data.get("btl_margin_pct", 0.15))
+        transactions = data.get("transactions")
+
+        result = tuning_engine.simulate_threshold_sweep(
+            scenario_id=scenario_id,
+            parameter_name=parameter_name,
+            min_val=min_val,
+            max_val=max_val,
+            step=step,
+            btl_margin_pct=btl_margin_pct,
+            transactions=transactions
+        )
+        return jsonify(result), 200
+    except Exception as e:
+        app.logger.error(f"Error in tuning simulation: {str(e)}")
+        return jsonify({"error": "Simulation error", "message": str(e)}), 500
+
+@app.route('/api/v2/tuning/benchmark', methods=['GET'])
+@limiter.limit("60 per minute")
+def get_tuning_benchmark():
+    """
+    GET /api/v2/tuning/benchmark
+    Returns summary of benchmark population used for 2LoD threshold sensitivity testing.
+    """
+    try:
+        population = tuning_engine.get_benchmark_population()
+        total_volume = sum(float(t.get("amount", 0)) for t in population)
+        return jsonify({
+            "total_transactions": len(population),
+            "total_volume_usd": round(total_volume, 2),
+            "sample_records": population[:5]
+        }), 200
+    except Exception as e:
+        app.logger.error(f"Error retrieving benchmark: {str(e)}")
+        return jsonify({"error": "Benchmark error", "message": str(e)}), 500
+
 
 
 if __name__ == '__main__':
