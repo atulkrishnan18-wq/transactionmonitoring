@@ -12,11 +12,13 @@ from engine.mule_module import MuleModule
 
 class ScoreSentinelEngine:
     def __init__(self):
+        from engine.rules_engine import RulesEngine
         self.customer_module = CustomerModule()
         self.structuring_module = StructuringModule()
         self.geo_module = GeoModule()
         self.transaction_module = TransactionModule()
         self.mule_module = MuleModule()
+        self.rules_engine = RulesEngine()
 
         # Weights as defined in COMPOSITE_LOGIC.md
         self.weights = {
@@ -66,13 +68,22 @@ class ScoreSentinelEngine:
         txtype_result = self.transaction_module.get_module_result(transaction_data.get("transaction", {}))
         txtype_normalised = txtype_result["normalised_score"] * 100
         
+        # Step 4.5: Evaluate dynamic rules engine scenarios
+        rules_eval = self.rules_engine.evaluate_scenarios(
+            transaction_data.get("transaction", {}),
+            transaction_data.get("customer", {}),
+            transaction_data.get("history", [])
+        )
+        
         # Step 5: Calculate CRS
-        crs = (
+        base_crs = (
             (customer_normalised * self.weights["customer"]) +
             (structuring_normalised * self.weights["structuring"]) +
             (geo_normalised * self.weights["geo"]) +
             (txtype_normalised * self.weights["transaction"])
         )
+        # Add dynamic score contribution (capped at 100)
+        crs = min(base_crs + rules_eval["total_score_contribution"], 100)
 
         # Step 6: mule_module.analyse_cluster()
         # This MUST run even if there is an auto-alert
@@ -142,6 +153,8 @@ class ScoreSentinelEngine:
         # Aggregate rules fired
         all_rules = rules_fired.copy()
         all_rules.extend(mule_result.get("rules_fired", []))
+        for fs in rules_eval["fired_scenarios"]:
+            all_rules.append(fs["scenario_id"])
         
         final_result = {
             "crs": None if is_sanctions_match else (round(crs, 2) if not auto_alert else None),
@@ -174,7 +187,8 @@ class ScoreSentinelEngine:
                     "normalised": round(txtype_normalised, 2),
                     "is_auto_alert": txtype_result["is_auto_alert"]
                 },
-                "mule": mule_result["dimension_scores"]
+                "mule": mule_result["dimension_scores"],
+                "rules_engine": rules_eval
             }
         }
         

@@ -216,4 +216,16 @@ AUDIT LOG — MANDATORY FIELDS PER TRANSACTION:
  -   U N   S e c u r i t y   C o u n c i l   C o n s o l i d a t e d   L i s t 
  -   R B I   K Y C   D i r e c t i o n s   2 0 2 5   C h a p t e r   I X 
  -   F A T F   R e c o m m e n d a t i o n   6  
+ C o n f i g u r a b l e   D e t e c t i o n   S c e n a r i o s : 
+ -   S C N - 0 0 1   ( S T R U C T U R I N G ) :   T r a n s a c t i o n s   b e t w e e n   7 5 - 9 9 %   o f   r e p o r t i n g   t h r e s h o l d 
+ -   S C N - 0 0 2   ( R A P I D _ M O V E M E N T ) :   F u n d s   r e c e i v e d   a n d   s e n t   o u t   w i t h i n   2 4   h o u r s 
+ -   S C N - 0 0 3   ( H I G H _ R I S K _ C O R R I D O R ) :   T r a n s a c t i o n   i n v o l v i n g   F A T F   g r e y   o r   b l a c k   l i s t   j u r i s d i c t i o n 
+ -   S C N - 0 0 4   ( F A N _ I N ) :   A c c o u n t   r e c e i v i n g   f u n d s   f r o m   u n u s u a l l y   h i g h   n u m b e r   o f   d i s t i n c t   s e n d e r s 
+ -   S C N - 0 0 5   ( R O U N D _ A M O U N T ) :   S u s p i c i o u s l y   r o u n d   t r a n s a c t i o n   a m o u n t   a b o v e   r e p o r t i n g   t h r e s h o l d 
+ -   S C N - 0 0 6   ( P E P _ T R A N S A C T I O N ) :   T r a n s a c t i o n   i n v o l v i n g   a   P o l i t i c a l l y   E x p o s e d   P e r s o n 
+ -   S C N - 0 0 7   ( C A S H _ I N T E N S I V E ) :   H i g h   v o l u m e   c a s h   t r a n s a c t i o n s   i n c o n s i s t e n t   w i t h   c u s t o m e r   p r o f i l e 
+ -   S C N - 0 0 8   ( V E L O C I T Y _ B R E A C H ) :   T r a n s a c t i o n   c o u n t   o r   v o l u m e   e x c e e d s   e x p e c t e d   p a t t e r n   i n   r o l l i n g   7 - d a y   w i n d o w 
+ 
+ A r c h i t e c t u r e   N o t e : 
+ T h e   R u l e s   E n g i n e   r e a d s   t h e s e   s c e n a r i o s   d y n a m i c a l l y   f r o m   r u l e s _ c o n f i g . j s o n .   A n y   s c e n a r i o   c a n   b e   t o g g l e d   v i a   t h e   A P I   w i t h o u t   m o d i f y i n g   P y t h o n   c o d e ,   a l l o w i n g   f o r   p e r - c l i e n t   t a i l o r i n g   a n d   r a p i d   t u n i n g .  
  

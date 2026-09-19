@@ -718,6 +718,56 @@ def get_tuning_benchmark():
 
 
 
+# ==========================================
+# RULES ENGINE SCENARIO MANAGEMENT ENDPOINTS
+# ==========================================
+
+@app.route('/api/scenarios', methods=['GET'])
+@limiter.limit("60 per minute")
+def get_scenarios():
+    try:
+        from engine.rules_engine import RulesEngine
+        engine = RulesEngine()
+        return jsonify(engine.config.get("scenarios", [])), 200
+    except Exception as e:
+        app.logger.error(f"Error retrieving scenarios: {str(e)}")
+        return jsonify({"error": "Failed to retrieve scenarios", "details": str(e)}), 500
+
+@app.route('/api/scenarios/active', methods=['GET'])
+@limiter.limit("60 per minute")
+def get_active_scenarios():
+    try:
+        from engine.rules_engine import RulesEngine
+        engine = RulesEngine()
+        return jsonify(engine.get_active_scenarios()), 200
+    except Exception as e:
+        app.logger.error(f"Error retrieving active scenarios: {str(e)}")
+        return jsonify({"error": "Failed to retrieve active scenarios", "details": str(e)}), 500
+
+@app.route('/api/scenarios/<scenario_id>', methods=['PUT'])
+@limiter.limit("30 per minute")
+def update_scenario(scenario_id):
+    try:
+        key = request.headers.get('X-DEMO-API-KEY')
+        if key != DEMO_API_KEY:
+            return jsonify({"error": "Unauthorized", "message": "Demo API Key required."}), 401
+
+        data = request.get_json() or {}
+        enabled = data.get("enabled")
+        weight = data.get("weight")
+
+        from engine.rules_engine import RulesEngine
+        engine = RulesEngine()
+        updated = engine.toggle_scenario(scenario_id, enabled, weight)
+
+        if not updated:
+            return jsonify({"error": "Not found", "message": f"Scenario {scenario_id} not found"}), 404
+
+        return jsonify({"status": "updated", "scenario_id": scenario_id, "enabled": enabled, "weight": weight}), 200
+    except Exception as e:
+        app.logger.error(f"Error updating scenario: {str(e)}")
+        return jsonify({"error": "Update error", "message": str(e)}), 500
+
 if __name__ == '__main__':
     host = os.environ.get('FLASK_RUN_HOST', '127.0.0.1')
     port = int(os.environ.get('FLASK_RUN_PORT', 5000))

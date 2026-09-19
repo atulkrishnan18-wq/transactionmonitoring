@@ -1,0 +1,109 @@
+{
+  "version": "1.0",
+  "last_updated": "2026-09-19T06:11:00.746343",
+  "alert_threshold": 60,
+  "scenarios": [
+    {
+      "id": "SCN-001",
+      "name": "STRUCTURING",
+      "description": "Transactions between 75-99% of reporting threshold indicating deliberate avoidance",
+      "enabled": true,
+      "weight": 25,
+      "regulatory_basis": "PMLA 2002 Section 12, FATF Recommendation 29",
+      "trigger_conditions": {
+        "amount_min_pct_of_threshold": 75,
+        "amount_max_pct_of_threshold": 99,
+        "threshold_amount": 10000
+      }
+    },
+    {
+      "id": "SCN-002",
+      "name": "RAPID_MOVEMENT",
+      "description": "Funds received and sent out within 24 hours indicating pass-through layering",
+      "enabled": true,
+      "weight": 20,
+      "regulatory_basis": "PMLA 2002, RBI KYC Directions 2025",
+      "trigger_conditions": {
+        "max_hours_between_in_and_out": 24,
+        "min_amount": 5000
+      }
+    },
+    {
+      "id": "SCN-003",
+      "name": "HIGH_RISK_CORRIDOR",
+      "description": "Transaction involving FATF grey or black list jurisdiction",
+      "enabled": true,
+      "weight": 30,
+      "regulatory_basis": "FATF Grey List Feb 2026, RBI KYC Directions 2025",
+      "trigger_conditions": {
+        "check_sender_country": true,
+        "check_receiver_country": true,
+        "use_geo_rules": true
+      }
+    },
+    {
+      "id": "SCN-004",
+      "name": "FAN_IN",
+      "description": "Account receiving funds from unusually high number of distinct senders indicating mule activity",
+      "enabled": true,
+      "weight": 25,
+      "regulatory_basis": "PMLA 2002, FIU-IND Typologies",
+      "trigger_conditions": {
+        "min_distinct_senders": 5,
+        "lookback_days": 7
+      }
+    },
+    {
+      "id": "SCN-005",
+      "name": "ROUND_AMOUNT",
+      "description": "Suspiciously round transaction amount above reporting threshold indicating placement",
+      "enabled": true,
+      "weight": 15,
+      "regulatory_basis": "PMLA 2002, FATF Recommendation 29",
+      "trigger_conditions": {
+        "min_amount": 10000,
+        "round_number_check": true
+      }
+    },
+    {
+      "id": "SCN-006",
+      "name": "PEP_TRANSACTION",
+      "description": "Transaction involving a Politically Exposed Person requiring enhanced scrutiny",
+      "enabled": true,
+      "weight": 35,
+      "regulatory_basis": "PMLA 2002, RBI KYC Directions 2025, UK MLR 2017",
+      "trigger_conditions": {
+        "pep_tier_1_auto_alert": true,
+        "pep_tier_2_threshold": 70,
+        "pep_tier_3_threshold": 50
+      }
+    },
+    {
+      "id": "SCN-007",
+      "name": "CASH_INTENSIVE",
+      "description": "High volume cash transactions inconsistent with customer profile",
+      "enabled": true,
+      "weight": 20,
+      "regulatory_basis": "PMLA 2002, RBI Master Direction 2023",
+      "trigger_conditions": {
+        "min_cash_amount": 50000,
+        "transaction_types": [
+          "CASH_DEPOSIT",
+          "CASH_WITHDRAWAL"
+        ]
+      }
+    },
+    {
+      "id": "SCN-008",
+      "name": "VELOCITY_BREACH",
+      "description": "Transaction count or volume exceeds expected pattern in rolling 7-day window",
+      "enabled": true,
+      "weight": 20,
+      "regulatory_basis": "PMLA 2002, FIU-IND STR Guidelines",
+      "trigger_conditions": {
+        "max_transactions_7_days": 20,
+        "max_volume_7_days": 50000
+      }
+    }
+  ]
+}
