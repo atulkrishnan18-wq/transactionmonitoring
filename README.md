@@ -58,7 +58,6 @@ Decouples compliance detection rules from hardcoded Python numbers into a parame
 
 ## 🖼️ Dashboard Preview
 
-*(Screenshots coming soon! Replace placeholders with your own captures)*
 
 | Alert Queue | Case Investigation | Mule Network Graph |
 | :--- | :--- | :--- |
