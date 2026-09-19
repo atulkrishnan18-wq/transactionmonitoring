@@ -200,10 +200,17 @@ def score_transaction():
 
             if alert_generated:
                 alert_id = generate_id("ALT")
-                if result.get("alert_type") == "UAPA_MATCH":
-                    atype = "UAPA_MATCH"
+                # Any of the sanctions matches
+                sanctions_alert_types = [
+                    "UAPA_MATCH_SCHEDULE4", "UAPA_MATCH_SCHEDULE1", 
+                    "OFAC_MATCH", "UN_MATCH", 
+                    "UNSC_1267_MATCH", "UNSC_1988_MATCH", "SANCTIONS_MATCH"
+                ]
+                
+                if result.get("alert_type") in sanctions_alert_types:
+                    atype = result.get("alert_type")
                     stage = "IMMEDIATE_ACTION_REQUIRED"
-                    uapa_list = result.get("uapa_match", {}).get("match_type")
+                    uapa_list = result.get("sanctions_match", {}).get("match_type")
                     actions = ",".join(result.get("mandatory_actions", []))
                 else:
                     atype = "SCREENING_MATCH" if result.get("alert_type") in ["Customer Auto-Alert", "Geography Auto-Alert"] else "TRANSACTION_RISK"
@@ -225,8 +232,8 @@ def score_transaction():
             conn.close()
             
         response_data = {"transaction_id": transaction_id, "crs": crs, "alert": alert_generated}
-        if result.get("alert_type") == "UAPA_MATCH":
-            response_data["uapa_match"] = result.get("uapa_match")
+        if result.get("alert_type") in sanctions_alert_types:
+            response_data["sanctions_match"] = result.get("sanctions_match")
             response_data["mandatory_actions"] = result.get("mandatory_actions")
             
         return jsonify(response_data)

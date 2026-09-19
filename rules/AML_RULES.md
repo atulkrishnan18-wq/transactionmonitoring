@@ -204,4 +204,16 @@ AUDIT LOG — MANDATORY FIELDS PER TRANSACTION:
  -   R B I   K Y C   D i r e c t i o n s   2 0 2 5   C h a p t e r   I X 
  -   U A P A   O r d e r   d a t e d   F e b r u a r y   2   2 0 2 1 
  -   R B I   C i r c u l a r   D O R . A M L . R E C . 1 / 1 4 . 0 6 . 0 0 1 / 2 0 2 6 - 2 7   d a t e d   A p r i l   1   2 0 2 6  
+ I n t e r n a t i o n a l   S a n c t i o n s   S c r e e n i n g   R u l e s : 
+ -   O F A C - 0 0 1 :   O F A C   S D N   i n d i v i d u a l   s c r e e n i n g 
+ -   O F A C - 0 0 2 :   O F A C   S D N   e n t i t y   s c r e e n i n g 
+ -   O F A C - 0 0 3 :   D a i l y   d e l t a   i n g e s t i o n   a n d   l o g g i n g 
+ -   U N - 0 0 1 :   U N   C o n s o l i d a t e d   L i s t   s c r e e n i n g 
+ -   U N - 0 0 2 :   D e l t a   i n g e s t i o n   a n d   c h a n g e   l o g g i n g 
+ 
+ R e g u l a t o r y   b a s i s : 
+ -   U S   T r e a s u r y   O F A C   S D N   L i s t 
+ -   U N   S e c u r i t y   C o u n c i l   C o n s o l i d a t e d   L i s t 
+ -   R B I   K Y C   D i r e c t i o n s   2 0 2 5   C h a p t e r   I X 
+ -   F A T F   R e c o m m e n d a t i o n   6  
  
