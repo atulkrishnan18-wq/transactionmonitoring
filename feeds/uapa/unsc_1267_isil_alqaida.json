@@ -1,0 +1,48 @@
+{
+  "list_name": "UNSC 1267 ISIL/Al-Qaida",
+  "regulatory_basis": "UNSC Resolution 1267",
+  "last_updated": "2024-03-01",
+  "source_url": "https://www.un.org/securitycouncil/sanctions/1267",
+  "entries": [
+    {
+      "id": "UNSC-1267-001",
+      "name": "Ayman al-Zawahiri",
+      "aliases": [],
+      "designation_date": "2001-01-25",
+      "statutory_order": "",
+      "remarks": "Al-Qaida leader"
+    },
+    {
+      "id": "UNSC-1267-002",
+      "name": "Ibrahim Awwad Ibrahim Ali al-Badri al-Samarrai",
+      "aliases": ["Abu Bakr al-Baghdadi"],
+      "designation_date": "2011-10-04",
+      "statutory_order": "",
+      "remarks": "ISIS leader"
+    },
+    {
+      "id": "UNSC-1267-003",
+      "name": "Amir Muhammad Sa'id Abdal-Rahman al-Mawla",
+      "aliases": [],
+      "designation_date": "2020-05-21",
+      "statutory_order": "",
+      "remarks": "ISIS leader"
+    },
+    {
+      "id": "UNSC-1267-004",
+      "name": "Sirajuddin Jallaloudine Haqqani",
+      "aliases": ["Sirajuddin Haqqani"],
+      "designation_date": "2007-09-13",
+      "statutory_order": "",
+      "remarks": "Haqqani Network"
+    },
+    {
+      "id": "UNSC-1267-005",
+      "name": "Hafiz Muhammad Saeed",
+      "aliases": ["Hafiz Saeed"],
+      "designation_date": "2008-12-10",
+      "statutory_order": "",
+      "remarks": "LeT leader"
+    }
+  ]
+}

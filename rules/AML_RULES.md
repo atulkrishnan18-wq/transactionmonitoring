@@ -192,3 +192,16 @@ AUDIT LOG — MANDATORY FIELDS PER TRANSACTION:
 ---
 
 *ScoreSentinel | AML_RULES.md | Master Detection Framework | Authored by Atul Krishnan, CAMS | Version 1.3 | 24 May 2026*
+#   U A P A   S c r e e n i n g   R u l e s 
+ -   U A P A - 0 0 1 :   S c h e d u l e   I   b a n n e d   o r g a n i s a t i o n   s c r e e n i n g 
+ -   U A P A - 0 0 2 :   S c h e d u l e   I V   d e s i g n a t e d   t e r r o r i s t   s c r e e n i n g 
+ -   U A P A - 0 0 3 :   U N S C   1 2 6 7   I S I L / A l - Q a i d a   s c r e e n i n g 
+ -   U A P A - 0 0 4 :   U N S C   1 9 8 8   T a l i b a n   s c r e e n i n g 
+ -   U A P A - 0 0 5 :   M a n d a t o r y   t r i p l e   a c t i o n   o n   a n y   m a t c h   ( F R E E Z E _ A C C O U N T ,   R E P O R T _ F I U _ I N D ,   A D V I S E _ M H A ) 
+ 
+ R e g u l a t o r y   b a s i s   f o r   a l l   r u l e s : 
+ -   S e c t i o n   5 1 A   o f   U A P A   1 9 6 7 
+ -   R B I   K Y C   D i r e c t i o n s   2 0 2 5   C h a p t e r   I X 
+ -   U A P A   O r d e r   d a t e d   F e b r u a r y   2   2 0 2 1 
+ -   R B I   C i r c u l a r   D O R . A M L . R E C . 1 / 1 4 . 0 6 . 0 0 1 / 2 0 2 6 - 2 7   d a t e d   A p r i l   1   2 0 2 6  
+ 

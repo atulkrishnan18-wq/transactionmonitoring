@@ -1,0 +1,48 @@
+{
+  "list_name": "Schedule IV of UAPA 1967",
+  "regulatory_basis": "Section 51A of UAPA 1967",
+  "last_updated": "2024-03-01",
+  "source_url": "https://www.mha.gov.in/en/designated-individuals",
+  "entries": [
+    {
+      "id": "UAPA-S4-001",
+      "name": "Lakhbir Singh",
+      "aliases": ["Landa"],
+      "designation_date": "2023-12-29",
+      "statutory_order": "S.O. 5491E",
+      "remarks": "Designated terrorist"
+    },
+    {
+      "id": "UAPA-S4-002",
+      "name": "Satwinder Singh",
+      "aliases": ["Goldy Brar"],
+      "designation_date": "2024-01-01",
+      "statutory_order": "S.O. 02E",
+      "remarks": "Designated terrorist"
+    },
+    {
+      "id": "UAPA-S4-003",
+      "name": "Arbaz Ahmad Mir",
+      "aliases": [],
+      "designation_date": "2023-01-01",
+      "statutory_order": "S.O. 71E",
+      "remarks": "Designated terrorist"
+    },
+    {
+      "id": "UAPA-S4-004",
+      "name": "Asif Maqbool Dar",
+      "aliases": [],
+      "designation_date": "2023-01-01",
+      "statutory_order": "S.O. 104E",
+      "remarks": "Designated terrorist"
+    },
+    {
+      "id": "UAPA-S4-005",
+      "name": "Arshdeep Singh Gill",
+      "aliases": ["Arsh Dala"],
+      "designation_date": "2023-01-01",
+      "statutory_order": "S.O. 105E",
+      "remarks": "Designated terrorist"
+    }
+  ]
+}

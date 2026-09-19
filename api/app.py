@@ -174,6 +174,13 @@ def score_transaction():
         cur = conn.cursor()
         
         try:
+            # First ensure the columns exist in the alerts table
+            cur.execute("""
+                ALTER TABLE alerts 
+                ADD COLUMN IF NOT EXISTS uapa_list_matched VARCHAR(50),
+                ADD COLUMN IF NOT EXISTS mandatory_actions TEXT;
+            """)
+            
             cur.execute("""
                 INSERT INTO customers (customer_id, full_name, customer_type, ccrs, risk_band, country_of_domicile)
                 VALUES (%s, %s, %s, %s, %s, %s)
@@ -193,9 +200,19 @@ def score_transaction():
 
             if alert_generated:
                 alert_id = generate_id("ALT")
-                atype = "SCREENING_MATCH" if result.get("alert_type") in ["Customer Auto-Alert", "Geography Auto-Alert"] else "TRANSACTION_RISK"
-                cur.execute("INSERT INTO alerts (alert_id, transaction_id, customer_id, alert_type, stage, status) VALUES (%s, %s, %s, %s, %s, %s)",
-                           (alert_id, transaction_id, customer_id, atype, "PENDING_ASSESSMENT", "PENDING"))
+                if result.get("alert_type") == "UAPA_MATCH":
+                    atype = "UAPA_MATCH"
+                    stage = "IMMEDIATE_ACTION_REQUIRED"
+                    uapa_list = result.get("uapa_match", {}).get("match_type")
+                    actions = ",".join(result.get("mandatory_actions", []))
+                else:
+                    atype = "SCREENING_MATCH" if result.get("alert_type") in ["Customer Auto-Alert", "Geography Auto-Alert"] else "TRANSACTION_RISK"
+                    stage = "PENDING_ASSESSMENT"
+                    uapa_list = None
+                    actions = None
+                    
+                cur.execute("INSERT INTO alerts (alert_id, transaction_id, customer_id, alert_type, stage, status, uapa_list_matched, mandatory_actions) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
+                           (alert_id, transaction_id, customer_id, atype, stage, "PENDING", uapa_list, actions))
                 
             conn.commit()
         except Exception as e:
@@ -207,7 +224,12 @@ def score_transaction():
             cur.close()
             conn.close()
             
-        return jsonify({"transaction_id": transaction_id, "crs": crs, "alert": alert_generated})
+        response_data = {"transaction_id": transaction_id, "crs": crs, "alert": alert_generated}
+        if result.get("alert_type") == "UAPA_MATCH":
+            response_data["uapa_match"] = result.get("uapa_match")
+            response_data["mandatory_actions"] = result.get("mandatory_actions")
+            
+        return jsonify(response_data)
     except Exception as e:
         app.logger.error(f"Error in score_transaction: {str(e)}")
         return jsonify({"error": "Internal server error", "message": "An unexpected error occurred. Please try again."}), 500

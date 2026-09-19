@@ -1,0 +1,48 @@
+{
+  "list_name": "UNSC 1988 Taliban",
+  "regulatory_basis": "UNSC Resolution 1988",
+  "last_updated": "2024-03-01",
+  "source_url": "https://www.un.org/securitycouncil/sanctions/1988",
+  "entries": [
+    {
+      "id": "UNSC-1988-001",
+      "name": "Hibbatullah Akhundzada",
+      "aliases": [],
+      "designation_date": "2016-01-01",
+      "statutory_order": "",
+      "remarks": "Taliban leader"
+    },
+    {
+      "id": "UNSC-1988-002",
+      "name": "Abdul Ghani Baradar",
+      "aliases": ["Mullah Baradar"],
+      "designation_date": "2010-01-01",
+      "statutory_order": "",
+      "remarks": "Taliban leader"
+    },
+    {
+      "id": "UNSC-1988-003",
+      "name": "Mohammad Yaqoob",
+      "aliases": ["Mullah Yaqoob"],
+      "designation_date": "2015-01-01",
+      "statutory_order": "",
+      "remarks": "Taliban leader"
+    },
+    {
+      "id": "UNSC-1988-004",
+      "name": "Amir Khan Muttaqi",
+      "aliases": [],
+      "designation_date": "2001-01-01",
+      "statutory_order": "",
+      "remarks": "Taliban member"
+    },
+    {
+      "id": "UNSC-1988-005",
+      "name": "Zabihullah Mujahid",
+      "aliases": [],
+      "designation_date": "2001-01-01",
+      "statutory_order": "",
+      "remarks": "Taliban member"
+    }
+  ]
+}

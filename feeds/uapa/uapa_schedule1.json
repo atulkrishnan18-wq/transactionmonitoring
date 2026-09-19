@@ -1,0 +1,80 @@
+{
+  "list_name": "Schedule I of UAPA 1967",
+  "regulatory_basis": "Section 51A of UAPA 1967",
+  "last_updated": "2024-03-01",
+  "source_url": "https://www.mha.gov.in/en/banned-organisations",
+  "entries": [
+    {
+      "id": "UAPA-S1-001",
+      "name": "Lashkar-e-Taiba",
+      "aliases": ["LeT", "Lashkar-e-Toiba"],
+      "designation_date": "2001-01-01",
+      "statutory_order": "",
+      "remarks": "Banned organisation"
+    },
+    {
+      "id": "UAPA-S1-002",
+      "name": "Jaish-e-Mohammed",
+      "aliases": ["JeM"],
+      "designation_date": "2001-01-01",
+      "statutory_order": "",
+      "remarks": "Banned organisation"
+    },
+    {
+      "id": "UAPA-S1-003",
+      "name": "Hizbul Mujahideen",
+      "aliases": [],
+      "designation_date": "2001-01-01",
+      "statutory_order": "",
+      "remarks": "Banned organisation"
+    },
+    {
+      "id": "UAPA-S1-004",
+      "name": "Indian Mujahideen",
+      "aliases": [],
+      "designation_date": "2010-06-22",
+      "statutory_order": "",
+      "remarks": "Banned organisation"
+    },
+    {
+      "id": "UAPA-S1-005",
+      "name": "Students Islamic Movement of India",
+      "aliases": ["SIMI"],
+      "designation_date": "2001-09-27",
+      "statutory_order": "",
+      "remarks": "Banned organisation"
+    },
+    {
+      "id": "UAPA-S1-006",
+      "name": "Al-Qaeda",
+      "aliases": ["Al-Qaida"],
+      "designation_date": "2001-01-01",
+      "statutory_order": "",
+      "remarks": "Banned organisation"
+    },
+    {
+      "id": "UAPA-S1-007",
+      "name": "ISIS",
+      "aliases": ["ISIL", "Daesh"],
+      "designation_date": "2015-02-16",
+      "statutory_order": "",
+      "remarks": "Banned organisation"
+    },
+    {
+      "id": "UAPA-S1-008",
+      "name": "Bodo Liberation Tigers",
+      "aliases": [],
+      "designation_date": "2001-01-01",
+      "statutory_order": "",
+      "remarks": "Banned organisation"
+    },
+    {
+      "id": "UAPA-S1-009",
+      "name": "National Democratic Front of Bodoland",
+      "aliases": [],
+      "designation_date": "2001-01-01",
+      "statutory_order": "",
+      "remarks": "Banned organisation"
+    }
+  ]
+}

@@ -33,6 +33,22 @@ class ScoreSentinelEngine:
         Coordinates the scoring across all modules and produces a 
         Composite Risk Score (CRS) and Mule Cluster Score (MCS).
         """
+        from feeds.uapa.uapa_screener import screen_uapa
+        
+        customer_data = transaction_data.get("customer", {})
+        customer_type = customer_data.get("customer_type", "INDIVIDUAL")
+        full_name = customer_data.get("full_name", "")
+        
+        # 1. Screen customer full_name
+        uapa_result = screen_uapa(full_name, "INDIVIDUAL" if customer_type != "CORPORATE" else "ORGANISATION")
+        
+        # 2. Also screen entity name if CORPORATE (assuming it's in full_name or another field, here full_name is the entity name)
+        # Wait, if customer_type is CORPORATE, the entity name is the full_name. But we might need to screen a beneficial owner or just the entity.
+        # Since it asks to screen entity name if CORPORATE, we can just use the same logic or check if there's an entity name.
+        # Actually, full_name is the entity name for CORPORATEs.
+        
+        is_uapa_match = uapa_result.get("match_found", False)
+        
         # Step 1: customer_module
         customer_result = self.customer_module.get_ccrs(transaction_data.get("customer", {}))
         customer_normalised = (customer_result["ccrs"] / 175) * 100
@@ -102,6 +118,12 @@ class ScoreSentinelEngine:
             trigger = txtype_result.get("alert_reason")
             rules_fired.append("TX-AUTO-001")
 
+        if is_uapa_match:
+            auto_alert = True
+            alert_type = "UAPA_MATCH"
+            trigger = f"UAPA Match: {uapa_result['matched_name']} ({uapa_result['match_type']})"
+            rules_fired.append("UAPA-AUTO-ALERT")
+
         # Step 7: Return both CRS and MCS
         is_alert = crs >= self.alert_threshold or mule_result["is_mule_alert"] or auto_alert
 
@@ -110,7 +132,7 @@ class ScoreSentinelEngine:
         all_rules.extend(mule_result.get("rules_fired", []))
         
         final_result = {
-            "crs": round(crs, 2) if not auto_alert else None,
+            "crs": None if is_uapa_match else (round(crs, 2) if not auto_alert else None),
             "overall_crs": round(crs, 2),
             "mcs": mule_result["mcs"],
             "mcs_risk_band": mule_result["mcs_risk_band"],
@@ -144,7 +166,12 @@ class ScoreSentinelEngine:
             }
         }
         
-        if auto_alert:
+        if is_uapa_match:
+            final_result["alert_type"] = "UAPA_MATCH"
+            final_result["trigger"] = trigger
+            final_result["uapa_match"] = uapa_result
+            final_result["mandatory_actions"] = uapa_result.get("mandatory_actions", [])
+        elif auto_alert:
             final_result["alert_type"] = alert_type
             final_result["trigger"] = trigger
         elif mule_result["is_mule_alert"]:
