@@ -61,7 +61,7 @@ Decouples compliance detection rules from hardcoded Python numbers into a parame
 
 | Alert Queue | Case Investigation | Mule Network Graph |
 | :--- | :--- | :--- |
-| | ![Alert Queue](alert-queue.png) | ![Case Investigation](case-investigation.png) | ![Mule Network Graph](mule-graph.png) | |
+| ![Alert Queue](alert-queue.png) | ![Case Investigation](case-investigation.png) | ![Mule Network Graph](mule-graph.png) |
 
 > 📊 **View Visual Documentation:** [System Architecture & Data Flow Diagrams](docs/ARCHITECTURE.md)
 
