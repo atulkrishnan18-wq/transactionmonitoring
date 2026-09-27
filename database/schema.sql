@@ -23,6 +23,7 @@ CREATE TABLE transactions (
     transaction_type    VARCHAR(50) NOT NULL,
     sender_country      VARCHAR(100) NOT NULL,
     receiver_country    VARCHAR(100) NOT NULL,
+    receiver_account_id VARCHAR(50),
     customer_type       VARCHAR(50),
     
     -- Module raw scores

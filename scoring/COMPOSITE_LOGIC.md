@@ -42,10 +42,11 @@ ScoreSentinel evaluates every transaction across four independent risk dimension
 
 | Module | Weight | Raw Score Range | **Module Maximum** | Baseline Document |
 |---|---|---|---|---|
-| Customer Risk | 30% | 0–175 | **175** | `CUSTOMER_RULES.md` |
-| Structuring | 25% | 0–70 | **70** | `STRUCTURING_RULES.md` |
+| Customer Risk | 25% | 0–175 | **175** | `CUSTOMER_RULES.md` |
+| Structuring | 20% | 0–70 | **70** | `STRUCTURING_RULES.md` |
 | Geography | 25% | 0–100 | **100** | `GEO_RULES.md` |
-| Transaction Type | 20% | 0–55 | **55** | `TRANSACTION_RULES.md` |
+| Transaction Type | 15% | 0–55 | **55** | `TRANSACTION_RULES.md` |
+| Velocity 7-day | 15% | 0–100 | **100** | `VELOCITY_RULES.md` |
 
 > **Critical Design Note — Why Four Modules, Not Five:**
 > Data integrity (missing beneficial owner, incomplete KYC fields) is handled within the **Customer Risk module** through the Ownership Transparency dimension defined in `CUSTOMER_RULES.md` Section 3.3. It is not a standalone scoring module. This design prevents double-counting and keeps the composite score architecture clean and SR 11-7 compliant. Any missing data penalty is applied directly to the Customer Risk raw score — it does not add a fifth module or exceed the 175 maximum.
@@ -332,4 +333,14 @@ This asymmetric risk tolerance is a **documented design decision**, not an overs
 
 ---
 
-*ScoreSentinel | COMPOSITE_LOGIC.md | Composite Scoring & Normalisation Framework | Authored by Atul Krishnan, CAMS | Version 1.2 | 29 April 2026*
+*ScoreSentinel | COMPOSITE_LOGIC.md | Composite Scoring & Normalisation Framework | Authored by Atul Krishnan, CAMS | Version 1.2 | 29 April 2026*# #   V e l o c i t y   S c o r i n g   M e t h o d o l o g y   ( 7 - d a y   R o l l i n g ) 
+ 
+ T h e   V e l o c i t y   e n g i n e   c a l c u l a t e s   r i s k   b a s e d   o n   f o u r   d i m e n s i o n s   e v a l u a t e d   o v e r   a   r o l l i n g   7 - d a y   w i n d o w : 
+ 
+ *       * * T r a n s a c t i o n   c o u n t : * *   S c o r e   s c a l e s   f r o m   0   ( < 5   t x )   t o   9 0   ( > 2 0   t x ) . 
+ *       * * T o t a l   v o l u m e : * *   S c o r e   s c a l e s   f r o m   0   ( < 1 0 k )   t o   9 0   ( > 1 0 0 k ) . 
+ *       * * D i s t i n c t   c o u n t e r p a r t i e s : * *   S c o r e   s c a l e s   f r o m   0   ( < 3 )   t o   9 0   ( > 1 0 ) . 
+ *       * * S t r u c t u r i n g   p a t t e r n : * *   C o u n t   o f   t r a n s a c t i o n s   b e t w e e n   7 5 - 9 9 %   o f   1 0 0 0 0   t h r e s h o l d .   S c o r e   s c a l e s   u p   t o   9 5   ( > 5   t x ) . 
+ 
+ T h e   o v e r a l l   v e l o c i t y   s c o r e   i s   t h e   e q u a l l y   w e i g h t e d   a v e r a g e   ( 2 5 %   e a c h )   o f   t h e   f o u r   d i m e n s i o n   s c o r e s .   I f   a n y   d i m e n s i o n   e x c e e d s   i t s   h i g h - r i s k   t h r e s h o l d ,   a   c o r r e s p o n d i n g   r u l e   ( V E L - 0 0 1   t h r o u g h   V E L - 0 0 4 )   f i r e s .  
+ 

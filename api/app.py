@@ -162,16 +162,16 @@ def score_transaction():
             "history": history_data
         }
         
-        result = engine.score_transaction(engine_input)
+        conn = get_db_connection()
+        cur = conn.cursor()
+        
+        result = engine.score_transaction(engine_input, db_connection=conn)
         transaction_id = generate_id("TXN")
         timestamp = datetime.datetime.now()
         crs = result.get("crs")
         mcs = result.get("mcs")
         alert_generated = result.get("alert", False)
         mule_alert = result.get("mule_alert", False)
-        
-        conn = get_db_connection()
-        cur = conn.cursor()
         
         try:
             # First ensure the columns exist in the alerts table
@@ -767,6 +767,42 @@ def update_scenario(scenario_id):
     except Exception as e:
         app.logger.error(f"Error updating scenario: {str(e)}")
         return jsonify({"error": "Update error", "message": str(e)}), 500
+
+@app.route('/api/customers/<customer_id>/velocity', methods=['GET'])
+@limiter.limit("30 per minute")
+def get_customer_velocity(customer_id):
+    try:
+        from engine.velocity_engine import calculate_velocity_score
+        
+        conn = get_db_connection()
+        # Mock transaction for evaluation trigger
+        current_tx = {"transaction_amount": 0}
+        
+        # Calculate for current 7 days
+        current_result = calculate_velocity_score(customer_id, current_tx, conn)
+        
+        # For trend, we would calculate for the previous 7 days (days 8-14)
+        # Mocking the previous result logic for demonstration if needed:
+        # In a real app we'd query NOW() - 14 days to NOW() - 7 days.
+        prev_result = {"velocity_score": 0} # Mocked for API structure
+        
+        response = {
+            "customer_id": customer_id,
+            "current_7_day_score": current_result.get("velocity_score", 0),
+            "dimensions": current_result.get("dimensions", {}),
+            "trend_vs_previous_period": "UP" if current_result.get("velocity_score", 0) > prev_result["velocity_score"] else "FLAT",
+            "transaction_history_summary": {
+                "count": current_result.get("dimensions", {}).get("transaction_count", {}).get("value", 0),
+                "volume": current_result.get("dimensions", {}).get("total_volume", {}).get("value", 0)
+            }
+        }
+        return jsonify(response), 200
+    except Exception as e:
+        app.logger.error(f"Error calculating velocity: {str(e)}")
+        return jsonify({"error": "Velocity engine error", "message": str(e)}), 500
+    finally:
+        if 'conn' in locals() and conn:
+            conn.close()
 
 if __name__ == '__main__':
     host = os.environ.get('FLASK_RUN_HOST', '127.0.0.1')

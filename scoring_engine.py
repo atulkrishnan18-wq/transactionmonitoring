@@ -22,15 +22,16 @@ class ScoreSentinelEngine:
 
         # Weights as defined in COMPOSITE_LOGIC.md
         self.weights = {
-            "customer": 0.30,
-            "structuring": 0.25,
+            "customer": 0.25,
+            "structuring": 0.20,
             "geo": 0.25,
-            "transaction": 0.20
+            "transaction": 0.15,
+            "velocity": 0.15
         }
         
         self.alert_threshold = 60
 
-    def score_transaction(self, transaction_data):
+    def score_transaction(self, transaction_data, db_connection=None):
         """
         Coordinates the scoring across all modules and produces a 
         Composite Risk Score (CRS) and Mule Cluster Score (MCS).
@@ -75,12 +76,19 @@ class ScoreSentinelEngine:
             transaction_data.get("history", [])
         )
         
+        # Step 4.6: Velocity Score
+        from engine.velocity_engine import calculate_velocity_score
+        customer_id = transaction_data.get("customer", {}).get("customer_id")
+        velocity_result = calculate_velocity_score(customer_id, transaction_data.get("transaction", {}), db_connection)
+        velocity_normalised = velocity_result.get("velocity_score", 0)
+        
         # Step 5: Calculate CRS
         base_crs = (
             (customer_normalised * self.weights["customer"]) +
             (structuring_normalised * self.weights["structuring"]) +
             (geo_normalised * self.weights["geo"]) +
-            (txtype_normalised * self.weights["transaction"])
+            (txtype_normalised * self.weights["transaction"]) +
+            (velocity_normalised * self.weights["velocity"])
         )
         # Add dynamic score contribution (capped at 100)
         crs = min(base_crs + rules_eval["total_score_contribution"], 100)
@@ -153,6 +161,7 @@ class ScoreSentinelEngine:
         # Aggregate rules fired
         all_rules = rules_fired.copy()
         all_rules.extend(mule_result.get("rules_fired", []))
+        all_rules.extend(velocity_result.get("rules_fired", []))
         for fs in rules_eval["fired_scenarios"]:
             all_rules.append(fs["scenario_id"])
         
@@ -186,6 +195,11 @@ class ScoreSentinelEngine:
                     "raw": txtype_result["raw_score"],
                     "normalised": round(txtype_normalised, 2),
                     "is_auto_alert": txtype_result["is_auto_alert"]
+                },
+                "velocity": {
+                    "raw": velocity_result.get("velocity_score", 0),
+                    "normalised": velocity_normalised,
+                    "dimensions": velocity_result.get("dimensions", {})
                 },
                 "mule": mule_result["dimension_scores"],
                 "rules_engine": rules_eval
