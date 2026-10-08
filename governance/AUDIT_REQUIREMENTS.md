@@ -596,4 +596,226 @@ Level 4 — Regulatory: Potential reportable failure
 
 ---
 
-*ScoreSentinel | AUDIT_REQUIREMENTS.md | Compliance Audit Trail Framework | Authored by Atul Krishnan, CAMS | Version 1.0 | 3 May 2026*
+## 14. Indian Regulatory Compliance Checklist
+
+This section supplements the global audit framework with a specific compliance checklist for Indian regulated entities deploying ScoreSentinel. All items below must be addressed by the client institution's compliance function. ScoreSentinel's technical output supports but does not substitute for the institution's own regulatory obligations.
+
+**Last Updated:** September 2026 | **Applicable Jurisdiction:** India
+
+---
+
+### 14.1 PMLA 2002 Obligations
+
+The Prevention of Money Laundering Act 2002 is the primary AML legislation in India. The following obligations apply to all Reporting Entities (REs) under Section 2(wa) of PMLA, including banking companies, financial institutions, and intermediaries.
+
+#### Section 12(1) — Transaction Record Maintenance
+
+| Requirement | Standard | ScoreSentinel Coverage | Client Action Required |
+|---|---|---|---|
+| Maintain records of all transactions | All transactions, regardless of amount or alert status | Every transaction submitted to ScoreSentinel is persisted to the `transactions` table with full scoring audit trail | Integrate ScoreSentinel API into all transaction processing workflows; do not selectively submit transactions |
+| Records must be in a manner that enables reconstruction of individual transactions | Transaction ID, customer ID, amount, currency, type, scoring output, timestamp | Full reconstruction possible from `transactions` table using `transaction_id` as primary key | Retain the `transaction_id` returned by the API in your own systems for cross-reference |
+| Records to be maintained for **5 years** from date of transaction | 5-year retention | ScoreSentinel database retains records indefinitely subject to storage; no auto-deletion policy | Confirm with your IT/legal team that ScoreSentinel records are within your 5-year retention policy scope |
+
+**Audit checklist — Section 12(1):**
+- [ ] All transactions processed by the institution flow through ScoreSentinel
+- [ ] ScoreSentinel `transaction_id` is stored in the institution's core banking system
+- [ ] Database records are confirmed to be retained for a minimum of 5 years
+- [ ] Backup and restore procedure confirms data is recoverable for the full 5-year period
+
+#### Section 12(1A) — Cash Transaction Reporting (CTR)
+
+| Requirement | Standard | ScoreSentinel Coverage |
+|---|---|---|
+| Report all cash transactions above ₹10 lakh (INR 1,000,000) to FIU-IND within 15 days of close of month | Cash transactions ≥ ₹10,00,000 | Transaction type module flags cash transactions with elevated risk score; SCN-007 (CASH_INTENSIVE) detects high-volume cash patterns |
+| Integrated cash transactions (structuring): report if single or linked transactions aggregate ≥ ₹10 lakh | Linked sub-threshold transactions | SCN-001 (STRUCTURING) and velocity module structuring dimension detect sub-threshold patterning |
+
+**Audit checklist — Section 12(1A):**
+- [ ] Institution's CTR filing process is triggered for any cash transaction ≥ ₹10 lakh regardless of ScoreSentinel CRS
+- [ ] SCN-001 alerts are reviewed for CTR applicability — structuring patterns may indicate aggregate cash transactions requiring CTR
+- [ ] CTR filing dates are recorded in the `alerts` table or in the institution's own case management system
+
+#### Rule 3 — Suspicious Transaction Reporting (STR) to FIU-IND
+
+| Requirement | Standard | ScoreSentinel Coverage |
+|---|---|---|
+| Report suspicious transactions to FIU-IND within **7 days** of suspicion arising | Any transaction giving rise to suspicion regardless of amount | ScoreSentinel alert (CRS ≥ 60 or auto-alert) triggers the STR workflow; STR filing decision rests with the designated officer |
+| Suspicion may arise before or after transaction is completed | Monitoring must be ongoing | Velocity module provides rolling 7-day monitoring; rules engine provides pattern-based detection |
+| No tipping off — client must not be informed that an STR has been or may be filed | Section 12(2) PMLA — tipping off prohibition | ScoreSentinel does not communicate alert status to customer-facing channels; API response is for compliance team use only |
+
+**Audit checklist — Rule 3 (STR):**
+- [ ] Designated Director / Principal Officer is identified and has authority to file STRs
+- [ ] Escalation procedure from ScoreSentinel alert to STR decision is documented and tested
+- [ ] STR filing deadline of 7 days from suspicion is tracked; alerts older than 7 days without disposition must be escalated
+- [ ] Tipping-off risk: confirm ScoreSentinel API response is not visible to customers or front-line staff who interact with the subject customer
+- [ ] All STRs filed are referenced in the corresponding `alerts` table entry
+
+#### Rule 7 — Maintenance of Records
+
+| Requirement | Standard | ScoreSentinel Coverage |
+|---|---|---|
+| Records must be maintained in a retrievable form | Must be able to produce records to regulatory authorities on demand | ScoreSentinel `GET /api/transactions/<id>` retrieves full scoring record; PostgreSQL database is queryable with full audit fields |
+| Records must be legible and in English or a scheduled language | English | All ScoreSentinel outputs are in English |
+| Principal Officer must have access to all records | Designated compliance officer must have unrestricted access | Supabase dashboard provides direct database access; API endpoints provide programmatic access |
+
+**Audit checklist — Rule 7:**
+- [ ] Principal Officer has credentials to access the ScoreSentinel database directly
+- [ ] Record retrieval process is tested: confirm ability to produce a specific transaction record within 24 hours of a regulatory request
+- [ ] Records are stored in a format that does not require proprietary software to read (PostgreSQL — open standard)
+
+---
+
+### 14.2 RBI KYC Directions 2025 Obligations
+
+The Reserve Bank of India's KYC Master Directions (updated 2025) apply to all RBI-regulated entities. The following requirements are directly relevant to ScoreSentinel deployment.
+
+#### Chapter IX — UAPA and UNSC Sanctions Compliance
+
+| Requirement | Standard | ScoreSentinel Coverage |
+|---|---|---|
+| Screen all customers and transactions against UAPA Schedule I (banned organisations) | Section 51A UAPA 1967 | UAPA Schedule I screening integrated — all entries including aliases |
+| Screen against UAPA Schedule IV (designated terrorists) | Section 51A UAPA 1967 | UAPA Schedule IV screening integrated with gazette reference numbers |
+| Screen against all UNSC designations | UNSC Resolutions 1267, 1988, 1373 | UNSC 1267 and 1988 lists fully integrated; 1373 is addressed via UAPA Schedule IV cross-reference |
+| Screening must be done at onboarding AND on an ongoing basis | Both point-in-time and continuous | ScoreSentinel screens on every transaction submission — continuous monitoring by design |
+
+**Audit checklist — Chapter IX:**
+- [ ] UAPA Schedule I and IV lists in ScoreSentinel are current — verify against latest MHA gazette notification
+- [ ] UNSC 1267 and 1988 lists in ScoreSentinel are current — verify against latest UNSC publication
+- [ ] Screening is applied to all customer names, not just the transaction initiator (beneficial owner, authorised signatories)
+- [ ] List update procedure is documented and assigned to a named responsible individual
+
+#### UAPA Order dated February 2, 2021 — Mandatory Action on Match
+
+The RBI circular of February 2, 2021 (reference: DBR.AML.BC.No.26/14.01.001/2020-21) mandates the following immediate actions on any UAPA or UNSC match:
+
+| Mandatory Action | Timing | ScoreSentinel Coverage |
+|---|---|---|
+| **Freeze the account** | Immediately on identification of match | `mandatory_actions` field in API response includes `FREEZE_ACCOUNT` on any UAPA/UNSC match |
+| **Report to FIU-IND** | Without delay | `mandatory_actions` includes `REPORT_FIU_IND`; STR must be filed immediately |
+| **Follow MHA advisory** | As per MHA communication | `FOLLOW_MHA_ADVISORY` included in mandatory actions; institution must contact MHA for guidance |
+| **Do not tip off the customer** | At no point | ScoreSentinel does not expose alert status externally; tipping-off prohibition must be enforced by the institution |
+
+**Audit checklist — UAPA February 2021 Order:**
+- [ ] Account freeze capability is connected to the ScoreSentinel UAPA alert — alert must trigger automatic freeze, not just a notification
+- [ ] FIU-IND reporting template is pre-populated and the filing process takes less than 24 hours from alert generation
+- [ ] MHA advisory protocol is documented — institution knows how to contact MHA and what information to provide
+- [ ] Three-point identifier verification is completed before confirming the match (see `AUDIT_REQUIREMENTS.md` Section 3)
+
+#### Customer Due Diligence Requirements
+
+| Requirement | Standard | ScoreSentinel Coverage |
+|---|---|---|
+| Risk-categorise all customers as Low, Medium, or High | Based on customer type, geography, transaction patterns | Customer risk module (CCRS) produces a normalised score driving risk band categorisation in the `customers` table |
+| Simplified due diligence for low-risk customers | Low-risk: reduced monitoring frequency | CRS < 20 = Low Risk band; monitoring frequency aligned to risk band |
+| Standard due diligence for medium-risk customers | Medium-risk: standard monitoring | CRS 21–59 = Medium-Low or Medium-High bands |
+
+#### Enhanced Due Diligence for Politically Exposed Persons (PEPs)
+
+| Requirement | Standard | ScoreSentinel Coverage |
+|---|---|---|
+| Senior management approval for PEP relationships | Before or during onboarding | PEP Tier 1 triggers auto-alert; institution must obtain SM approval as a separate process |
+| Source of wealth / source of funds for PEPs | Required for all PEP accounts | Not automated by ScoreSentinel; must be collected by the institution's KYC team and documented in `alerts` table |
+| Ongoing enhanced monitoring for PEPs | Increased frequency and scrutiny | PEP status elevates CCRS in every scored transaction; alerts route to enhanced review queue |
+| EDD documentation in file | Documented before first transaction | ScoreSentinel `alerts` table `internal_summary` field must contain EDD reference |
+
+**Audit checklist — PEP EDD:**
+- [ ] All PEP customers are marked in ScoreSentinel with correct PEP tier (Tier 1, 2, or 3)
+- [ ] Senior management approval document reference is stored in the customer record
+- [ ] Source of wealth evidence is on file and referenced in `alerts.reviewer_rationale`
+- [ ] PEP review frequency meets RBI requirement (at minimum annual for all PEPs; quarterly for Tier 1)
+
+---
+
+### 14.3 FIU-IND Reporting Obligations
+
+Financial Intelligence Unit — India (FIU-IND) is the nodal agency for receiving and processing financial intelligence reports under PMLA 2002.
+
+#### Suspicious Transaction Reports (STR)
+
+| Requirement | Deadline | ScoreSentinel Integration |
+|---|---|---|
+| File STR for any transaction giving rise to suspicion | **Within 7 days** of suspicion arising | ScoreSentinel alert (CRS ≥ 60 or auto-alert) is the trigger event; alert `created_at` timestamp is the start of the 7-day clock |
+| STR must contain: customer details, transaction details, grounds for suspicion, details of officer filing | As per FIU-IND format | ScoreSentinel API response provides customer ID, transaction details, CRS, rules fired, and module scores — all required as grounds for suspicion |
+| Maintain record of all STRs filed | 5 years | Reference FIU-IND reference number in `alerts.str_reference` field (available in `mule_clusters` table; replicate to `alerts`) |
+
+**Audit checklist — STR:**
+- [ ] Alert age monitoring: all alerts with status `PENDING` and `created_at` > 5 days old must be escalated daily
+- [ ] STR filing log maintained: every filed STR has a FIU-IND acknowledgement reference stored
+- [ ] Annual STR reconciliation: total STRs filed reconciles with total alerts dispositioned as True Positive or Escalated
+
+#### Cash Transaction Reports (CTR)
+
+| Requirement | Deadline | ScoreSentinel Integration |
+|---|---|---|
+| File CTR for all cash transactions ≥ ₹10 lakh | Within **15 days** of close of the month | SCN-007 (CASH_INTENSIVE) flags high-volume cash patterns; institution must run a monthly CTR extraction query |
+| Mandatory CTR regardless of alert status | CTR is a reporting obligation, not a risk decision | Even if CRS is low, all cash transactions above threshold must be reported |
+
+**Monthly CTR extraction query (guidance):**
+```sql
+SELECT 
+    transaction_id,
+    customer_id,
+    timestamp_processed,
+    transaction_amount,
+    transaction_currency,
+    transaction_type,
+    sender_country,
+    receiver_country
+FROM transactions
+WHERE transaction_type ILIKE '%cash%'
+  AND transaction_amount >= 1000000  -- INR 10 lakh
+  AND timestamp_processed >= DATE_TRUNC('month', NOW() - INTERVAL '1 month')
+  AND timestamp_processed < DATE_TRUNC('month', NOW())
+ORDER BY timestamp_processed;
+```
+
+#### Non-Profit Organisation Transaction Reports (NTR)
+
+| Requirement | Deadline | ScoreSentinel Integration |
+|---|---|---|
+| File NTR for all cross-border transactions of NGOs/NPOs | Within **15 days** of close of the month | Geography module flags cross-border transactions; customer type `Non-Profit Organisation` elevates CCRS |
+| Threshold: All cross-border transactions by NPOs | No minimum threshold | Filter transactions table by customer_type = 'NGO' or 'NPO' |
+
+---
+
+### 14.4 FATF Recommendations Addressed by ScoreSentinel
+
+| FATF Recommendation | Full Title | ScoreSentinel Implementation |
+|---|---|---|
+| **Recommendation 1** | Risk-Based Approach | Five-module weighted CRS implements a risk-proportionate scoring framework; higher-risk customers, geographies, and transaction types receive proportionally higher scores. Alert threshold of 60 ensures resources are focused on genuinely elevated risk. |
+| **Recommendation 6** | Targeted Financial Sanctions Related to Terrorism and Terrorist Financing | Six-list sanctions waterfall executed before every transaction scores. Any match triggers immediate auto-alert with mandatory freeze action. No delay — sanctions screening completes in milliseconds per transaction. |
+| **Recommendation 10** | Customer Due Diligence | Customer risk module (CCRS) implements a full risk-based CDD framework covering entity type, PEP status, beneficial ownership transparency, account age, and sanctions screening. EDD-level scoring applied to PEPs, shell companies, and high-risk entity types. |
+| **Recommendation 29** | Financial Intelligence Units | Alert output is structured for FIU-IND STR submission. Rules fired provide human-readable grounds for suspicion. Module scores provide quantitative evidence. Velocity module provides historical transaction context. All required STR fields are captured in the scoring output and `alerts` table. |
+
+**Additional FATF Recommendations — Partial Coverage:**
+
+| Recommendation | Partial Coverage | Gap |
+|---|---|---|
+| Rec. 12 — PEPs | PEP scoring in customer module; PEP auto-alert for Tier 1 | No commercial PEP database — reliance on self-reported PEP status |
+| Rec. 19 — Higher-Risk Countries | Geography module applies elevated scores for FATF grey/black list jurisdictions | Scores are updated on FATF plenary schedule, not real-time |
+| Rec. 20 — STR Reporting | Alert pipeline generates STR-ready output | STR filing is a human decision — ScoreSentinel does not auto-file |
+| Rec. 28 — Regulation of DNFBPs | ScoreSentinel can be deployed by reporting entities beyond banks | DNFBP-specific typologies not yet implemented in rules engine |
+
+---
+
+### 14.5 Indian Regulatory Compliance Summary Dashboard
+
+| Regulatory Area | Regulation | ScoreSentinel Status | Client Action |
+|---|---|---|---|
+| Transaction record maintenance | PMLA 2002 Section 12(1) | ✅ Full coverage | Integrate all transactions; confirm 5-year retention |
+| Cash transaction reporting | PMLA 2002 Section 12(1A) | ✅ Detection; ⚠️ Filing is client obligation | Run monthly CTR extraction; file within 15 days of month-end |
+| Suspicious transaction reporting | PMLA 2002 Rule 3 | ✅ Alert generation; ⚠️ STR filing is client obligation | File STR within 7 days of alert; monitor alert age |
+| UAPA sanctions screening | Section 51A UAPA 1967 | ✅ Full — 6-list waterfall | Confirm lists are current; test freeze procedure |
+| UAPA match mandatory actions | RBI Circular Feb 2, 2021 | ✅ mandatory_actions in API response | Connect freeze action to core banking; train staff |
+| PEP enhanced due diligence | RBI KYC Directions 2025 Ch. VII | ✅ Scoring; ⚠️ EDD process is client obligation | Document source of wealth; obtain senior management approval |
+| Ongoing transaction monitoring | RBI KYC Directions 2025 para 37 | ✅ Velocity module + rules engine | Ensure all transactions submitted — no cherry-picking |
+| Data localisation | RBI Payment Data Policy 2018 | ⚠️ GAP — data currently processed outside India | Disclose to regulator; monitor Mumbai migration progress |
+| STR format compliance | FIU-IND STR format | ✅ ScoreSentinel output maps to STR fields | Pre-populate STR template using ScoreSentinel API response |
+| Risk-based approach | FATF Recommendation 1 | ✅ Five-module weighted CRS | Document risk appetite and threshold rationale for regulator |
+
+---
+
+*Last Updated: September 2026 | Section 14 added by: Atul Krishnan, CAMS*
+
+---
+
+*ScoreSentinel | AUDIT_REQUIREMENTS.md | Compliance Audit Trail Framework | Authored by Atul Krishnan, CAMS | Version 1.1 | September 2026 (Section 14 added)*
