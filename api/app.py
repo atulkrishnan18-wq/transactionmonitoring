@@ -5,6 +5,7 @@ Authored by Atul Krishnan, CAMS | Day 27 of 60
 """
 
 import os
+import sys
 import datetime
 import json
 import uuid
@@ -14,6 +15,10 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+
+# Ensure project root is in sys.path
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from scoring_engine import ScoreSentinelEngine
 from engine.scenario_engine import ScenarioEngine
 from engine.tuning_module import ThresholdTuningEngine
@@ -232,7 +237,7 @@ def score_transaction():
             cur.close()
             conn.close()
             
-        response_data = {"transaction_id": transaction_id, "crs": crs, "alert": alert_generated}
+        response_data = {"transaction_id": transaction_id, "crs": crs, "overall_crs": result.get("overall_crs", crs), "alert": alert_generated, "rules_fired": result.get("rules_fired", [])}
         if result.get("alert_type") in sanctions_alert_types:
             response_data["sanctions_match"] = result.get("sanctions_match")
             response_data["mandatory_actions"] = result.get("mandatory_actions")

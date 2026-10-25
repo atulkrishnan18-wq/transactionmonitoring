@@ -29,11 +29,17 @@ class StructuringModule:
         all_tx = history + [transaction]
         # Ensure all transactions have datetime objects for calculation
         for tx in all_tx:
-            if isinstance(tx.get("date"), str):
-                tx["date"] = datetime.fromisoformat(tx["date"])
+            d = tx.get("date")
+            if not d:
+                tx["date"] = datetime.now()
+            elif isinstance(d, str):
+                try:
+                    tx["date"] = datetime.fromisoformat(d)
+                except Exception:
+                    tx["date"] = datetime.now()
 
-        # Sort transactions by date
-        all_tx.sort(key=lambda x: x["date"])
+        # Sort transactions by date safely
+        all_tx.sort(key=lambda x: x.get("date") or datetime.now())
         
         # --- PART 1: STRUCTURING_RULES.md ---
         
