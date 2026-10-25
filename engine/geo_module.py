@@ -59,11 +59,31 @@ class GeoModule:
         # Nigeria/Pakistan CPI Tier 2B adjustment (+15) or CPI 25 score (+20)
         # We use the tier_2a/2b for these.
 
+        # ISO-2 aliases — API validates 2-letter codes; IBM ingestion sends ISO-2.
+        self.iso_map = {
+            "US": "United States", "GB": "United Kingdom", "UK": "United Kingdom",
+            "DE": "Germany", "CN": "China", "AE": "UAE", "SG": "Singapore",
+            "IN": "India", "HK": "Hong Kong", "JP": "Japan",
+            "IR": "Iran", "KP": "North Korea", "MM": "Myanmar",
+            "SY": "Syria", "CU": "Cuba", "RU": "Russia", "BY": "Belarus",
+            "VE": "Venezuela", "PK": "Pakistan", "NG": "Nigeria",
+            "ZA": "South Africa", "AF": "Afghanistan", "YE": "Yemen",
+            "KY": "Cayman Islands", "VG": "British Virgin Islands",
+            "PA": "Panama", "CY": "Cyprus", "CH": "Switzerland",
+        }
+
+    def _resolve_country(self, country):
+        if not country or not isinstance(country, str):
+            return country
+        mapped = self.iso_map.get(country.strip().upper())
+        return mapped if mapped else country
+
     def calculate_country_score(self, country):
         """
         Calculates the cumulative score for a single country.
         Returns (score, is_auto_alert)
         """
+        country = self._resolve_country(country)
         score = 0
         is_auto_alert = False
         

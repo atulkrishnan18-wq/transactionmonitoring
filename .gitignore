@@ -18,6 +18,9 @@ htmlcov/
 *.db
 *.sqlite3
 
+# Generated IBM ingestion output
+scripts/ibm_ingestion_results.csv
+
 # IDE / System
 .vscode/
 .idea/

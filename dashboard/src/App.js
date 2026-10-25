@@ -9,6 +9,102 @@ import MuleClusterView from './components/MuleClusterView';
 import TuningLab from './components/TuningLab';
 import { LayoutGrid, BarChart3, Users, Network, ShieldAlert, LogOut, Activity, Sliders } from 'lucide-react';
 
+function isIbmRecord(item) {
+  const id = item?.customer_id || '';
+  const name = item?.customer_name || item?.full_name || '';
+  return String(id).startsWith('IBM-') || String(name).startsWith('IBM-');
+}
+
+function DemoBanner() {
+  const API_URL = process.env.REACT_APP_API_URL || 'https://scoresentinel-api.onrender.com';
+  const READ_KEY = process.env.REACT_APP_READ_API_KEY;
+  const DEMO_KEY = process.env.REACT_APP_DEMO_API_KEY;
+  const [ibmActive, setIbmActive] = React.useState(false);
+  const [resetting, setResetting] = React.useState(false);
+  const [resetMessage, setResetMessage] = React.useState('');
+
+  const refreshFlag = React.useCallback(() => {
+    fetch(`${API_URL}/api/alerts`, { headers: { 'X-READ-API-KEY': READ_KEY } })
+      .then((res) => res.json())
+      .then((data) => {
+        const alerts = data.alerts || [];
+        setIbmActive(alerts.some(isIbmRecord));
+      })
+      .catch(() => {});
+  }, [API_URL, READ_KEY]);
+
+  React.useEffect(() => {
+    refreshFlag();
+    const timer = setInterval(refreshFlag, 8000);
+    return () => clearInterval(timer);
+  }, [refreshFlag]);
+
+  const handleReset = async () => {
+    if (!DEMO_KEY) {
+      setResetMessage('Reset unavailable — REACT_APP_DEMO_API_KEY is not configured.');
+      return;
+    }
+    setResetting(true);
+    setResetMessage('');
+    try {
+      const res = await fetch(`${API_URL}/api/demo/reset`, {
+        method: 'DELETE',
+        headers: { 'X-DEMO-API-KEY': DEMO_KEY, 'Content-Type': 'application/json' }
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setResetMessage(data.message || 'Demo environment reset — records deleted');
+        setIbmActive(false);
+        window.setTimeout(() => window.location.reload(), 800);
+      } else {
+        setResetMessage(data.message || `Reset failed (${res.status})`);
+      }
+    } catch (err) {
+      setResetMessage('Reset failed — could not reach API.');
+    } finally {
+      setResetting(false);
+    }
+  };
+
+  if (!ibmActive && !resetMessage) return null;
+
+  return (
+    <div style={{
+      backgroundColor: '#111827',
+      color: '#fff',
+      padding: '10px 24px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: '16px',
+      borderBottom: '3px solid #f59e0b'
+    }}>
+      <div>
+        <strong style={{ color: '#fbbf24' }}>Demo Mode — IBM AML Dataset Active</strong>
+        {resetMessage && (
+          <div style={{ fontSize: '12px', color: '#d1d5db', marginTop: '2px' }}>{resetMessage}</div>
+        )}
+      </div>
+      <button
+        onClick={handleReset}
+        disabled={resetting}
+        style={{
+          backgroundColor: '#f59e0b',
+          color: '#111827',
+          border: 'none',
+          borderRadius: '4px',
+          padding: '8px 14px',
+          fontWeight: 700,
+          cursor: resetting ? 'wait' : 'pointer',
+          fontSize: '13px'
+        }}
+      >
+        {resetting ? 'Resetting…' : 'Reset Demo'}
+      </button>
+    </div>
+  );
+}
+
 function AppContent() {
   const location = useLocation();
   const currentPath = location.pathname;
@@ -83,6 +179,7 @@ function AppContent() {
 
       {/* Main Content Area */}
       <div style={styles.content}>
+        <DemoBanner />
         <Routes>
           <Route path="/" element={<AlertQueue />} />
           <Route path="/alerts/:id" element={<CaseDetail />} />

@@ -696,3 +696,85 @@ Rule Rationale          : Loan-back scheme indicator + FATF grey list domicile
 | Integration with GEO_RULES.md, STRUCTURING_RULES.md, CUSTOMER_RULES.md explicit | ✅ |
 | No black-box ML — full rules-based explainability | ✅ |
 | Worked examples demonstrate scoring logic end-to-end | ✅ |
+
+---
+
+## 11. Credit Card Specific Risk Scoring (v1.3)
+
+**Added:** October 2026 | **Regulatory Basis:** RBI Master Direction on Credit Card 2022, RBI CNP Circular, PCI DSS MCC Risk Framework
+
+### 11.1 Credit Card Transaction Types
+
+| Code | Description | Base Score | Regulatory Reference |
+|------|-------------|-----------|----------------------|
+| `CNP` | Card Not Present — e-commerce, MOTO, online transactions | 45 | RBI CNP Circular 2011, PCI DSS 3.2.1 |
+| `CASH_ADVANCE` | Credit card cash withdrawal / ATM advance | 55 | RBI MD Credit Card 2022 §20 |
+| `EMI_CONVERSION` | Retail purchase converted to EMI instalment | 25 | RBI MD Credit Card 2022 §15 |
+| `REWARD_REDEMPTION` | Loyalty points / cashback redemption | 30 | RBI MD Credit Card 2022 |
+| `BALANCE_TRANSFER` | Balance transferred from another card/lender | 35 | RBI MD Credit Card 2022 §18 |
+
+### 11.2 MCC Risk Tiers
+
+MCC (Merchant Category Code) risk tiers add to the base transaction score according to the category of the receiving merchant.
+
+#### Tier 1 — HIGH RISK (+20 points)
+
+| MCC | Category | Risk Rationale |
+|-----|----------|---------------|
+| 6011 | ATM Cash Disbursements | Direct cash extraction, structuring risk |
+| 6051 | Quasi-Cash Merchants | Near-cash instruments, minimal traceability |
+| 7995 | Gambling Transactions | High-volume, high-frequency, anonymous |
+| 9222 | Fines and Penalties | Government fines — potential bribery/corruption nexus |
+| 4829 | Wire Transfer Money Orders | Layering vehicle, cross-border risk |
+
+#### Tier 2 — MEDIUM RISK (+10 points)
+
+| MCC | Category | Risk Rationale |
+|-----|----------|---------------|
+| 5411 | Grocery Stores | Smurfing risk when used for large structured amounts |
+| 5912 | Drug Stores / Pharmacies | Controlled substance nexus |
+| 5999 | Miscellaneous Retail | Catch-all; limited auditability |
+| 7011 | Hotels and Lodging | Common placement vehicle |
+| 4111 | Local/Suburban Transport | High-volume anonymised payments |
+
+#### Tier 3 — LOW RISK (+0 points)
+
+| MCC | Category | Notes |
+|-----|----------|-------|
+| 5812 | Eating Places / Restaurants | Normal retail |
+| 7372 | Computer Programming Services | B2B, typically documented |
+| 8011 | Doctors and Physicians | Healthcare services |
+| 5945 | Hobby, Toy and Game Shops | Consumer retail |
+
+### 11.3 Credit Card Rule Triggers
+
+| Rule ID | Trigger | Action |
+|---------|---------|--------|
+| `CC-CNP-HIGH-RISK` | CNP transaction + (international merchant or amount > ₹10,000) | +10 to raw score, rule fired |
+| `CC-CASH-ADVANCE-RISK` | Any CASH_ADVANCE transaction | +5 to raw score, rule fired |
+| `CC-MCC-TIER1` | MCC in Tier 1 set | +20 to raw score, rule fired |
+| `CC-MCC-TIER2` | MCC in Tier 2 set | +10 to raw score, rule fired |
+| `CC-EMI-STRUCTURING` | EMI_CONVERSION + multiple conversions same day | +15 to raw score, rule fired |
+
+### 11.4 Worked Example — CNP + MCC 6011
+
+**Scenario:** Online payment of ₹15,000 via CNP, merchant MCC 6011 (ATM), sender in India, merchant in USA.
+
+| Component | Value |
+|-----------|-------|
+| Base score (CNP) | 45 |
+| MCC Tier 1 bonus (6011) | +20 |
+| CC-CNP-HIGH-RISK (intl + high amount) | +10 |
+| Raw total | 75 |
+| Module maximum cap | 55 |
+| **Final module score** | **55** |
+| Rules fired | `CC-MCC-TIER1`, `CC-CNP-HIGH-RISK` |
+
+> **Note:** Module maximum of 55 is enforced — scores are capped regardless of additive bonuses. The cap ensures the transaction module cannot disproportionately dominate the composite CRS.
+
+### 11.5 Applicable Indian Regulatory Guidance
+
+- **RBI Master Direction on Credit Card and Debit Card — Issuance and Conduct Directions, 2022** — mandates real-time fraud detection, CNP authentication via OTP, and risk-based monitoring of credit card transactions.
+- **RBI Circular on Security and Risk Mitigation Measures for Card Present and Card Not Present Transactions (2011)** — requires additional authentication for all CNP transactions above ₹2,000 and mandates monitoring of international CNP volumes.
+- **PCI DSS v4.0 MCC Risk Taxonomy** — provides industry-standard merchant risk classification underpinning Tier 1/2/3 scoring.
+- **PMLA 2002 / FIU-IND Reporting** — cash advances and quasi-cash MCCs may trigger STR filing obligations where suspicious patterns are detected.

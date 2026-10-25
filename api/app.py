@@ -804,6 +804,62 @@ def get_customer_velocity(customer_id):
         if 'conn' in locals() and conn:
             conn.close()
 
+
+# ============================================================
+# IBM DEMO RESET ENDPOINT
+# ============================================================
+
+@app.route('/api/demo/reset', methods=['DELETE'])
+@limiter.limit("10 per hour")
+def demo_reset():
+    """
+    Deletes all transactions and alerts where customer_id starts with 'IBM-'.
+    Safety guard: only works when FLASK_ENV != 'production'.
+    Requires X-DEMO-API-KEY header.
+    """
+    # Safety check — refuse to run in production
+    if os.environ.get("FLASK_ENV") == "production":
+        return jsonify({
+            "error": "Forbidden",
+            "message": "Demo reset is disabled in production environment."
+        }), 403
+
+    # Auth check (belt-and-suspenders — before_request handles this but be explicit)
+    key = request.headers.get("X-DEMO-API-KEY")
+    if key != DEMO_API_KEY:
+        return jsonify({"error": "Unauthorized", "message": "Demo API Key required."}), 401
+
+    conn = None
+    try:
+        conn = get_db_connection()
+        cur  = conn.cursor()
+
+        # Delete alerts first (FK constraint on transaction_id)
+        cur.execute("DELETE FROM alerts WHERE customer_id LIKE 'IBM-%'")
+        alerts_deleted = cur.rowcount
+
+        cur.execute("DELETE FROM transactions WHERE customer_id LIKE 'IBM-%'")
+        tx_deleted = cur.rowcount
+
+        conn.commit()
+
+        app.logger.info(f"Demo reset: {tx_deleted} transactions, {alerts_deleted} alerts deleted.")
+        return jsonify({
+            "status":               "reset_complete",
+            "transactions_deleted": tx_deleted,
+            "alerts_deleted":       alerts_deleted,
+            "message":              f"Demo environment reset — {tx_deleted + alerts_deleted} records deleted"
+        }), 200
+
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        app.logger.error(f"Demo reset error: {str(e)}")
+        return jsonify({"error": "Reset failed", "message": str(e)}), 500
+    finally:
+        if conn:
+            conn.close()
+
 if __name__ == '__main__':
     host = os.environ.get('FLASK_RUN_HOST', '127.0.0.1')
     port = int(os.environ.get('FLASK_RUN_PORT', 5000))

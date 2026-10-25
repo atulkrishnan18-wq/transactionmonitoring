@@ -11,9 +11,16 @@ const AlertQueue = () => {
   const API_URL = process.env.REACT_APP_API_URL || 'https://scoresentinel-api.onrender.com';
   const READ_KEY = process.env.REACT_APP_READ_API_KEY;
 
+  const isIbmAlert = (alert) => {
+    const id = alert?.customer_id || '';
+    const name = alert?.customer_name || '';
+    return String(id).startsWith('IBM-') || String(name).startsWith('IBM-');
+  };
+
   useEffect(() => {
-    const fetchAlerts = async () => {
-      setLoading(true);
+    let cancelled = false;
+    const fetchAlerts = async (showSpinner) => {
+      if (showSpinner) setLoading(true);
       try {
         const url = activeStage === 'ALL' 
           ? `${API_URL}/api/alerts` 
@@ -22,14 +29,19 @@ const AlertQueue = () => {
           headers: { 'X-READ-API-KEY': READ_KEY }
         });
         const data = await response.json();
-        setAlerts(data.alerts || []);
+        if (!cancelled) setAlerts(data.alerts || []);
       } catch (error) {
         console.error("Failed to fetch alerts:", error);
       } finally {
-        setLoading(false);
+        if (!cancelled && showSpinner) setLoading(false);
       }
     };
-    fetchAlerts();
+    fetchAlerts(true);
+    const timer = setInterval(() => fetchAlerts(false), 5000);
+    return () => {
+      cancelled = true;
+      clearInterval(timer);
+    };
   }, [activeStage, API_URL, READ_KEY]);
 
   const stages = [
@@ -151,7 +163,20 @@ const AlertQueue = () => {
                     {alert.alert_id}
                   </td>
                   <td style={styles.td}>
-                    <div style={{fontWeight: 500}}>{alert.customer_name}</div>
+                    <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                      <span style={{fontWeight: 500}}>{alert.customer_name}</span>
+                      {isIbmAlert(alert) && (
+                        <span style={{
+                          backgroundColor: '#111827',
+                          color: '#fbbf24',
+                          fontSize: '10px',
+                          fontWeight: 700,
+                          letterSpacing: '0.4px',
+                          padding: '1px 6px',
+                          borderRadius: '4px'
+                        }}>IBM</span>
+                      )}
+                    </div>
                     <div style={{fontSize: '11px', color: '#8c8c8c'}}>ID: {alert.customer_id}</div>
                   </td>
                   <td style={{...styles.td, fontWeight: 700}}>
