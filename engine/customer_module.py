@@ -15,10 +15,36 @@ class CustomerModule:
         self.module_maximum = 175
         self.alert_threshold = 60
 
+
+    # ── Customer type alias map (v1.2) ─────────────────────────────────────
+    # Allows short-form strings from API payloads and IBM ingestion scripts
+    # (e.g. "PEP", "CORPORATE", "INDIVIDUAL") alongside canonical rule names.
+    _CUSTOMER_TYPE_ALIASES = {
+        "PEP":          "Politically Exposed Person (PEP)",
+        "SHELL":        "Shell Company",
+        "CRYPTO":       "Crypto-Asset Business",
+        "HNWI":         "High-Net-Worth Individual (HNWI)",
+        "NGO":          "Charity / NGO",
+        "CORPORATE":    "Established Business (3+ years)",
+        "INDIVIDUAL":   "Verified Salaried Individual",
+        "TRUST":        "Trust / Foundation",
+        "NBFI":         "Correspondent Bank / NBFI",
+        "SMB":          "Small/Medium Business (SMB)",
+    }
+
+    def _resolve_customer_type(self, customer_type):
+        """Return canonical customer type string; pass through if already canonical."""
+        if not customer_type:
+            return customer_type
+        return self._CUSTOMER_TYPE_ALIASES.get(
+            str(customer_type).strip().upper(), customer_type
+        )
+
     def calculate_customer_type_score(self, customer_type):
         """
         Dimension 1: Customer Type Score (0-50)
         """
+        customer_type = self._resolve_customer_type(customer_type)
         scores = {
             "Shell Company": 50,
             "Sanctions-Adjacent Entity": 50,
@@ -134,7 +160,8 @@ class CustomerModule:
         """
         Calculates the Composite Customer Risk Score (CCRS).
         """
-        dim1 = self.calculate_customer_type_score(customer_data.get("customer_type"))
+        _resolved_ctype = self._resolve_customer_type(customer_data.get("customer_type"))
+        dim1 = self.calculate_customer_type_score(_resolved_ctype)
         dim2 = self.calculate_ownership_transparency_score(customer_data)
         dim3 = self.calculate_geographic_risk_score(customer_data.get("geo_tier"))
         dim4 = self.calculate_account_behaviour_score(customer_data.get("behaviour_indicator"))
@@ -157,6 +184,7 @@ class CustomerModule:
             },
             "is_auto_alert": (
                 customer_data.get("match_type") in ["Confirmed PEP — Tier 1", "Confirmed Sanctions Hit"] or
-                customer_data.get("geo_tier") in ["Tier 1A", "Tier 1B"]
+                customer_data.get("geo_tier") in ["Tier 1A", "Tier 1B"] or
+                _resolved_ctype == "Politically Exposed Person (PEP)"
             )
         }

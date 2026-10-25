@@ -59,6 +59,15 @@ class GeoModule:
         # Nigeria/Pakistan CPI Tier 2B adjustment (+15) or CPI 25 score (+20)
         # We use the tier_2a/2b for these.
 
+        # High-Risk Currencies
+        self.high_risk_currencies = {
+            "RUB": 25,  # Russian Ruble (Sanctions evasion / capital flight risk)
+            "SAR": 15,  # Saudi Riyal (Regional corruption / illicit finance corridor)
+            "IRR": 50,  # Iranian Rial (Sanctioned jurisdiction)
+            "KPW": 50,  # North Korean Won (Sanctioned jurisdiction)
+            "SYP": 50,  # Syrian Pound (Sanctioned jurisdiction)
+        }
+
         # ISO-2 aliases — API validates 2-letter codes; IBM ingestion sends ISO-2.
         self.iso_map = {
             "US": "United States", "GB": "United Kingdom", "UK": "United Kingdom",
@@ -114,15 +123,18 @@ class GeoModule:
             
         return score, is_auto_alert
 
-    def get_geo_score(self, sender_country, receiver_country):
+    def get_geo_score(self, sender_country, receiver_country, currency=None):
         """
         Calculates the geographic risk score for a transaction.
-        Assessed on BOTH sender and receiver countries.
+        Assessed on BOTH sender and receiver countries, plus currency risk.
         """
         sender_score, sender_alert = self.calculate_country_score(sender_country)
         receiver_score, receiver_alert = self.calculate_country_score(receiver_country)
         
-        total_raw_score = sender_score + receiver_score
+        currency_code = str(currency).strip().upper() if currency else None
+        currency_score = self.high_risk_currencies.get(currency_code, 0) if currency_code else 0
+        
+        total_raw_score = sender_score + receiver_score + currency_score
         is_auto_alert = sender_alert or receiver_alert
         
         # SR 11-7 Validation Rule: Cap at module maximum before normalisation
@@ -135,10 +147,10 @@ class GeoModule:
             "raw_score": total_raw_score,
             "normalised_score": normalised_score,
             "is_auto_alert": is_auto_alert,
+            "currency_risk": {"currency": currency, "score": currency_score},
             "sender": {"country": sender_country, "score": sender_score, "is_auto_alert": sender_alert},
             "receiver": {"country": receiver_country, "score": receiver_score, "is_auto_alert": receiver_alert}
         }
-
 if __name__ == "__main__":
     engine = GeoModule()
     

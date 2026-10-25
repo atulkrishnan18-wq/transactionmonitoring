@@ -1,6 +1,6 @@
 {
-  "version": "1.0",
-  "last_updated": "2026-09-19T06:11:00.746343",
+  "version": "1.1",
+  "last_updated": "2026-10-25T12:30:00",
   "alert_threshold": 60,
   "scenarios": [
     {
@@ -103,6 +103,31 @@
       "trigger_conditions": {
         "max_transactions_7_days": 20,
         "max_volume_7_days": 50000
+      }
+    },
+    {
+      "id": "SCN-009",
+      "name": "CRYPTO_HIGH_VALUE",
+      "description": "Cryptocurrency or virtual asset transaction above high-value threshold — high anonymity and cross-border layering risk requiring mandatory enhanced due diligence",
+      "enabled": true,
+      "weight": 40,
+      "regulatory_basis": "FATF Recommendation 15 (VASP), RBI Circular on Virtual Digital Assets 2022, PMLA 2002 Schedule",
+      "trigger_conditions": {
+        "transaction_types": ["CRYPTO", "Cryptocurrency Transaction", "Bitcoin"],
+        "min_amount": 10000
+      }
+    },
+    {
+      "id": "SCN-010",
+      "name": "HIGH_VALUE_WIRE",
+      "description": "Single cross-border wire transfer above high-value threshold — potential placement or layering vehicle",
+      "enabled": true,
+      "weight": 25,
+      "regulatory_basis": "PMLA 2002 Section 12, FATF Recommendation 16 (Wire Transfer Rule), RBI FEMA Reporting",
+      "trigger_conditions": {
+        "transaction_types": ["WIRE_TRANSFER", "Wire Transfer (International)", "Wire Transfer (Domestic)"],
+        "min_amount": 50000,
+        "require_cross_border": true
       }
     }
   ]

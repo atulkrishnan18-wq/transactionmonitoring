@@ -59,9 +59,12 @@ class ScoreSentinelEngine:
         structuring_normalised = structuring_result["normalised_score"] * 100
 
         # Step 3: geo_module
+        tx_dict = transaction_data.get("transaction", {})
+        tx_curr = tx_dict.get("currency") or tx_dict.get("transaction_currency")
         geo_result = self.geo_module.get_geo_score(
-            transaction_data.get("transaction", {}).get("sender_country"),
-            transaction_data.get("transaction", {}).get("receiver_country")
+            tx_dict.get("sender_country"),
+            tx_dict.get("receiver_country"),
+            currency=tx_curr
         )
         geo_normalised = geo_result["normalised_score"] * 100
 

@@ -157,6 +157,7 @@ def score_transaction():
                 "sender_country": sender_country,
                 "receiver_country": receiver_country,
                 "account_id": account_id,
+                "currency": tx_currency,
                 "date": datetime.datetime.now()
             },
             "history": history_data

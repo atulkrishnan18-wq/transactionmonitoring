@@ -104,11 +104,18 @@ class RulesEngine:
                     reason = f"Suspiciously round transaction amount: {amount}"
 
             elif sc_id == "SCN-006": # PEP_TRANSACTION
+                # Trigger on explicit pep_tier OR on customer_type = PEP / canonical PEP string
                 pep_tier = customer.get("pep_tier")
-                if pep_tier == "1" and conds.get("pep_tier_1_auto_alert"):
+                ctype    = str(customer.get("customer_type", "")).strip().upper()
+                is_pep   = (
+                    pep_tier == "1" or
+                    ctype == "PEP" or
+                    ctype == "POLITICALLY EXPOSED PERSON (PEP)"
+                )
+                if is_pep and conds.get("pep_tier_1_auto_alert"):
                     triggered = True
                     score_contribution = weight
-                    reason = "Transaction involves Tier 1 PEP"
+                    reason = "Transaction involves PEP customer"
 
             elif sc_id == "SCN-007": # CASH_INTENSIVE
                 min_cash = conds.get("min_cash_amount", 50000)
@@ -123,6 +130,29 @@ class RulesEngine:
                     triggered = True
                     score_contribution = weight
                     reason = f"Transaction count ({len(history)}) exceeds expected pattern"
+
+            elif sc_id == "SCN-009": # CRYPTO_HIGH_VALUE
+                # Cryptocurrency or virtual asset transaction above threshold
+                # FATF R-15 VASP / RBI VDA Circular — any crypto above min_amount triggers
+                min_amount = conds.get("min_amount", 10000)
+                allowed_types = conds.get("transaction_types", ["CRYPTO", "Cryptocurrency Transaction", "Bitcoin"])
+                if tx_type in allowed_types and amount >= min_amount:
+                    triggered = True
+                    score_contribution = weight
+                    reason = f"Cryptocurrency/VDA transaction of {amount} above {min_amount} threshold ({tx_type})"
+
+            elif sc_id == "SCN-010": # HIGH_VALUE_WIRE
+                # Cross-border wire above threshold
+                min_amount = conds.get("min_amount", 50000)
+                allowed_types = conds.get("transaction_types", ["WIRE_TRANSFER", "Wire Transfer (International)"])
+                require_cross_border = conds.get("require_cross_border", True)
+                sender = transaction.get("sender_country", "")
+                receiver = transaction.get("receiver_country", "")
+                is_cross_border = sender != receiver if require_cross_border else True
+                if tx_type in allowed_types and amount >= min_amount and is_cross_border:
+                    triggered = True
+                    score_contribution = weight
+                    reason = f"High-value cross-border wire: {amount} ({sender} -> {receiver})"
 
             if triggered:
                 total_score += score_contribution
