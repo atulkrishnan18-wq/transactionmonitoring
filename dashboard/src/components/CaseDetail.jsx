@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Shield, User, Activity, FileText, CheckCircle, ArrowLeft } from 'lucide-react';
+import { Shield, User, Activity, FileText, CheckCircle, ArrowLeft, Download, Eye, X } from 'lucide-react';
 
 const CaseDetail = () => {
   const { id } = useParams();
@@ -8,7 +8,14 @@ const CaseDetail = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('breakdown');
-  
+
+  // STR state
+  const [strPreviewData, setStrPreviewData] = useState(null);
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const [strLoading, setStrLoading] = useState(false);
+  const [strReference, setStrReference] = useState(null);
+  const [strGeneratedAt, setStrGeneratedAt] = useState(null);
+
   // Form State
   const [form, setForm] = useState({
     client_rp: '',
@@ -26,41 +33,47 @@ const CaseDetail = () => {
   const DEMO_KEY = process.env.REACT_APP_DEMO_API_KEY;
   const READ_KEY = process.env.REACT_APP_READ_API_KEY;
 
-  useEffect(() => {
-    const fetchDetail = async () => {
-      try {
-        const response = await fetch(`${API_URL}/api/alerts/${id}`, {
-          headers: { 'X-READ-API-KEY': READ_KEY }
+  const fetchDetail = useCallback(async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/alerts/${id}`, {
+        headers: { 'X-READ-API-KEY': READ_KEY }
+      });
+      const result = await response.json();
+      setData(result);
+      if (result.alert) {
+        setForm({
+          client_rp: result.alert.client_rp || '',
+          worldcheck_id: result.alert.worldcheck_id || '',
+          internal_summary: result.alert.internal_summary || '',
+          reviewer_rationale: result.alert.reviewer_rationale || '',
+          disposition: result.alert.disposition || 'PENDING',
+          stage: result.alert.stage || 'PENDING_ASSESSMENT',
+          p1_id: result.alert.point_1_identifier || '',
+          p1_src: result.alert.point_1_source || '',
+          p2_id: result.alert.point_2_identifier || '',
+          p2_src: result.alert.point_2_source || '',
+          p3_id: result.alert.point_3_identifier || '',
+          p3_src: result.alert.point_3_source || ''
         });
-        const result = await response.json();
-        setData(result);
-        if (result.alert) {
-          setForm({
-            client_rp: result.alert.client_rp || '',
-            worldcheck_id: result.alert.worldcheck_id || '',
-            internal_summary: result.alert.internal_summary || '',
-            reviewer_rationale: result.alert.reviewer_rationale || '',
-            disposition: result.alert.disposition || 'PENDING',
-            stage: result.alert.stage || 'PENDING_ASSESSMENT',
-            p1_id: result.alert.point_1_identifier || '',
-            p1_src: result.alert.point_1_source || '',
-            p2_id: result.alert.point_2_identifier || '',
-            p2_src: result.alert.point_2_source || '',
-            p3_id: result.alert.point_3_identifier || '',
-            p3_src: result.alert.point_3_source || ''
-          });
+        if (result.alert.str_reference) {
+          setStrReference(result.alert.str_reference);
         }
-      } catch (error) {
-        console.error("Failed to fetch case detail:", error);
-      } finally {
-        setLoading(false);
+        if (result.alert.str_generated_at) {
+          setStrGeneratedAt(result.alert.str_generated_at);
+        }
       }
-    };
-    fetchDetail();
+    } catch (error) {
+      console.error("Failed to fetch case detail:", error);
+    } finally {
+      setLoading(false);
+    }
   }, [id, API_URL, READ_KEY]);
 
+  useEffect(() => {
+    fetchDetail();
+  }, [fetchDetail]);
+
   const handleUpdate = async (newStage) => {
-    // Validation for compliance standards if resolving
     if (newStage === 'RESOLVED' || form.disposition === 'FALSE_POSITIVE' || form.disposition === 'CLEARED') {
       if (data.alert.alert_type === 'SCREENING_MATCH') {
         const { p1_id, p1_src, p2_id, p2_src, p3_id, p3_src } = form;
@@ -69,7 +82,6 @@ const CaseDetail = () => {
           return;
         }
       } else {
-        // TRANSACTION_RISK
         if (!form.reviewer_rationale || form.reviewer_rationale.trim() === '') {
           window.alert("CRITICAL ERROR: Reviewer rationale mandatory for transaction risk dispositions.");
           return;
@@ -80,7 +92,7 @@ const CaseDetail = () => {
     try {
       const response = await fetch(`${API_URL}/api/alerts/${id}`, {
         method: 'PUT',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           'X-DEMO-API-KEY': DEMO_KEY
         },
@@ -93,25 +105,110 @@ const CaseDetail = () => {
           point_2_source: form.p2_src,
           point_3_identifier: form.p3_id,
           point_3_source: form.p3_src,
-          reviewer_id: 'ANALYST_01' // Mock reviewer ID
+          reviewer_id: 'ANALYST_01'
         })
       });
       if (response.ok) {
-        alert("Case updated successfully.");
-        navigate('/');
+        await fetchDetail();
+        window.alert("Case updated successfully.");
       } else {
         const error = await response.json();
-        alert(`Failed to update: ${error.message}`);
+        window.alert(`Failed to update: ${error.message || error.error}`);
       }
     } catch (error) {
       console.error("Update failed:", error);
     }
   };
 
-  if (loading) return <div style={{padding: '40px'}}>Loading Case...</div>;
-  if (!data) return <div style={{padding: '40px'}}>Case Not Found.</div>;
+  const handlePreviewSTR = async () => {
+    setStrLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/api/alerts/${id}/str/preview`, {
+        headers: {
+          'X-DEMO-API-KEY': DEMO_KEY,
+          'X-READ-API-KEY': READ_KEY
+        }
+      });
+      const json = await response.json();
+      if (!response.ok) {
+        window.alert(json.error || "Unable to preview STR.");
+        return;
+      }
+      setStrPreviewData(json);
+      setShowPreviewModal(true);
+    } catch (err) {
+      console.error("STR Preview error:", err);
+      window.alert("Failed to load STR preview.");
+    } finally {
+      setStrLoading(false);
+    }
+  };
 
-  const { alert, transaction } = data;
+  const handleGenerateSTR = async () => {
+    setStrLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/api/alerts/${id}/str`, {
+        method: 'GET',
+        headers: {
+          'X-DEMO-API-KEY': DEMO_KEY
+        }
+      });
+
+      if (!response.ok) {
+        const errJson = await response.json();
+        window.alert(errJson.error || "Failed to generate STR PDF.");
+        return;
+      }
+
+      const headerRef = response.headers.get('X-STR-Reference');
+      const nowIso = new Date().toISOString();
+      const dateCompact = nowIso.slice(0, 10).replace(/-/g, '');
+      const computedRef = headerRef || strPreviewData?.str_reference || `STR-${dateCompact}-${String(id).slice(-6)}`;
+
+      const blob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.setAttribute('download', `STR-${id}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(downloadUrl);
+
+      // Update alert record with STR metadata
+      await fetch(`${API_URL}/api/alerts/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-DEMO-API-KEY': DEMO_KEY
+        },
+        body: JSON.stringify({
+          str_generated: true,
+          str_reference: computedRef,
+          str_generated_at: nowIso
+        })
+      });
+
+      setStrReference(computedRef);
+      setStrGeneratedAt(nowIso);
+      setShowPreviewModal(false);
+      await fetchDetail();
+    } catch (err) {
+      console.error("STR generation failed:", err);
+      window.alert("Failed to generate STR PDF.");
+    } finally {
+      setStrLoading(false);
+    }
+  };
+
+  if (loading) return <div style={{padding: '40px'}}>Loading Case...</div>;
+  if (!data || !data.alert) return <div style={{padding: '40px'}}>Case Not Found.</div>;
+
+  const { alert: alertObj, transaction } = data;
+  const isDisposed = Boolean(
+    (alertObj.disposition && alertObj.disposition !== 'PENDING') ||
+    alertObj.stage === 'RESOLVED'
+  );
 
   const styles = {
     container: { padding: '24px', backgroundColor: '#f0f2f5', minHeight: '100vh', fontFamily: 'Segoe UI, Roboto, sans-serif' },
@@ -119,14 +216,25 @@ const CaseDetail = () => {
     header: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid #f0f0f0', paddingBottom: '20px', marginBottom: '20px' },
     backBtn: { background: 'none', border: 'none', color: '#1890ff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' },
     title: { margin: 0, fontSize: '22px', fontWeight: 600 },
-    
+
     badge: (stage) => ({
       padding: '4px 12px', borderRadius: '16px', fontSize: '12px', fontWeight: 600,
       backgroundColor: stage === 'RESOLVED' ? '#f6ffed' : '#fff7e6',
       color: stage === 'RESOLVED' ? '#52c41a' : '#fa8c16',
       border: `1px solid ${stage === 'RESOLVED' ? '#b7eb8f' : '#ffd591'}`
     }),
-    
+
+    strBanner: {
+      backgroundColor: '#f0f5ff',
+      border: '1px solid #adc6ff',
+      borderRadius: '8px',
+      padding: '12px 16px',
+      marginBottom: '20px',
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center'
+    },
+
     tabRow: { display: 'flex', gap: '24px', marginBottom: '24px', borderBottom: '1px solid #f0f0f0' },
     tab: (active) => ({
       padding: '12px 4px', background: 'none', border: 'none', cursor: 'pointer',
@@ -134,43 +242,87 @@ const CaseDetail = () => {
       borderBottom: active ? '2px solid #1890ff' : 'none',
       fontWeight: active ? 600 : 400
     }),
-    
+
     section: { marginBottom: '32px' },
     sectionTitle: { fontSize: '16px', fontWeight: 600, marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' },
-    
+
     grid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' },
     field: { marginBottom: '16px' },
     label: { fontSize: '13px', color: '#8c8c8c', marginBottom: '6px', display: 'block' },
     input: { width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #d9d9d9', fontSize: '14px' },
     textarea: { width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #d9d9d9', fontSize: '14px', height: '100px' },
-    
+
     auditBox: { backgroundColor: '#f9f9f9', padding: '20px', borderRadius: '8px', border: '1px solid #e8e8e8' },
     auditGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' },
-    
-    actionRow: { display: 'flex', gap: '12px', marginTop: '32px', borderTop: '1px solid #f0f0f0', paddingTop: '24px' },
+
+    actionRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginTop: '32px', borderTop: '1px solid #f0f0f0', paddingTop: '24px' },
+    leftActions: { display: 'flex', gap: '12px', flexWrap: 'wrap' },
+    rightActions: { display: 'flex', gap: '12px', flexWrap: 'wrap' },
     btn: (primary) => ({
-      padding: '10px 24px', borderRadius: '6px', fontWeight: 600, cursor: 'pointer',
+      padding: '10px 20px', borderRadius: '6px', fontWeight: 600, cursor: 'pointer',
+      display: 'inline-flex', alignItems: 'center', gap: '8px',
       backgroundColor: primary ? '#1890ff' : '#fff',
       color: primary ? '#fff' : '#595959',
       border: primary ? 'none' : '1px solid #d9d9d9'
-    })
+    }),
+    strBtn: (isGenerate) => ({
+      padding: '10px 20px', borderRadius: '6px', fontWeight: 600, cursor: 'pointer',
+      display: 'inline-flex', alignItems: 'center', gap: '8px',
+      backgroundColor: isGenerate ? '#cf1322' : '#1d39c4',
+      color: '#fff',
+      border: 'none'
+    }),
+    modalOverlay: {
+      position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.55)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000
+    },
+    modalContent: {
+      backgroundColor: '#fff', borderRadius: '12px', width: '90%', maxWidth: '760px', maxHeight: '85vh',
+      overflowY: 'auto', padding: '24px', boxShadow: '0 8px 32px rgba(0,0,0,0.2)'
+    }
   };
 
   return (
     <div style={styles.container}>
       <button onClick={() => navigate('/')} style={styles.backBtn}><ArrowLeft size={16}/> Back to Queue</button>
-      
+
       <div style={styles.card}>
         <div style={styles.header}>
           <div>
-            <h1 style={styles.title}>Case Investigation: {alert.alert_id}</h1>
+            <h1 style={styles.title}>Case Investigation: {alertObj.alert_id}</h1>
             <div style={{color: '#8c8c8c', fontSize: '14px', marginTop: '4px'}}>
               <User size={14} style={{verticalAlign: 'middle', marginRight: '4px'}}/>
-              {alert.customer_name} (ID: {alert.customer_id})
+              {alertObj.customer_name} (ID: {alertObj.customer_id})
             </div>
           </div>
-          <span style={styles.badge(alert.stage)}>{alert.stage}</span>
+          <div style={{display: 'flex', gap: '8px', alignItems: 'center'}}>
+            {strReference && (
+              <span style={{
+                padding: '4px 12px', borderRadius: '16px', fontSize: '12px', fontWeight: 600,
+                backgroundColor: '#e6f7ff', color: '#0958d9', border: '1px solid #91caff'
+              }}>
+                STR Ref: {strReference}
+              </span>
+            )}
+            <span style={styles.badge(alertObj.stage)}>{alertObj.stage}</span>
+          </div>
         </div>
+
+        {strReference && (
+          <div style={styles.strBanner}>
+            <div>
+              <strong style={{color: '#1d39c4', fontSize: '14px'}}>FIU-IND STR Generated: {strReference}</strong>
+              {strGeneratedAt && (
+                <div style={{fontSize: '12px', color: '#595959', marginTop: '2px'}}>
+                  Generated at: {new Date(strGeneratedAt).toLocaleString()} | Status: DRAFT — Pending Principal Officer Review
+                </div>
+              )}
+            </div>
+            <button style={styles.strBtn(true)} onClick={handleGenerateSTR} disabled={strLoading}>
+              <Download size={16}/> Redownload STR PDF
+            </button>
+          </div>
+        )}
 
         <div style={styles.tabRow}>
           <button style={styles.tab(activeTab === 'breakdown')} onClick={() => setActiveTab('breakdown')}>Score Breakdown</button>
@@ -196,7 +348,7 @@ const CaseDetail = () => {
                 <div style={{marginTop: '20px', padding: '16px', backgroundColor: '#fff2f0', borderRadius: '8px', border: '1px solid #ffccc7'}}>
                   <div style={{display: 'flex', justifyContent: 'space-between', fontWeight: 700}}>
                     <span>Composite Risk Score (CRS):</span>
-                    <span style={{color: '#cf1322'}}>{transaction.crs}</span>
+                    <span style={{color: '#cf1322'}}>{transaction.crs ?? 'AUTO'}</span>
                   </div>
                 </div>
               </div>
@@ -219,13 +371,13 @@ const CaseDetail = () => {
 
         {activeTab === 'audit' && (
           <div style={styles.section}>
-            <h3 style={styles.sectionTitle}><Shield size={18}/> {alert.alert_type === 'SCREENING_MATCH' ? 'Three-Point Identifier Standard (MANDATORY)' : 'Identifier Verification (OPTIONAL)'}</h3>
+            <h3 style={styles.sectionTitle}><Shield size={18}/> {alertObj.alert_type === 'SCREENING_MATCH' ? 'Three-Point Identifier Standard (MANDATORY)' : 'Identifier Verification (REQUIRED FOR STR)'}</h3>
             <p style={{fontSize: '13px', color: '#8c8c8c', marginBottom: '20px'}}>
-              {alert.alert_type === 'SCREENING_MATCH' 
-                ? 'CRITICAL: As this is a Screening Match (Sanctions/PEP), the Three-Point Standard is MANDATORY for resolution per AML Policy.' 
-                : 'This is a Behavioral Alert. Identity verification is recommended but not mandatory for resolution. Rationale is the primary requirement.'}
+              {alertObj.alert_type === 'SCREENING_MATCH'
+                ? 'CRITICAL: As this is a Screening Match (Sanctions/PEP), the Three-Point Standard is MANDATORY for resolution per AML Policy.'
+                : 'Complete all three identifier fields to satisfy the Three-Point Verification Standard required before generating an FIU-IND STR.'}
             </p>
-            
+
             <div style={styles.grid}>
               <div style={styles.field}>
                 <label style={styles.label}>Client RP (Relevant Person)</label>
@@ -241,31 +393,31 @@ const CaseDetail = () => {
               <div style={styles.auditGrid}>
                 <div style={styles.field}>
                   <label style={styles.label}>Point 1: Identifier</label>
-                  <input style={styles.input} value={form.p1_id} onChange={e => setForm({...form, p1_id: e.target.value})} placeholder="e.g. Passport Number" />
+                  <input style={styles.input} value={form.p1_id} onChange={e => setForm({...form, p1_id: e.target.value})} placeholder="e.g. PAN / Passport Number" />
                 </div>
                 <div style={styles.field}>
                   <label style={styles.label}>Point 1: Source</label>
-                  <input style={styles.input} value={form.p1_src} onChange={e => setForm({...form, p1_src: e.target.value})} placeholder="e.g. Gov Database" />
+                  <input style={styles.input} value={form.p1_src} onChange={e => setForm({...form, p1_src: e.target.value})} placeholder="e.g. CKYC / Gov Database" />
                 </div>
               </div>
               <div style={styles.auditGrid}>
                 <div style={styles.field}>
                   <label style={styles.label}>Point 2: Identifier</label>
-                  <input style={styles.input} value={form.p2_id} onChange={e => setForm({...form, p2_id: e.target.value})} placeholder="e.g. Address Proof" />
+                  <input style={styles.input} value={form.p2_id} onChange={e => setForm({...form, p2_id: e.target.value})} placeholder="e.g. Registered Address" />
                 </div>
                 <div style={styles.field}>
                   <label style={styles.label}>Point 2: Source</label>
-                  <input style={styles.input} value={form.p2_src} onChange={e => setForm({...form, p2_src: e.target.value})} placeholder="e.g. Utility Bill" />
+                  <input style={styles.input} value={form.p2_src} onChange={e => setForm({...form, p2_src: e.target.value})} placeholder="e.g. Aadhaar / Utility Bill" />
                 </div>
               </div>
               <div style={styles.auditGrid}>
                 <div style={styles.field}>
                   <label style={styles.label}>Point 3: Identifier</label>
-                  <input style={styles.input} value={form.p3_id} onChange={e => setForm({...form, p3_id: e.target.value})} placeholder="e.g. DOB" />
+                  <input style={styles.input} value={form.p3_id} onChange={e => setForm({...form, p3_id: e.target.value})} placeholder="e.g. Date of Birth / CIN" />
                 </div>
                 <div style={styles.field}>
                   <label style={styles.label}>Point 3: Source</label>
-                  <input style={styles.input} value={form.p3_src} onChange={e => setForm({...form, p3_src: e.target.value})} placeholder="e.g. Entity Registry" />
+                  <input style={styles.input} value={form.p3_src} onChange={e => setForm({...form, p3_src: e.target.value})} placeholder="e.g. MCA Registry" />
                 </div>
               </div>
             </div>
@@ -297,11 +449,60 @@ const CaseDetail = () => {
         )}
 
         <div style={styles.actionRow}>
-          <button style={styles.btn(false)} onClick={() => handleUpdate('PENDING_ACTION')}>Send for Action</button>
-          <button style={styles.btn(false)} onClick={() => handleUpdate('SENT_FOR_REVIEW')}>Send for Review</button>
-          <button style={styles.btn(true)} onClick={() => handleUpdate('RESOLVED')}>Resolve & Close Case</button>
+          <div style={styles.leftActions}>
+            <button style={styles.btn(false)} onClick={() => handleUpdate('PENDING_ACTION')}>Send for Action</button>
+            <button style={styles.btn(false)} onClick={() => handleUpdate('SENT_FOR_REVIEW')}>Send for Review</button>
+            <button style={styles.btn(true)} onClick={() => handleUpdate('RESOLVED')}>Resolve & Close Case</button>
+          </div>
+
+          {isDisposed && (
+            <div style={styles.rightActions}>
+              <button style={styles.strBtn(false)} onClick={handlePreviewSTR} disabled={strLoading}>
+                <Eye size={16}/> Preview STR
+              </button>
+              <button style={styles.strBtn(true)} onClick={handleGenerateSTR} disabled={strLoading}>
+                <Download size={16}/> {strLoading ? 'Generating...' : 'Generate STR'}
+              </button>
+            </div>
+          )}
         </div>
       </div>
+
+      {showPreviewModal && strPreviewData && (
+        <div style={styles.modalOverlay} onClick={() => setShowPreviewModal(false)}>
+          <div style={styles.modalContent} onClick={e => e.stopPropagation()}>
+            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f0f0f0', paddingBottom: '12px', marginBottom: '16px'}}>
+              <div>
+                <h2 style={{margin: 0, fontSize: '18px', color: '#112240'}}>FIU-IND STR Preview — {strPreviewData.str_reference}</h2>
+                <span style={{fontSize: '12px', color: '#8c8c8c'}}>PMLA 2002 Section 12 Reporting Package (JSON Preview)</span>
+              </div>
+              <button onClick={() => setShowPreviewModal(false)} style={{background: 'none', border: 'none', cursor: 'pointer', color: '#595959'}}>
+                <X size={20}/>
+              </button>
+            </div>
+
+            <pre style={{
+              backgroundColor: '#f8fafc',
+              padding: '16px',
+              borderRadius: '8px',
+              border: '1px solid #e2e8f0',
+              fontSize: '12px',
+              overflowX: 'auto',
+              maxHeight: '420px',
+              color: '#1e293b'
+            }}>
+              {JSON.stringify(strPreviewData, null, 2)}
+            </pre>
+
+            <div style={{display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '16px'}}>
+              <button style={styles.btn(false)} onClick={() => setShowPreviewModal(false)}>Close Preview</button>
+              <button style={styles.strBtn(true)} onClick={handleGenerateSTR} disabled={strLoading}>
+                <Download size={16}/> Download Official STR PDF
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -819,3 +819,44 @@ ORDER BY timestamp_processed;
 ---
 
 *ScoreSentinel | AUDIT_REQUIREMENTS.md | Compliance Audit Trail Framework | Authored by Atul Krishnan, CAMS | Version 1.1 | September 2026 (Section 14 added)*
+
+
+---
+
+## 15. STR Generation Process
+
+### 15.1 Regulatory Basis
+
+The Suspicious Transaction Report (STR) generation workflow in ScoreSentinel is engineered in accordance with:
+- **Prevention of Money Laundering Act (PMLA), 2002 — Section 12** (Obligation of banking companies, financial institutions, and intermediaries to maintain records and furnish information to FIU-IND).
+- **PMLA (Maintenance of Records) Rules, 2005 — Rule 3 & Rule 8** (Mandatory furnishing of STRs to the Director, FIU-IND within **7 days** of arriving at a conclusion that a transaction is suspicious).
+- **FIU-IND STR Filing Guidelines (FINnet 2.0)** — Standardised 5-part reporting schema covering Reporting Entity Details (Part A), Suspicious Transaction Details (Part B), Suspect Details (Part C), Grounds for Suspicion Narrative (Part D), and Audit/STR Metadata (Part E).
+
+### 15.2 STR Reference Number Assignment
+
+Every generated STR is assigned a deterministic, unique reference number formatted as:
+
+```
+STR-{YYYYMMDD}-{alert_id_last_6_chars}
+```
+
+- `YYYYMMDD`: Date of STR generation (e.g., `20261029`).
+- `alert_id_last_6_chars`: The trailing 6 characters of the originating `alert_id` (e.g., `a1b2c3`), providing immediate bi-directional traceability between the FIU-IND filing package and the ScoreSentinel case management record.
+- Once assigned, `str_reference`, `str_generated = TRUE`, and `str_generated_at` are persisted on the `alerts` table record.
+
+### 15.3 Three Mandatory Pre-Conditions Before STR Generation
+
+ScoreSentinel enforces strict technical guardrails at the API layer (`GET /api/alerts/{alert_id}/str` and `GET /api/alerts/{alert_id}/str/preview`). An STR cannot be generated unless **all three** of the following conditions are met:
+
+1. **Completed Investigation & Disposition**:
+   - The alert must have a recorded disposition (`disposition IS NOT NULL` and `disposition != 'PENDING'`). Undisposed alerts are rejected with HTTP `400` (`"STR cannot be generated for undisposed alerts. Complete investigation first."`).
+2. **Three-Point Identifier Standard Met (`three_point_met = TRUE`)**:
+   - All three corroborating KYC/identity verification points (`point_1_identifier`, `point_2_identifier`, `point_3_identifier`) must be populated and verified on the alert record. If `three_point_met` is `FALSE`, the API blocks generation with HTTP `400` (`"Three-point standard not met. Complete all three identifier fields before generating STR."`).
+3. **Contemporaneous Reviewer Rationale**:
+   - The investigating analyst's `reviewer_rationale` and `reviewer_id` must be recorded on the alert so that Part D (Grounds for Suspicion) combines automated typology triggers (`STRUCTURING`, `HIGH_RISK_CORRIDOR`, `FAN_IN`, `UAPA`, `OFAC`) with human investigative conclusions.
+
+### 15.4 PDF Storage, Watermarking & Confidentiality Controls
+
+- **Storage Location**: Generated STR PDFs are written to the server's `generated_strs/` directory (`generated_strs/STR-{alert_id}.pdf`) and streamed directly to the authorised analyst via `Content-Disposition: attachment; filename="STR-{alert_id}.pdf"`.
+- **Draft Watermarking**: Every page of the generated PDF carries a diagonal light-grey watermark (`"DRAFT — PENDING REVIEW"`) to prevent premature external circulation prior to Principal Officer sign-off.
+- **Anti-Tipping-Off Footer**: Every page includes a mandatory PMLA Section 12AA confidentiality notice (`"CONFIDENTIAL — For FIU-IND submission only. Not for distribution."`) alongside sequential page numbering.

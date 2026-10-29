@@ -11,7 +11,7 @@ import json
 import uuid
 import psycopg2
 from psycopg2.extras import RealDictCursor
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -79,6 +79,18 @@ def check_auth():
     if request.method == 'OPTIONS':
         return
     if request.path == '/api/health' and request.method == 'GET':
+        return
+
+    if request.path.endswith('/str') and request.method == 'GET':
+        key = request.headers.get('X-DEMO-API-KEY')
+        if key != DEMO_API_KEY:
+            return jsonify({"error": "Unauthorized", "message": "Demo API Key required for STR generation."}), 401
+        return
+    if request.path.endswith('/str/preview') and request.method == 'GET':
+        demo_key = request.headers.get('X-DEMO-API-KEY')
+        read_key = request.headers.get('X-READ-API-KEY')
+        if demo_key != DEMO_API_KEY and read_key != READ_API_KEY:
+            return jsonify({"error": "Unauthorized", "message": "Valid API Key required for STR preview."}), 401
         return
 
     if request.method in ['POST', 'PUT']:
@@ -281,6 +293,11 @@ def get_alerts():
                     "alert_type": row["alert_type"],
                     "stage": row["stage"],
                     "status": row["status"],
+                    "disposition": row.get("disposition"),
+                    "three_point_met": bool(row.get("three_point_met", False)),
+                    "str_generated": bool(row.get("str_generated", False)),
+                    "str_reference": row.get("str_reference"),
+                    "str_generated_at": row["str_generated_at"].isoformat() if row.get("str_generated_at") else None,
                     "crs": float(row["crs"]) if row["crs"] is not None else "AUTO",
                     "created_at": row["created_at"].isoformat()
                 })
@@ -532,10 +549,29 @@ def update_alert(alert_id):
         conn = get_db_connection()
         cur = conn.cursor()
         try:
-            cur.execute("SELECT alert_type FROM alerts WHERE alert_id = %s", (alert_id,))
+            cur.execute("""
+                ALTER TABLE alerts
+                ADD COLUMN IF NOT EXISTS str_generated BOOLEAN DEFAULT FALSE,
+                ADD COLUMN IF NOT EXISTS str_reference VARCHAR(50),
+                ADD COLUMN IF NOT EXISTS str_generated_at TIMESTAMP;
+            """)
+            cur.execute("SELECT * FROM alerts WHERE alert_id = %s", (alert_id,))
             alert = cur.fetchone()
             if alert is None:
                 return jsonify({"error": "Not found", "message": f"Alert {alert_id} not found"}), 404
+
+            # Allow standalone STR metadata update after STR generation
+            if "str_generated" in data and not disposition:
+                str_gen = bool(data.get("str_generated", True))
+                str_ref = data.get("str_reference") or alert.get("str_reference")
+                str_ts = data.get("str_generated_at") or datetime.datetime.now()
+                cur.execute("""
+                    UPDATE alerts
+                    SET str_generated = %s, str_reference = %s, str_generated_at = %s, updated_at = NOW()
+                    WHERE alert_id = %s
+                """, (str_gen, str_ref, str_ts, alert_id))
+                conn.commit()
+                return jsonify({"status": "updated", "alert_id": alert_id, "str_reference": str_ref})
                 
             if disposition in ["FALSE_POSITIVE", "CLEARED"]:
                 if alert["alert_type"] == "SCREENING_MATCH":
@@ -862,6 +898,148 @@ def demo_reset():
             conn.rollback()
         app.logger.error(f"Demo reset error: {str(e)}")
         return jsonify({"error": "Reset failed", "message": str(e)}), 500
+    finally:
+        if conn:
+            conn.close()
+
+
+
+# ============================================================
+# FIU-IND STR GENERATION ENDPOINTS (PMLA 2002 SECTION 12)
+# ============================================================
+
+def _validate_alert_for_str(alert):
+    """Validates disposition and three-point standard before STR generation."""
+    disposition = alert.get("disposition")
+    if not disposition or str(disposition).strip().upper() == "PENDING":
+        return {"error": "STR cannot be generated for undisposed alerts. Complete investigation first."}, 400
+
+    if not alert.get("three_point_met"):
+        return {"error": "Three-point standard not met. Complete all three identifier fields before generating STR."}, 400
+
+    return None, 200
+
+
+@app.route('/api/alerts/<alert_id>/str/preview', methods=['GET'])
+@limiter.limit("60 per minute")
+def preview_alert_str(alert_id):
+    """
+    GET /api/alerts/<alert_id>/str/preview
+    Validates disposition & 3-point standard, and returns the structured FIU-IND STR JSON.
+    """
+    conn = None
+    try:
+        from engine.str_generator import generate_str
+
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("""
+            ALTER TABLE alerts
+            ADD COLUMN IF NOT EXISTS str_generated BOOLEAN DEFAULT FALSE,
+            ADD COLUMN IF NOT EXISTS str_reference VARCHAR(50),
+            ADD COLUMN IF NOT EXISTS str_generated_at TIMESTAMP;
+        """)
+        conn.commit()
+
+        cur.execute("SELECT * FROM alerts WHERE alert_id = %s", (alert_id,))
+        alert = cur.fetchone()
+        cur.close()
+
+        if not alert:
+            return jsonify({"error": "Not found", "message": f"Alert {alert_id} not found"}), 404
+
+        err_payload, status_code = _validate_alert_for_str(alert)
+        if err_payload:
+            return jsonify(err_payload), status_code
+
+        str_data = generate_str(alert_id, conn)
+        return jsonify(str_data), 200
+
+    except Exception as e:
+        app.logger.error(f"Error in preview_alert_str: {str(e)}")
+        return jsonify({"error": "Internal server error", "message": str(e)}), 500
+    finally:
+        if conn:
+            conn.close()
+
+
+@app.route('/api/alerts/<alert_id>/str', methods=['GET'])
+@limiter.limit("30 per minute")
+def download_alert_str(alert_id):
+    """
+    GET /api/alerts/<alert_id>/str
+    Requires X-DEMO-API-KEY header.
+    Generates the FIU-IND STR PDF, updates alert STR metadata, and streams the PDF download.
+    """
+    key = request.headers.get("X-DEMO-API-KEY")
+    if key != DEMO_API_KEY:
+        return jsonify({"error": "Unauthorized", "message": "Demo API Key required."}), 401
+
+    conn = None
+    try:
+        from engine.str_generator import generate_str
+        from engine.str_pdf_generator import generate_str_pdf
+
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("""
+            ALTER TABLE alerts
+            ADD COLUMN IF NOT EXISTS str_generated BOOLEAN DEFAULT FALSE,
+            ADD COLUMN IF NOT EXISTS str_reference VARCHAR(50),
+            ADD COLUMN IF NOT EXISTS str_generated_at TIMESTAMP;
+        """)
+        conn.commit()
+
+        cur.execute("SELECT * FROM alerts WHERE alert_id = %s", (alert_id,))
+        alert = cur.fetchone()
+
+        if not alert:
+            cur.close()
+            return jsonify({"error": "Not found", "message": f"Alert {alert_id} not found"}), 404
+
+        err_payload, status_code = _validate_alert_for_str(alert)
+        if err_payload:
+            cur.close()
+            return jsonify(err_payload), status_code
+
+        str_data = generate_str(alert_id, conn)
+        str_ref = str_data.get("str_reference")
+
+        # Update alert record with STR tracking metadata
+        cur.execute("""
+            UPDATE alerts
+            SET str_generated = TRUE,
+                str_reference = %s,
+                str_generated_at = NOW(),
+                updated_at = NOW()
+            WHERE alert_id = %s
+        """, (str_ref, alert_id))
+        conn.commit()
+        cur.close()
+
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        output_dir = os.path.join(base_dir, "generated_strs")
+        os.makedirs(output_dir, exist_ok=True)
+        pdf_path = os.path.join(output_dir, f"STR-{alert_id}.pdf")
+
+        generate_str_pdf(str_data, pdf_path)
+
+        response = send_file(
+            pdf_path,
+            mimetype="application/pdf",
+            as_attachment=True,
+            download_name=f"STR-{alert_id}.pdf",
+        )
+        response.headers["Content-Disposition"] = f'attachment; filename="STR-{alert_id}.pdf"'
+        response.headers["X-STR-Reference"] = str_ref
+        response.headers["Access-Control-Expose-Headers"] = "Content-Disposition, X-STR-Reference"
+        return response
+
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        app.logger.error(f"Error in download_alert_str: {str(e)}")
+        return jsonify({"error": "Internal server error", "message": str(e)}), 500
     finally:
         if conn:
             conn.close()

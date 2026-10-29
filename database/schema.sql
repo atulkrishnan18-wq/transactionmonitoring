@@ -112,6 +112,11 @@ CREATE TABLE alerts (
     residual_risk       TEXT,
     enhanced_rescreening VARCHAR(20),
     
+    -- FIU-IND STR Tracking
+    str_generated       BOOLEAN DEFAULT FALSE,
+    str_reference       VARCHAR(50),
+    str_generated_at    TIMESTAMP,
+    
     -- Metadata
     created_at          TIMESTAMP DEFAULT NOW(),
     updated_at          TIMESTAMP DEFAULT NOW()

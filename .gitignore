@@ -26,3 +26,6 @@ scripts/ibm_ingestion_results.csv
 .idea/
 .DS_Store
 Thumbs.db
+
+# Generated STR PDFs
+generated_strs/
