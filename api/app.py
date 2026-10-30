@@ -29,10 +29,26 @@ load_dotenv()
 
 app = Flask(__name__)
 
-# Open CORS for production (allows Vercel dashboard to connect)
+# Configure CORS for Vercel dashboard and AWS EC2 (ap-south-1 Mumbai) deployment
+_ec2_ip = os.environ.get("EC2_PUBLIC_IP", "13.233.0.0").strip()
+_env_origins = [
+    o.strip() for o in os.environ.get("ALLOWED_ORIGINS", "").split(",") if o.strip()
+]
+ALLOWED_CORS_ORIGINS = list(dict.fromkeys([
+    "https://transactionmonitoring.vercel.app",
+    f"http://{_ec2_ip}",
+    f"http://{_ec2_ip}:5000",
+    f"https://{_ec2_ip}",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    *_env_origins,
+]))
+
 CORS(app, resources={r"/api/*": {
-    "origins": "*",
-    "allow_headers": ["Content-Type", "X-READ-API-KEY", "X-DEMO-API-KEY"]
+    "origins": ALLOWED_CORS_ORIGINS,
+    "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    "allow_headers": ["Content-Type", "X-READ-API-KEY", "X-DEMO-API-KEY"],
+    "expose_headers": ["Content-Disposition", "X-STR-Reference"]
 }})
 
 # MEDIUM FIX 2 — Add rate limiting
