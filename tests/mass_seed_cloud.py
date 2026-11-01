@@ -1,10 +1,11 @@
+import os
 import requests
 import time
 from datetime import datetime, timedelta
 
 # BASE_URL = "http://localhost:5000"
 BASE_URL = "https://scoresentinel-api.onrender.com"
-API_KEY = "SCORESENTINEL_DEMO_2027"
+API_KEY = os.environ.get("DEMO_API_KEY", "CHANGE_ME_GENERATE_NEW_KEY")
 
 def seed_cloud():
     print(f"=== ScoreSentinel Mass Seed Script ===")

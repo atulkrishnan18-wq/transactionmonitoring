@@ -42,7 +42,7 @@ const SCENARIO_OPTIONS = [
 
 const TuningLab = () => {
   const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
-  const DEMO_KEY = process.env.REACT_APP_DEMO_API_KEY || 'SCORESENTINEL_DEMO_2027';
+  const DEMO_KEY = process.env.REACT_APP_DEMO_API_KEY || '';
 
   const [selectedScenarioId, setSelectedScenarioId] = useState('SCEN-STRUC-01');
   const activeScenario = useMemo(

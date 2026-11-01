@@ -1,0 +1,31 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install system dependencies required for psycopg2
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq-dev \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies from root requirements.txt
+COPY requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir -r /app/requirements.txt
+
+# Copy application modules from repo root build context
+COPY api/ /app/api/
+COPY engine/ /app/engine/
+COPY feeds/ /app/feeds/
+COPY rules/ /app/rules/
+COPY scoring/ /app/scoring/
+COPY scoring_engine.py /app/scoring_engine.py
+
+# Ensure runtime directory for generated STR PDFs exists
+RUN mkdir -p /app/generated_strs /app/api/generated_strs
+
+ENV FLASK_ENV=production
+ENV PYTHONPATH=/app:/app/api
+
+EXPOSE 5000
+
+CMD ["gunicorn", "--chdir", "api", "--bind", "0.0.0.0:5000", "app:app"]

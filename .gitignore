@@ -2,6 +2,16 @@
 
 # Environment variables (Secrets)
 .env
+.env.local
+api/.env
+dashboard/.env
+dashboard/.env.local
+
+# Keys & Certificates
+*.pem
+
+# Logs
+*.log
 
 # Python caching
 __pycache__/

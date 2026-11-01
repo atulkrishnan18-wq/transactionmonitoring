@@ -1,99 +1,87 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# ScoreSentinel — AWS EC2 (ap-south-1 Mumbai) Automated Deployment Script
+# ScoreSentinel — AWS EC2 Mumbai (ap-south-1) Deployment Script (Docker Compose)
 # ==============================================================================
-# Usage (from local machine via SSH):
-#   EC2_HOST="ec2-13-233-xx-xx.ap-south-1.compute.amazonaws.com" \
-#   PEM_KEY="~/.ssh/scoresentinel-mumbai.pem" \
-#   ./scripts/deploy_aws.sh
+# Usage:
+#   1. Run from local machine (SSH into EC2 and deploy):
+#      EC2_HOST=ec2-xx-xx-xx-xx.ap-south-1.compute.amazonaws.com \
+#      SSH_KEY=~/.ssh/scoresentinel-mumbai.pem \
+#      API_DOMAIN=api.chainsutra.in \
+#      ./scripts/deploy_aws.sh
 #
-# Or run directly on the EC2 instance:
-#   ./scripts/deploy_aws.sh --on-server
+#   2. Run directly on the EC2 instance:
+#      ./scripts/deploy_aws.sh --on-server
 # ==============================================================================
 
 set -euo pipefail
 
 EC2_USER="${EC2_USER:-ec2-user}"
 EC2_HOST="${EC2_HOST:-}"
-PEM_KEY="${PEM_KEY:-~/.ssh/scoresentinel-mumbai.pem}"
-APP_DIR="${APP_DIR:-~/transactionmonitoring}"
-CONTAINER_NAME="scoresentinel"
-IMAGE_NAME="scoresentinel-api"
+SSH_KEY="${SSH_KEY:-$HOME/.ssh/scoresentinel-mumbai.pem}"
+REMOTE_REPO_DIR="${REMOTE_REPO_DIR:-$HOME/transactionmonitoring}"
+GIT_BRANCH="${GIT_BRANCH:-aws-hardening}"
+API_DOMAIN="${API_DOMAIN:-api.chainsutra.in}"
 
-REMOTE_COMMANDS=$(cat << 'EOF'
-set -euo pipefail
+deploy_on_server() {
+    echo "==> [1/4] Navigating to repository at ${REMOTE_REPO_DIR}..."
+    cd "${REMOTE_REPO_DIR}"
 
-echo "============================================================"
-echo " ScoreSentinel AWS EC2 (ap-south-1 Mumbai) Deployment"
-echo "============================================================"
-
-# 1. Pull latest code from GitHub
-if [ ! -d "$HOME/transactionmonitoring" ]; then
-    echo "[1/5] Cloning repository..."
-    git clone https://github.com/atulkrishnan18-wq/transactionmonitoring.git "$HOME/transactionmonitoring"
-fi
-
-cd "$HOME/transactionmonitoring"
-echo "[1/5] Pulling latest changes from GitHub (main)..."
-git fetch origin main
-git reset --hard origin/main
-
-# 2. Stage engine modules into api/ build context
-echo "[2/5] Preparing Docker build context in api/..."
-cp -r engine feeds rules scoring_engine.py requirements.txt api/
-
-cd "$HOME/transactionmonitoring/api"
-
-if [ ! -f ".env" ]; then
-    echo "WARNING: .env file not found in api/. Copying template from .env.production..."
-    cp .env.production .env
-    echo "Please populate api/.env with production secrets before traffic cutover."
-fi
-
-# 3. Rebuild Docker image
-echo "[3/5] Building Docker image: scoresentinel-api..."
-sudo docker build -t scoresentinel-api .
-
-# 4. Restart the Docker container service
-echo "[4/5] Restarting container: scoresentinel..."
-if sudo docker ps -a --format '{{.Names}}' | grep -Eq "^scoresentinel$"; then
-    sudo docker stop scoresentinel || true
-    sudo docker rm scoresentinel || true
-fi
-
-sudo docker run -d \
-    -p 5000:5000 \
-    --env-file .env \
-    --restart unless-stopped \
-    --name scoresentinel \
-    scoresentinel-api
-
-# 5. Verify health endpoint
-echo "[5/5] Waiting for Gunicorn workers to initialise..."
-sleep 4
-echo "Checking health endpoint: http://localhost:5000/api/health"
-HEALTH_RESP=$(curl -sS http://localhost:5000/api/health)
-echo "Health response: $HEALTH_RESP"
-
-if echo "$HEALTH_RESP" | grep -q '"status":"ok"'; then
-    echo "✅ Deployment successful! ScoreSentinel API is live on port 5000."
-else
-    echo "❌ Health check did not return expected status. Container logs:"
-    sudo docker logs --tail 50 scoresentinel
-    exit 1
-fi
-EOF
-)
-
-if [[ "${1:-}" == "--on-server" ]] || [[ -z "$EC2_HOST" ]]; then
-    if [[ -z "$EC2_HOST" ]] && [[ "${1:-}" != "--on-server" ]]; then
-        echo "Connecting to EC2 instance..."
-        echo "Note: Set EC2_HOST and PEM_KEY environment variables to run over SSH,"
-        echo "or pass --on-server when executing directly inside the EC2 instance."
+    if [ ! -f ".env" ]; then
+        echo "ERROR: .env file not found in ${REMOTE_REPO_DIR}."
+        echo "Copy .env.production to .env and populate production secrets first."
         exit 1
     fi
-    bash -c "$REMOTE_COMMANDS"
+
+    # Load API_DOMAIN from .env if present
+    ENV_DOMAIN="$(grep -E '^API_DOMAIN=' .env | tail -n 1 | cut -d'=' -f2- | tr -d '\r"'\''' || true)"
+    if [ -n "${ENV_DOMAIN}" ]; then
+        API_DOMAIN="${ENV_DOMAIN}"
+    fi
+
+    echo "==> [2/4] Pulling latest code from GitHub (branch: ${GIT_BRANCH})..."
+    git fetch origin
+    git checkout "${GIT_BRANCH}"
+    git pull origin "${GIT_BRANCH}"
+
+    echo "==> [3/4] Building and starting services via docker-compose.prod.yml..."
+    docker compose -f docker-compose.prod.yml build
+    docker compose -f docker-compose.prod.yml up -d
+
+    echo "==> [4/4] Verifying HTTPS health endpoint at https://${API_DOMAIN}/api/health ..."
+    sleep 5
+    HEALTH_RESPONSE="$(curl -fsS --max-time 15 "https://${API_DOMAIN}/api/health" || true)"
+    if echo "${HEALTH_RESPONSE}" | grep -q '"status"'; then
+        echo "Health response: ${HEALTH_RESPONSE}"
+        echo "PASS"
+    else
+        echo "Health check failed or returned unexpected payload: ${HEALTH_RESPONSE}"
+        docker compose -f docker-compose.prod.yml logs --tail 40
+        echo "FAIL"
+        exit 1
+    fi
+}
+
+if [[ "${1:-}" == "--on-server" ]]; then
+    deploy_on_server
 else
-    echo "Connecting to ${EC2_USER}@${EC2_HOST} (ap-south-1 Mumbai)..."
-    ssh -i "$PEM_KEY" -o StrictHostKeyChecking=accept-new "${EC2_USER}@${EC2_HOST}" "$REMOTE_COMMANDS"
+    if [[ -z "${EC2_HOST}" ]]; then
+        echo "Usage: EC2_HOST=<ec2-ip-or-dns> SSH_KEY=<path-to-pem> ./scripts/deploy_aws.sh"
+        echo "   or: ./scripts/deploy_aws.sh --on-server  (when already SSH'd into EC2)"
+        exit 1
+    fi
+
+    echo "==> Connecting to ${EC2_USER}@${EC2_HOST} (ap-south-1 Mumbai)..."
+    ssh -i "${SSH_KEY}" -o StrictHostKeyChecking=accept-new "${EC2_USER}@${EC2_HOST}" \
+        "GIT_BRANCH='${GIT_BRANCH}' API_DOMAIN='${API_DOMAIN}' bash -s" << 'EOF'
+set -euo pipefail
+REPO_DIR="$HOME/transactionmonitoring"
+if [ ! -d "$REPO_DIR" ]; then
+    git clone https://github.com/atulkrishnan18-wq/transactionmonitoring.git "$REPO_DIR"
+fi
+cd "$REPO_DIR"
+git fetch origin
+git checkout "${GIT_BRANCH:-aws-hardening}"
+git pull origin "${GIT_BRANCH:-aws-hardening}"
+bash scripts/deploy_aws.sh --on-server
+EOF
 fi

@@ -1,22 +1,22 @@
 # TECH_STACK_EXPLAINED.md — ScoreSentinel Architecture & Data Flow
 
 **ScoreSentinel AML Transaction Risk Scoring Engine**
-**Version:** 1.2 | **Day:** 60 of 60 | **Author:** Atul Krishnan, CAMS
-**Last Updated:** 30 October 2026
+**Version:** 1.3 | **Day:** 60 of 60 | **Author:** Atul Krishnan, CAMS
+**Last Updated:** 1 November 2026
 
 ---
 
 ## 1. System Architecture Overview
 
-ScoreSentinel is built using a modern "Full Stack" architecture, combining specialized components for logic execution, data persistence, and user interaction. The system is designed for **explainability, speed, RBI data localisation alignment, and Free Tier cloud deployment**.
+ScoreSentinel is built using a modern "Full Stack" architecture, combining specialized components for logic execution, data persistence, and user interaction. The system is designed for **explainability, speed, and India-hosted deployment to support clients' own data-residency requirements**.
 
 | Component | Technology | Primary Role |
 |---|---|---|
 | **Scoring Engine** | Python 3.11 | Logic execution — implements 5-module AML rules, sanctions waterfall, velocity, and FIU-IND STR generation |
-| **API Layer** | Flask + Gunicorn (Docker) | Data ingress/egress — containerised REST API deployed on **AWS EC2 (`ap-south-1` Mumbai)** |
-| **Database** | PostgreSQL | Persistence — hosted on **Supabase (Singapore)** with planned migration to **AWS RDS Mumbai (`ap-south-1`)** |
+| **API & Reverse Proxy** | Flask + Gunicorn + Caddy 2 (Docker Compose) | Data ingress/egress — containerised REST API deployed on **AWS EC2 (`ap-south-1` Mumbai)** behind Caddy 2 HTTPS (`https://api.chainsutra.in`) |
+| **Database** | PostgreSQL | Persistence — currently hosted on **Supabase (`ap-northeast-1` Tokyo)** as detected by `scripts/check_db_region.py`; migration to **`ap-south-1` (Mumbai)** required for full India data residency |
 | **Dashboard** | React | UI/UX — analyst case management interface, 3-point verification, STR generation, and Tuning Lab |
-| **Infrastructure** | AWS EC2 (`ap-south-1`) + Vercel | Cloud hosting — Indian onshore compute in Mumbai (`ap-south-1`) for RBI data localisation compliance |
+| **Infrastructure** | AWS EC2 (`ap-south-1`) + Vercel | Cloud hosting — API hosted in Mumbai (`ap-south-1`); database migration to `ap-south-1` in progress |
 
 ---
 
@@ -28,22 +28,25 @@ The "Brain" of ScoreSentinel. Python was chosen for its dominance in data scienc
 - **Independent Modules:** Each module is a discrete Python script, allowing for easier updates and independent testing.
 - **Fail-Fast Sanctions Waterfall:** Screens against 6 sanctions lists (UAPA Schedules 1 & 4, UNSC 1267/1988, OFAC SDN, UN Consolidated) and sanctioned jurisdictions, triggering an immediate AUTO-ALERT.
 
-### 2.2 The API Layer (Flask + Docker on AWS EC2 Mumbai `ap-south-1`)
-The "Door" to the system. Flask is packaged inside a production `python:3.11-slim` Docker container served by Gunicorn on **AWS EC2 (`t2.micro`, `ap-south-1` Mumbai)**.
-- **RBI Data Localisation Alignment:** Migrating the API compute layer from US-hosted Render servers to **AWS EC2 Mumbai (`ap-south-1`)** ensures that transaction scoring, sanctions screening, and FIU-IND STR PDF generation execute onshore within India in alignment with the RBI Circular on Storage of Payment System Data (2018) and DPDP Act 2023.
+### 2.2 The API Layer (Flask + Gunicorn + Caddy 2 on AWS EC2 Mumbai `ap-south-1`)
+The "Door" to the system. Flask is packaged inside a production `python:3.11-slim` Docker container (`api/Dockerfile.aws`) served by Gunicorn and fronted by **Caddy 2** (`docker-compose.prod.yml`) on **AWS EC2 (`t3.small` / `t4g.small`, `ap-south-1` Mumbai)**.
+- **Hosting & Residency Status:** Deploying the API container on **AWS EC2 Mumbai (`ap-south-1`)** ensures that transaction scoring, sanctions screening, and FIU-IND STR PDF generation execute in Mumbai (`https://api.chainsutra.in`). Port `5000` is exposed only on the internal Docker network (`expose: ["5000"]`), while Caddy terminates TLS on ports `80`/`443`.
 - **POST /api/score:** Accepts JSON transaction data, passes it to the engine, and returns the composite risk score and triggered rules.
-- **PUT /api/alerts & GET /api/alerts/{id}/str:** Allows analysts to record dispositions following the Three-Point Documentation Standard and generate watermarked FIU-IND Suspicious Transaction Report (STR) PDFs.
-- **Security:** Enforces `X-DEMO-API-KEY` and `X-READ-API-KEY` authentication, rate limiting (`Flask-Limiter`), parameterized SQL queries, and strict CORS allowlisting for the Vercel frontend and EC2 IP.
+- **PUT /api/alerts & GET /api/alerts/{id}/str:** Allows analysts to record dispositions following the Three-Point Documentation Standard and generate watermarked FIU-IND Suspicious Transaction Report (STR) PDFs (with automatic `DEMONSTRATION DOCUMENT - NOT A REGISTERED FIU-IND FILING` headers when `REPORTING_ENTITY_FIU_REG_NO` starts with `DEMO`).
+- **Security:** Enforces startup validation on `DEMO_API_KEY` and `READ_API_KEY` (rejecting missing, short, duplicate, or placeholder keys), rate limiting (`Flask-Limiter`), parameterized SQL queries, and strict CORS allowlisting for `https://transactionmonitoring.vercel.app`.
 
-### 2.3 The Database (PostgreSQL — Supabase Singapore → Planned AWS RDS Mumbai)
+### 2.3 The Database (PostgreSQL — Current Hosting vs. India Residency Requirement)
 The "Memory" of the system. An enterprise-grade relational database.
-- **Current Hosting & Localisation Roadmap:** Currently hosted on **Supabase PostgreSQL (Singapore region)** for zero-cost managed persistence, with a **planned migration to AWS RDS for PostgreSQL in `ap-south-1` (Mumbai)** to achieve complete end-to-end onshore data residency alongside the AWS EC2 Mumbai API instance.
+- **Honest Hosting Status (`scripts/check_db_region.py`):**
+  - **API Location:** AWS EC2 Mumbai (`ap-south-1`).
+  - **Current Database Location:** Supabase PostgreSQL in **`ap-northeast-1` (Tokyo)** (verified via `python scripts/check_db_region.py` -> `NOT India-hosted: detected ap-northeast-1`).
+  - **Data-Residency Requirement:** Full India data residency requires the PostgreSQL database itself to be hosted in **`ap-south-1` (Mumbai)** (either by provisioning a new Supabase project in Mumbai `ap-south-1` or migrating to AWS RDS for PostgreSQL in `ap-south-1`). Until that migration is completed, the environment is accurately described as: **API hosted in Mumbai (`ap-south-1`); database migration to `ap-south-1` in progress.**
 - **Transactions Table:** INSERT-ONLY immutable audit trail storing every field and raw/normalised module score from every transaction attempt.
 - **Customers Table:** Stores CCRS (Customer Risk Score) components, PEP tier, and beneficial ownership data.
 - **Alerts Table:** Stores case management metadata (timestamps, reviewer IDs, 3-point identifiers, dispositions, and FIU-IND `str_reference` numbers).
 
 ### 2.4 The Dashboard (React on Vercel)
-The "Face" of the system. A modern web interface connected to the AWS EC2 Mumbai API.
+The "Face" of the system. A modern web interface connected to `https://api.chainsutra.in`.
 - **Real-time Queue:** Displays alerts as they are generated by the engine, including IBM AML dataset badges.
 - **Explainability UI:** Shows a visual breakdown of the composite score across all risk dimensions and rules fired.
 - **Case Management & STR Filing:** Enforces the "Three-Point Decision Standard" and provides one-click **Preview STR** (JSON) and **Generate STR** (FIU-IND PMLA Section 12 PDF download) once an alert is disposed.
@@ -52,12 +55,13 @@ The "Face" of the system. A modern web interface connected to the AWS EC2 Mumbai
 
 ## 3. Architecture & Data Flow Diagram
 
-The diagram below illustrates how transaction payloads enter the **AWS EC2 (`ap-south-1` Mumbai)** Docker container, execute across the scoring and sanctions modules, persist to **Supabase PostgreSQL (Singapore — planned migration to AWS RDS Mumbai `ap-south-1`)**, and serve the **Vercel React Dashboard** for case investigation and FIU-IND STR filing:
+The diagram below illustrates how transaction payloads enter **Caddy 2 (`https://api.chainsutra.in`)** on **AWS EC2 (`ap-south-1` Mumbai)**, proxy to the internal **Flask + Gunicorn API** container, execute across the scoring and sanctions modules, persist to **Supabase PostgreSQL (currently `ap-northeast-1` Tokyo; migration to `ap-south-1` Mumbai required for full India residency)**, and serve the **Vercel React Dashboard**:
 
 ```mermaid
 graph TD
-    A["External Core Banking / Payment System"] -->|"POST /api/score (JSON)"| B("Flask + Gunicorn API<br/>Docker on AWS EC2 ap-south-1 Mumbai")
-    B --> C{"ScoreSentinel Engine<br/>(Onshore India Compute)"}
+    A["External Core Banking / Payment System"] -->|"POST https://api.chainsutra.in/api/score"| P("Caddy 2 Reverse Proxy<br/>Ports 80/443 TLS on AWS EC2 ap-south-1")
+    P -->|"Internal Docker Network :5000"| B("Flask + Gunicorn API<br/>Docker on AWS EC2 ap-south-1 Mumbai")
+    B --> C{"ScoreSentinel Engine<br/>(Mumbai Compute)"}
     C -->|"6-List Waterfall"| S["UAPA / OFAC / UN Sanctions"]
     C -->|"Module 1 (20%)"| D["Structuring Logic"]
     C -->|"Module 2 (25%)"| E["Geography & Currency Risk"]
@@ -70,13 +74,13 @@ graph TD
     G -->|"Composite CRS >= 60"| H
     V -->|"Velocity Breach"| H
 
-    H --> I[("PostgreSQL Database<br/>Supabase Singapore<br/>(Planned: AWS RDS ap-south-1 Mumbai)")]
+    H --> I[("PostgreSQL Database<br/>Current: Supabase ap-northeast-1 Tokyo<br/>(Target for Full India Residency: ap-south-1 Mumbai)")]
     B -->|"Immutable Audit Trail"| I
 
-    J["AML Compliance Analyst"] -->|"HTTPS"| K("React Dashboard<br/>Hosted on Vercel")
-    K -->|"GET /api/alerts & History"| B
-    K -->|"PUT /api/alerts/{id} (3-Point Disposition)"| B
-    K -->|"GET /api/alerts/{id}/str (FIU-IND PDF)"| B
+    J["AML Compliance Analyst"] -->|"HTTPS"| K("React Dashboard<br/>https://transactionmonitoring.vercel.app")
+    K -->|"GET /api/alerts & History"| P
+    K -->|"PUT /api/alerts/{id} (3-Point Disposition)"| P
+    K -->|"GET /api/alerts/{id}/str (FIU-IND PDF)"| P
     B -->|"Update Status & STR Ref"| I
 ```
 
@@ -84,25 +88,18 @@ graph TD
 
 ## 4. Cloud Deployment Topology
 
-ScoreSentinel runs on Free Tier cloud infrastructure while aligning compute residency with Indian regulatory requirements:
-
-| Layer | Provider | Region / Endpoint | Plan | Cost |
-|---|---|---|---|---|
-| **API & Engine** | **AWS EC2 (`t2.micro`)** | **`ap-south-1` (Mumbai, India)** — Docker (`scoresentinel-api:5000`) | AWS Free Tier | ₹0 / \$0 |
-| **Database** | **Supabase PostgreSQL** | **Singapore (`ap-southeast-1`)** — *Planned migration to **AWS RDS Mumbai (`ap-south-1`)*** | Free Tier | ₹0 / \$0 |
-| **Dashboard** | **Vercel** | [transactionmonitoring.vercel.app](https://transactionmonitoring.vercel.app) | Hobby Plan | ₹0 / \$0 |
-| **Container Runtime** | **Docker + Gunicorn** | Amazon Linux 2023 (`python:3.11-slim`, port `5000`) | Open Source | ₹0 / \$0 |
+| Layer | Provider | Region / Endpoint | Instance / Plan |
+|---|---|---|---|
+| **Reverse Proxy & TLS** | **Caddy 2 (`docker-compose.prod.yml`)** | **`ap-south-1` (Mumbai, India)** — `https://api.chainsutra.in` (ports `80`/`443`) | Open Source |
+| **API & Engine** | **AWS EC2 (`t3.small` or `t4g.small`)** | **`ap-south-1` (Mumbai, India)** — internal port `5000` (`expose: ["5000"]`) | 2 GiB RAM, 30 GiB `gp3` |
+| **Database** | **Supabase PostgreSQL** | **Current: `ap-northeast-1` (Tokyo)** — *Migration to **`ap-south-1` (Mumbai)** required for full India data residency* | Managed PostgreSQL |
+| **Dashboard** | **Vercel** | [transactionmonitoring.vercel.app](https://transactionmonitoring.vercel.app) | Hobby Plan |
 
 ---
 
 ## 5. Model Governance & Regulatory Alignment
 
-The choice of this tech stack directly supports **SR 11-7**, **PMLA 2002**, and **RBI Master Directions**:
-- **Data Localisation (RBI 2018 Circular & DPDP Act 2023):** Hosting the API container in **AWS `ap-south-1` (Mumbai)** ensures transaction risk processing and STR generation occur on Indian soil, with database migration to AWS RDS Mumbai completing full onshore residency.
-- **Traceability:** Python logic is explicit and deterministic; there are no opaque black-box neural network weights.
-- **Integrity:** PostgreSQL enforces an immutable transaction log and tracks every analyst disposition and FIU-IND STR reference.
-- **Explainability:** The React dashboard presents the engine's module scores, triggered scenarios, and STR narrative in a human-readable format.
-
----
-
-*ScoreSentinel | TECH_STACK_EXPLAINED.md | Version 1.2 | Updated for AWS EC2 Mumbai (`ap-south-1`) Migration | 30 October 2026*
+The choice of this tech stack directly supports **SR 11-7**, **PMLA 2002**, and **FIU-IND** operational workflows:
+- **Transparency (No Black Box):** Unlike unexplainable neural networks, ScoreSentinel's Python code can be line-by-line audited by an independent validator.
+- **Data Integrity:** PostgreSQL foreign keys and `INSERT-ONLY` transaction logging ensure that an alert can never be separated from its underlying transaction or customer state at the time of scoring.
+- **Demonstration Safety:** When `REPORTING_ENTITY_FIU_REG_NO` begins with `DEMO` (such as `DEMO-ONLY`), every page of a generated STR PDF is stamped with `DEMONSTRATION DOCUMENT - NOT A REGISTERED FIU-IND FILING` in addition to the diagonal `DRAFT — PENDING REVIEW` watermark.

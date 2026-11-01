@@ -12,8 +12,7 @@ Error: psycopg2.OperationalError
 Fix:
   Check PostgreSQL is running
   Check .env file has correct DATABASE_URL
-  Format: postgresql://postgres:postgres
-          @localhost:5432/scoresentinel
+  Format: DATABASE_URL=CHANGE_ME
 
 ## Issue 3 — React cannot connect to API
 Error: Network Error / CORS error
@@ -38,14 +37,10 @@ Fix:
   If Scenario 9 fails, a recent code
   change has broken calibration
   Check scoring_engine.py weights
-  Must be exactly 0.30/0.25/0.25/0.20
 
-## Issue 6 — Three-point form not blocking
-Symptom: Disposition saves without points
+## Issue 6 — Sanctions match failing
+Symptom: Known terrorist name not flagging
 Fix:
-  Check api/app.py update_alert function
-  Look for the validation block:
-  if disposition in 
-    ["FALSE_POSITIVE", "CLEARED"]:
-      if not all([p1_id, p1_src...])
-  If missing, re-add from Day 27 build
+  Confirm JSON files exist in engine/data/
+  Run: python engine/sanctions_screening.py
+  Check all 10 unit tests pass

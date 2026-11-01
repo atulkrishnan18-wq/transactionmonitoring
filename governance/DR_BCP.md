@@ -446,7 +446,7 @@ Supabase provides automated daily backups. A manual export must additionally be 
 
 ```bash
 # Step 1: Set connection string
-export DATABASE_URL="postgresql://postgres:<password>@<host>:<port>/postgres"
+export DATABASE_URL="CHANGE_ME"
 
 # Step 2: Full database dump in custom format (supports selective restore)
 pg_dump "$DATABASE_URL" \

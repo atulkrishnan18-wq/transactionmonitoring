@@ -1,10 +1,11 @@
+import os
 import requests
 import json
 import time
 from datetime import datetime
 
 BASE_URL = "http://localhost:5000"
-API_KEY = "SCORESENTINEL_DEMO_2027"
+API_KEY = os.environ.get("DEMO_API_KEY", "CHANGE_ME_GENERATE_NEW_KEY")
 
 def run_demo():
     print("=== ScoreSentinel Demo Script ===")

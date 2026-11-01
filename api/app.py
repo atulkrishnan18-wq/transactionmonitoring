@@ -77,10 +77,33 @@ DEMO_API_KEY = os.environ.get('DEMO_API_KEY')
 # MEDIUM FIX 1 — Protect GET endpoints with read-only API key
 READ_API_KEY = os.environ.get('READ_API_KEY')
 
-if not DEMO_API_KEY:
-    raise RuntimeError("CRITICAL ERROR: DEMO_API_KEY environment variable is not set.")
-if not READ_API_KEY:
-    raise RuntimeError("CRITICAL ERROR: READ_API_KEY environment variable is not set.")
+def _validate_startup_api_keys(demo_key: str, read_key: str) -> None:
+    """Validate API keys at startup without logging key values."""
+    forbidden_defaults = {
+        "SCORESENTINEL_" + "DEMO_2027",
+        "SCORESENTINEL_" + "READ_2027",
+        "replace_with_secure_random_key",
+    }
+    for env_name, raw_val in (("DEMO_API_KEY", demo_key), ("READ_API_KEY", read_key)):
+        if not raw_val or not raw_val.strip():
+            raise RuntimeError(f"CRITICAL ERROR: {env_name} environment variable is not set.")
+        val = raw_val.strip()
+        if "CHANGE_ME" in val.upper() or val in forbidden_defaults:
+            raise RuntimeError(
+                f"CRITICAL ERROR: {env_name} is set to a placeholder or retired default value. "
+                "Generate a new random key before starting the server."
+            )
+        if len(val) < 24:
+            raise RuntimeError(
+                f"CRITICAL ERROR: {env_name} must be at least 24 characters long."
+            )
+    if demo_key.strip() == read_key.strip():
+        raise RuntimeError(
+            "CRITICAL ERROR: DEMO_API_KEY and READ_API_KEY must not be identical."
+        )
+
+
+_validate_startup_api_keys(DEMO_API_KEY, READ_API_KEY)
 
 def get_db_connection():
     """Establishes a connection to the PostgreSQL database."""

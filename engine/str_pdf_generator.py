@@ -20,11 +20,34 @@ from reportlab.platypus import (
     KeepTogether,
 )
 
+DEMO_HEADER_TEXT = "DEMONSTRATION DOCUMENT - NOT A REGISTERED FIU-IND FILING"
+
+
+def _is_demo_fiu_reg(str_data=None) -> bool:
+    """Return True if REPORTING_ENTITY_FIU_REG_NO starts with 'DEMO'."""
+    reg_no = None
+    if isinstance(str_data, dict):
+        part_a = str_data.get("part_a_reporting_entity") or {}
+        reg_no = part_a.get("reporting_entity_fiu_reg_no")
+    if not reg_no:
+        reg_no = os.environ.get("REPORTING_ENTITY_FIU_REG_NO", "DEMO-ONLY")
+    return str(reg_no).strip().upper().startswith("DEMO")
+
 
 def _draw_watermark_and_footer(canvas, doc):
-    """Draws diagonal DRAFT watermark, footer, and page number on every page."""
+    """Draws diagonal DRAFT watermark, optional DEMO page header, footer, and page number on every page."""
     canvas.saveState()
     width, height = A4
+
+    # 0. Demonstration document header on every page when REPORTING_ENTITY_FIU_REG_NO starts with "DEMO"
+    if getattr(doc, "_is_demo_str", False) or _is_demo_fiu_reg():
+        canvas.setFillColor(colors.HexColor("#B91C1C"))
+        canvas.setFont("Helvetica-Bold", 9.5)
+        canvas.drawCentredString(
+            width / 2.0,
+            height - 11 * mm,
+            DEMO_HEADER_TEXT,
+        )
 
     # 1. Diagonal Watermark in light grey
     canvas.saveState()
@@ -77,6 +100,7 @@ def generate_str_pdf(str_data, output_path):
         title=f"FIU-IND STR - {str_data.get('str_reference', 'DRAFT')}",
         author="ScoreSentinel AML Compliance Engine",
     )
+    doc._is_demo_str = _is_demo_fiu_reg(str_data)
 
     styles = getSampleStyleSheet()
 
